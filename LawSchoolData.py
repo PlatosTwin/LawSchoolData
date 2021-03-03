@@ -24,11 +24,11 @@ from sklearn import metrics
 pd.options.mode.chained_assignment = None
 
 #  Time-delimit the data
-t_min = "10/01/2019"
-t_max = "05/31/2020"
+t_min = "10/01/2017"
+t_max = "08/31/2021"
 
 #  Read-in data, downloaded from https://www.lawschooldata.org/download
-filename = '/Users/lsdata.csv'
+filename = '/Users/Desktop/lsdata.csv'
 df = pd.read_csv(filename, skiprows=1, low_memory=False)
 
 print("\nShape of original file: " + str(df.shape))
@@ -39,7 +39,7 @@ drop_cols = ['scholarship', 'attendance', 'is_in_state', 'is_fee_waived', 'is_co
 df_dcol = df.drop(drop_cols, axis=1)
 
 #  Remove rows that are missing crucial values
-filter_rows = ['sent_at', 'decision_at', 'lsat', 'gpa', 'years_out', 'cycle_id']
+filter_rows = ['sent_at', 'decision_at', 'lsat', 'gpa', 'result']
 df_filtered = df_dcol.dropna(subset=filter_rows)
 
 #  Convert sent_at and decision_at to datetime
@@ -79,7 +79,7 @@ top_ten = df_filtered[df_filtered['school_name'].str.contains('|'.join(top_ten_l
 top_four_list = ['Yale University', 'Harvard University', 'Stanford University', 'University of Chicago']
 top_four = df_filtered[df_filtered['school_name'].str.contains('|'.join(top_four_list))]
 
-school = top_four
+school = columbia
 
 print("\nNumber of samples for chosen school: %i" % (school.shape[0]))
 
@@ -88,6 +88,66 @@ duration = ((school['decision_at'] - school['sent_at'])/np.timedelta64(1, 's'))/
 
 print("Average wait: %0.f" % duration.mean())
 
+#####
+#  Plot sent_at vs. decision_at, stacking cycles
+#####
+
+school_stack = school.copy()
+
+cycle18 = school_stack[(school_stack['decision_at'] > '10/01/2017') & (school_stack['decision_at'] < '08/31/2018')]
+cycle19 = school_stack[(school_stack['decision_at'] > '10/01/2018') & (school_stack['decision_at'] < '08/31/2019')]
+cycle20 = school_stack[(school_stack['decision_at'] > '10/01/2019') & (school_stack['decision_at'] < '08/31/2020')]
+cycle21 = school_stack[(school_stack['decision_at'] > '10/01/2020') & (school_stack['decision_at'] < '08/31/2021')]
+
+#  Account for 2020 being a leap year
+cycle20.loc[cycle20['sent_at'] == '02/29/2020', 'sent_at'] = dt.datetime(2020, 02, 28)
+cycle20.loc[cycle20['decision_at'] == '02/29/2020', 'decision_at'] = dt.datetime(2020, 02, 28)
+
+cycle19.loc[:, 'sent_at'] = cycle19['sent_at'].map(lambda x: dt.datetime(x.year-1, x.month, x.day))
+cycle20.loc[:, 'sent_at'] = cycle20['sent_at'].map(lambda x: dt.datetime(x.year-2, x.month, x.day))
+cycle21.loc[:, 'sent_at'] = cycle21['sent_at'].map(lambda x: dt.datetime(x.year-3, x.month, x.day))
+
+cycle19.loc[:, 'decision_at'] = cycle19['decision_at'].map(lambda x: dt.datetime(x.year-1, x.month, x.day))
+cycle20.loc[:, 'decision_at'] = cycle20['decision_at'].map(lambda x: dt.datetime(x.year-2, x.month, x.day))
+cycle21.loc[:, 'decision_at'] = cycle21['decision_at'].map(lambda x: dt.datetime(x.year-3, x.month, x.day))
+
+#  Plot sent_at vs. decision_at, stacking cycles
+markers = ['1', '3', '2', '4']
+cycle = ['18', '19', '20', '21']
+
+for i, mark in enumerate(markers):
+
+    school_temp = None
+    exec('school_temp = ' + 'cycle' + cycle[i])
+
+    accepted = school_temp[school_temp['result'] == 'Accepted']
+    rejected = school_temp[school_temp['result'] == 'Rejected']
+    waitlisted = school_temp[school_temp['result'].str.contains('Wait')]
+
+    plt.scatter(accepted['sent_at'], accepted['decision_at'],
+                color='green', marker=mark, label="Accepted 20" + cycle[i])
+    plt.scatter(rejected['sent_at'], rejected['decision_at'],
+                color='red', marker=mark, label="Rejected 20" + cycle[i])
+    plt.scatter(waitlisted['sent_at'], waitlisted['decision_at'],
+                color='orange', marker=mark, label="Waitlisted 20" + cycle[i])
+
+plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
+plt.gca().xaxis.set_major_locator(mdates.MonthLocator())
+plt.gca().xaxis.set_minor_locator(mdates.WeekdayLocator(interval=1))
+
+plt.gca().yaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
+plt.gca().yaxis.set_major_locator(mdates.MonthLocator())
+plt.gca().yaxis.set_minor_locator(mdates.WeekdayLocator(interval=1))
+
+plt.xlabel("Date Sent")
+plt.ylabel("Date Decision Received")
+
+plt.legend()
+
+plt.show()
+
+#####
+#  Random Forest, to predict wait time
 #####
 
 #  Set up for RandomForest
@@ -118,12 +178,10 @@ to_predict = sc.transform(np.array([mdates.date2num(dt.datetime(2019, 11, 13)), 
 print("\nPrediction: %.2f" % regressor.predict(to_predict)[0])
 
 #####
-
-#  Placeholder for assessing likelihood of late notification given splitter status
-
+#  Date slider (does not stack cycles)
 #####
 
-#  Setup to date plot
+#  Setup to date/slider plot
 fig, ax = plt.subplots()
 plt.subplots_adjust(left=0.1, bottom=0.20)
 
@@ -148,7 +206,6 @@ slider = Slider(ax_slider, 'Date', mdates.date2num(school['decision_at'].min()),
                 mdates.date2num(school['decision_at'].max()),
                 valinit=mdates.date2num(initial_time),
                 valfmt="%i")
-
 
 #  Update function, called upon slider movement
 #  (splitter/rev_splitter colors show up incorrectly if slider is dragged from beginning; click in middle, instead)
