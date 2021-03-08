@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.widgets import Slider
 from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.colors as c
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -23,12 +24,12 @@ from sklearn import metrics
 #  Suppress Pandas SettingWithCopyWarning
 pd.options.mode.chained_assignment = None
 
-#  Time-delimit the data
+#  Time-delimit the data (used to delimit 'decision_at')
 t_min = "10/01/2017"
 t_max = "08/31/2021"
 
 #  Read-in data, downloaded from https://www.lawschooldata.org/download
-filename = '/Users/Desktop/lsdata.csv'
+filename = '/Users/johnsmith/Desktop/lsdata.csv'
 df = pd.read_csv(filename, skiprows=1, low_memory=False)
 
 print("\nShape of original file: " + str(df.shape))
@@ -79,7 +80,9 @@ top_ten = df_filtered[df_filtered['school_name'].str.contains('|'.join(top_ten_l
 top_four_list = ['Yale University', 'Harvard University', 'Stanford University', 'University of Chicago']
 top_four = df_filtered[df_filtered['school_name'].str.contains('|'.join(top_four_list))]
 
-school = columbia
+school_name = 'Virginia'
+school = None
+exec('school = ' + school_name.lower())
 
 print("\nNumber of samples for chosen school: %i" % (school.shape[0]))
 
@@ -103,6 +106,7 @@ cycle21 = school_stack[(school_stack['decision_at'] > '10/01/2020') & (school_st
 cycle20.loc[cycle20['sent_at'] == '02/29/2020', 'sent_at'] = dt.datetime(2020, 02, 28)
 cycle20.loc[cycle20['decision_at'] == '02/29/2020', 'decision_at'] = dt.datetime(2020, 02, 28)
 
+# Standardize cycle years
 cycle19.loc[:, 'sent_at'] = cycle19['sent_at'].map(lambda x: dt.datetime(x.year-1, x.month, x.day))
 cycle20.loc[:, 'sent_at'] = cycle20['sent_at'].map(lambda x: dt.datetime(x.year-2, x.month, x.day))
 cycle21.loc[:, 'sent_at'] = cycle21['sent_at'].map(lambda x: dt.datetime(x.year-3, x.month, x.day))
@@ -110,6 +114,8 @@ cycle21.loc[:, 'sent_at'] = cycle21['sent_at'].map(lambda x: dt.datetime(x.year-
 cycle19.loc[:, 'decision_at'] = cycle19['decision_at'].map(lambda x: dt.datetime(x.year-1, x.month, x.day))
 cycle20.loc[:, 'decision_at'] = cycle20['decision_at'].map(lambda x: dt.datetime(x.year-2, x.month, x.day))
 cycle21.loc[:, 'decision_at'] = cycle21['decision_at'].map(lambda x: dt.datetime(x.year-3, x.month, x.day))
+
+school_stack = pd.concat([cycle18, cycle19, cycle20, cycle21])
 
 #  Plot sent_at vs. decision_at, stacking cycles
 markers = ['1', '3', '2', '4']
@@ -141,6 +147,9 @@ plt.gca().yaxis.set_minor_locator(mdates.WeekdayLocator(interval=1))
 
 plt.xlabel("Date Sent")
 plt.ylabel("Date Decision Received")
+plt.title("Admissions Data for 20" + str(int(cycle[0])-1) + "-20" + cycle[0] +
+          " to 20" + str(int(cycle[-1])-1) + "-20" + cycle[-1] + ", " + school_name +
+          " (" + str(school_stack.shape[0]) + " samples)")
 
 plt.legend()
 
@@ -178,7 +187,7 @@ to_predict = sc.transform(np.array([mdates.date2num(dt.datetime(2019, 11, 13)), 
 print("\nPrediction: %.2f" % regressor.predict(to_predict)[0])
 
 #####
-#  Date slider (does not stack cycles)
+#  Date slider with splitters/revsplitters, stacking cycles
 #####
 
 #  Setup to date/slider plot
@@ -186,31 +195,35 @@ fig, ax = plt.subplots()
 plt.subplots_adjust(left=0.1, bottom=0.20)
 
 #  Set initial values
-initial_time = school['decision_at'].min()
-time_delim_init = school[school['decision_at'] <= initial_time]
+initial_time = school_stack['decision_at'].min()
+time_delim_init = school_stack[school_stack['decision_at'] <= initial_time]
 
 #  Establish scatter plot
-scat = ax.scatter(time_delim_init['decision_at'], time_delim_init['lsat'])
+scat = ax.scatter(time_delim_init['decision_at'], time_delim_init['lsat'], s=5, c=['k']*time_delim_init.shape[0])
 
+plt.title("Admissions Data for 20" + str(int(cycle[0])-1) + "-20" + cycle[0] +
+          " to 20" + str(int(cycle[-1])-1) + "-20" + cycle[-1] + ", " + school_name +
+          " (" + str(school_stack.shape[0]) + " samples)")
 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
 plt.gca().xaxis.set_major_locator(mdates.MonthLocator())
 plt.gca().xaxis.set_minor_locator(mdates.WeekdayLocator(interval=1))
 plt.gcf().autofmt_xdate()
-ax.set_xlim([school['decision_at'].min() - dt.timedelta(days=7), school['decision_at'].max() + dt.timedelta(days=7)])
+ax.set_xlim([school_stack['decision_at'].min() - dt.timedelta(days=7),
+             school_stack['decision_at'].max() + dt.timedelta(days=7)])
 
 plt.ylim([140, 181])
 
 #  Define slider
 ax_slider = plt.axes([0.15, 0.05, 0.65, 0.03])
-slider = Slider(ax_slider, 'Date', mdates.date2num(school['decision_at'].min()),
-                mdates.date2num(school['decision_at'].max()),
+slider = Slider(ax_slider, 'Date', mdates.date2num(school_stack['decision_at'].min()),
+                mdates.date2num(school_stack['decision_at'].max()),
                 valinit=mdates.date2num(initial_time),
                 valfmt="%i")
 
 #  Update function, called upon slider movement
 #  (splitter/rev_splitter colors show up incorrectly if slider is dragged from beginning; click in middle, instead)
 def update(val):
-    time_delim = school[school['decision_at'] <= mdates.num2date(val).replace(tzinfo=None)]
+    time_delim = school_stack[school_stack['decision_at'] <= mdates.num2date(val).replace(tzinfo=None)]
 
     splitters = np.intersect1d(np.where(time_delim['lsat'] > 175), np.where(time_delim['gpa'] < 3.78))
     rev_splitters = np.intersect1d(np.where(time_delim['lsat'] < 170), np.where(time_delim['gpa'] > 3.95))
@@ -218,10 +231,12 @@ def update(val):
     print("\nNumber of splitters: %i " % len(splitters))
     print("Number of reverse splitters: %i " % len(rev_splitters))
 
-    colors_new = np.zeros(time_delim.shape[0])
-    colors_new[[splitters]] = 0.9
-    colors_new[[rev_splitters]] = 0.4
-    scat.set_array(colors_new)
+    colors_new = np.array(['k']*time_delim.shape[0], dtype=object)
+    colors_new[[splitters]] = 'c'
+    colors_new[[rev_splitters]] = 'm'
+    # colors_new = map(lambda x: c.to_rgb(x), colors_new)
+    # colors_new = np.dot(colors_new, [0.2989, 0.5870, 0.1140])
+    scat.set_facecolors(colors_new)
 
     time_delim.loc[:, 'decision_at'] = time_delim['decision_at'].map(lambda x: mdates.date2num(x))
 
@@ -233,6 +248,18 @@ def update(val):
 slider.on_changed(update)
 
 plt.show()
+
+#####
+#  Splitter probabilities
+#####
+
+# splitters = np.intersect1d(np.where(time_delim['lsat'] > 175), np.where(time_delim['gpa'] < 3.78))
+# rev_splitters = np.intersect1d(np.where(time_delim['lsat'] < 170), np.where(time_delim['gpa'] > 3.95))
+#
+# school_date_float.loc[:, 'decision_at'] = school_date_float['decision_at'].map(lambda x: mdates.date2num(x))
+
+## Histogram school_date_float['decision_at'] into week-sized bins and see how number of splitters/revsplitters
+## admitted changes with total number admitted so far and number admitted/week.
 
 #####
 #  3D plotting (does not display human-readable dates on x axis)
