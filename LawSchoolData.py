@@ -10,6 +10,7 @@ register_matplotlib_converters()
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 import matplotlib.dates as mdates
 from matplotlib.widgets import Slider
 from mpl_toolkits.mplot3d import Axes3D
@@ -20,6 +21,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestRegressor
 from sklearn import metrics
 
+school_name = 'Columbia'  # Select the school to analyze, below
 
 #  Suppress Pandas SettingWithCopyWarning
 pd.options.mode.chained_assignment = None
@@ -28,9 +30,14 @@ pd.options.mode.chained_assignment = None
 t_min = "10/01/2017"
 t_max = "08/31/2021"
 
-#  Read-in data, downloaded from https://www.lawschooldata.org/download
-filename = '/Users/johnsmith/Desktop/lsdata.csv'
-df = pd.read_csv(filename, skiprows=1, low_memory=False)
+#  Read-in medians data, downloaded from https://7sage.com/top-law-school-admissions/
+filename_percentiles = '/Users/johnsmith/Desktop/lsmedians.csv'
+dff = pd.read_csv(filename_percentiles, low_memory=False)
+dff = dff[:10]  # Limit to top ten schools
+
+#  Read-in admissions data, downloaded from https://www.lawschooldata.org/download
+filename_admitdata = '/Users/johnsmith/Desktop/lsdata.csv'
+df = pd.read_csv(filename_admitdata, skiprows=1, low_memory=False)
 
 print("\nShape of original file: " + str(df.shape))
 
@@ -60,6 +67,12 @@ print("Shape of trimmed and filtered file: " + str(df_filtered.shape))
 
 #####
 
+#  Get school admissions medians
+if school_name != 'NYU':
+    school_percentiles = dff[dff['School'].str.contains(school_name[1:])]
+else:
+    school_percentiles = dff[dff['School'] == 'New York University']
+
 #  Create data sets for individual schools
 yale = df_filtered[df_filtered['school_name'] == 'Yale University']
 harvard = df_filtered[df_filtered['school_name'] == 'Harvard University']
@@ -80,7 +93,6 @@ top_ten = df_filtered[df_filtered['school_name'].str.contains('|'.join(top_ten_l
 top_four_list = ['Yale University', 'Harvard University', 'Stanford University', 'University of Chicago']
 top_four = df_filtered[df_filtered['school_name'].str.contains('|'.join(top_four_list))]
 
-school_name = 'Virginia'
 school = None
 exec('school = ' + school_name.lower())
 
@@ -91,12 +103,22 @@ duration = ((school['decision_at'] - school['sent_at'])/np.timedelta64(1, 's'))/
 
 print("Average wait: %0.f" % duration.mean())
 
+
+def split_revsplit(input):
+    splits = np.intersect1d(np.where(input['lsat'] > school_percentiles['L75'].values[0]),
+                               np.where(input['gpa'] < school_percentiles['G25'].values[0]))
+    rev_splits = np.intersect1d(np.where(input['lsat'] < school_percentiles['L25'].values[0]),
+                                   np.where(input['gpa'] > school_percentiles['G75'].values[0]))
+
+    return splits, rev_splits
+
 #####
 #  Plot sent_at vs. decision_at, stacking cycles
 #####
 
 school_stack = school.copy()
 
+#  Break data down by cycles
 cycle18 = school_stack[(school_stack['decision_at'] > '10/01/2017') & (school_stack['decision_at'] < '08/31/2018')]
 cycle19 = school_stack[(school_stack['decision_at'] > '10/01/2018') & (school_stack['decision_at'] < '08/31/2019')]
 cycle20 = school_stack[(school_stack['decision_at'] > '10/01/2019') & (school_stack['decision_at'] < '08/31/2020')]
@@ -106,11 +128,12 @@ cycle21 = school_stack[(school_stack['decision_at'] > '10/01/2020') & (school_st
 cycle20.loc[cycle20['sent_at'] == '02/29/2020', 'sent_at'] = dt.datetime(2020, 02, 28)
 cycle20.loc[cycle20['decision_at'] == '02/29/2020', 'decision_at'] = dt.datetime(2020, 02, 28)
 
-# Standardize cycle years
+#  Standardize cycle years, sent_at
 cycle19.loc[:, 'sent_at'] = cycle19['sent_at'].map(lambda x: dt.datetime(x.year-1, x.month, x.day))
 cycle20.loc[:, 'sent_at'] = cycle20['sent_at'].map(lambda x: dt.datetime(x.year-2, x.month, x.day))
 cycle21.loc[:, 'sent_at'] = cycle21['sent_at'].map(lambda x: dt.datetime(x.year-3, x.month, x.day))
 
+#  Standardize cycle years, sent_at
 cycle19.loc[:, 'decision_at'] = cycle19['decision_at'].map(lambda x: dt.datetime(x.year-1, x.month, x.day))
 cycle20.loc[:, 'decision_at'] = cycle20['decision_at'].map(lambda x: dt.datetime(x.year-2, x.month, x.day))
 cycle21.loc[:, 'decision_at'] = cycle21['decision_at'].map(lambda x: dt.datetime(x.year-3, x.month, x.day))
@@ -118,24 +141,42 @@ cycle21.loc[:, 'decision_at'] = cycle21['decision_at'].map(lambda x: dt.datetime
 school_stack = pd.concat([cycle18, cycle19, cycle20, cycle21])
 
 #  Plot sent_at vs. decision_at, stacking cycles
-markers = ['1', '3', '2', '4']
-cycle = ['18', '19', '20', '21']
+markers = ['v', '^', '<', '>']
+cycles = ['18', '19', '20', '21']
+
+fig, ax = plt.subplots()
 
 for i, mark in enumerate(markers):
 
-    school_temp = None
-    exec('school_temp = ' + 'cycle' + cycle[i])
+    cycle = None
+    exec('cycle = ' + 'cycle' + cycles[i])
 
-    accepted = school_temp[school_temp['result'] == 'Accepted']
-    rejected = school_temp[school_temp['result'] == 'Rejected']
-    waitlisted = school_temp[school_temp['result'].str.contains('Wait')]
+    accepted = cycle[cycle['result'] == 'Accepted']
+    rejected = cycle[cycle['result'] == 'Rejected']
+    waitlisted = cycle[cycle['result'].str.contains('Wait')]
 
-    plt.scatter(accepted['sent_at'], accepted['decision_at'],
-                color='green', marker=mark, label="Accepted 20" + cycle[i])
-    plt.scatter(rejected['sent_at'], rejected['decision_at'],
-                color='red', marker=mark, label="Rejected 20" + cycle[i])
-    plt.scatter(waitlisted['sent_at'], waitlisted['decision_at'],
-                color='orange', marker=mark, label="Waitlisted 20" + cycle[i])
+    splitters_a, rev_splitters_a = split_revsplit(accepted)
+    splitters_r, rev_splitters_r = split_revsplit(rejected)
+    splitters_w, rev_splitters_w = split_revsplit(waitlisted)
+
+    edge_colors_a = np.array(['green'] * accepted.shape[0], dtype=object)
+    edge_colors_a[splitters_a] = 'b'
+    edge_colors_a[rev_splitters_a] = 'k'
+
+    edge_colors_r = np.array(['red'] * rejected.shape[0], dtype=object)
+    edge_colors_r[splitters_r] = 'b'
+    edge_colors_r[rev_splitters_r] = 'k'
+
+    edge_colors_w = np.array(['orange'] * waitlisted.shape[0], dtype=object)
+    edge_colors_w[splitters_w] = 'b'
+    edge_colors_w[rev_splitters_w] = 'k'
+
+    ax.scatter(accepted['sent_at'], accepted['decision_at'],
+                color='green', edgecolors=edge_colors_a, marker=mark, label="A 20" + cycles[i], s=17)
+    ax.scatter(rejected['sent_at'], rejected['decision_at'],
+                color='red', edgecolors=edge_colors_r, marker=mark, label="R 20" + cycles[i], s=17)
+    ax.scatter(waitlisted['sent_at'], waitlisted['decision_at'],
+                color='orange', edgecolors=edge_colors_w, marker=mark, label="W 20" + cycles[i], s=17)
 
 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
 plt.gca().xaxis.set_major_locator(mdates.MonthLocator())
@@ -147,11 +188,15 @@ plt.gca().yaxis.set_minor_locator(mdates.WeekdayLocator(interval=1))
 
 plt.xlabel("Date Sent")
 plt.ylabel("Date Decision Received")
-plt.title("Admissions Data for 20" + str(int(cycle[0])-1) + "-20" + cycle[0] +
-          " to 20" + str(int(cycle[-1])-1) + "-20" + cycle[-1] + ", " + school_name +
+plt.title("Admissions Data for 20" + str(int(cycles[0])-1) + "-20" + cycles[0] +
+          " to 20" + str(int(cycles[-1])-1) + "-20" + cycles[-1] + ", " + school_name +
           " (" + str(school_stack.shape[0]) + " samples)")
 
-plt.legend()
+custom_markers = [Line2D([0], [0], marker='v', markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
+                  Line2D([0], [0], marker='^', markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
+                  Line2D([0], [0], marker='<', markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
+                  Line2D([0], [0], marker='>', markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls='')]
+ax.legend(custom_markers, ['17/18', '18/19', '19/20', '20/21'])
 
 plt.show()
 
@@ -198,11 +243,17 @@ plt.subplots_adjust(left=0.1, bottom=0.20)
 initial_time = school_stack['decision_at'].min()
 time_delim_init = school_stack[school_stack['decision_at'] <= initial_time]
 
-#  Establish scatter plot
-scat = ax.scatter(time_delim_init['decision_at'], time_delim_init['lsat'], s=5, c=['k']*time_delim_init.shape[0])
+splitters, rev_splitters = split_revsplit(time_delim_init)
 
-plt.title("Admissions Data for 20" + str(int(cycle[0])-1) + "-20" + cycle[0] +
-          " to 20" + str(int(cycle[-1])-1) + "-20" + cycle[-1] + ", " + school_name +
+colors_init = np.array(['k']*time_delim_init.shape[0], dtype=object)
+colors_init[splitters] = 'c'
+colors_init[rev_splitters] = 'm'
+
+#  Establish scatter plot
+scat = ax.scatter(time_delim_init['decision_at'], time_delim_init['lsat'], s=5, c=colors_init)
+
+plt.title("Admissions Data (A) for 20" + str(int(cycles[0])-1) + "-20" + cycles[0] +
+          " to 20" + str(int(cycles[-1])-1) + "-20" + cycles[-1] + ", " + school_name +
           " (" + str(school_stack.shape[0]) + " samples)")
 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
 plt.gca().xaxis.set_major_locator(mdates.MonthLocator())
@@ -220,29 +271,22 @@ slider = Slider(ax_slider, 'Date', mdates.date2num(school_stack['decision_at'].m
                 valinit=mdates.date2num(initial_time),
                 valfmt="%i")
 
+
 #  Update function, called upon slider movement
-#  (splitter/rev_splitter colors show up incorrectly if slider is dragged from beginning; click in middle, instead)
 def update(val):
     time_delim = school_stack[school_stack['decision_at'] <= mdates.num2date(val).replace(tzinfo=None)]
 
-    splitters = np.intersect1d(np.where(time_delim['lsat'] > 175), np.where(time_delim['gpa'] < 3.78))
-    rev_splitters = np.intersect1d(np.where(time_delim['lsat'] < 170), np.where(time_delim['gpa'] > 3.95))
-
-    print("\nNumber of splitters: %i " % len(splitters))
-    print("Number of reverse splitters: %i " % len(rev_splitters))
+    splitters, rev_splitters = split_revsplit(time_delim)
 
     colors_new = np.array(['k']*time_delim.shape[0], dtype=object)
-    colors_new[[splitters]] = 'c'
-    colors_new[[rev_splitters]] = 'm'
-    # colors_new = map(lambda x: c.to_rgb(x), colors_new)
-    # colors_new = np.dot(colors_new, [0.2989, 0.5870, 0.1140])
+    colors_new[splitters] = 'c'
+    colors_new[rev_splitters] = 'm'
     scat.set_facecolors(colors_new)
 
     time_delim.loc[:, 'decision_at'] = time_delim['decision_at'].map(lambda x: mdates.date2num(x))
 
     xx = np.vstack((time_delim['decision_at'], time_delim['lsat']))
     scat.set_offsets(xx.T)
-
 
 #  Call update function on slider value change
 slider.on_changed(update)
@@ -258,8 +302,8 @@ plt.show()
 #
 # school_date_float.loc[:, 'decision_at'] = school_date_float['decision_at'].map(lambda x: mdates.date2num(x))
 
-## Histogram school_date_float['decision_at'] into week-sized bins and see how number of splitters/revsplitters
-## admitted changes with total number admitted so far and number admitted/week.
+## For applications in a given two week period, see if being a splitter/revsplitter makes a difference to acceptance,
+## based on others timelines from that same period.
 
 #####
 #  3D plotting (does not display human-readable dates on x axis)
