@@ -21,7 +21,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestRegressor
 from sklearn import metrics
 
-school_name = 'Columbia'  # Select the school to analyze, below
+school_name = 'Virginia'  # Select the school to analyze, below
 
 #  Suppress Pandas SettingWithCopyWarning
 pd.options.mode.chained_assignment = None
@@ -172,11 +172,11 @@ for i, mark in enumerate(markers):
     edge_colors_w[rev_splitters_w] = 'k'
 
     ax.scatter(accepted['sent_at'], accepted['decision_at'],
-                color='green', edgecolors=edge_colors_a, marker=mark, label="A 20" + cycles[i], s=17)
+                color='green', edgecolors=edge_colors_a, marker=mark, label="A 20" + cycles[i], s=17, zorder=3)
     ax.scatter(rejected['sent_at'], rejected['decision_at'],
-                color='red', edgecolors=edge_colors_r, marker=mark, label="R 20" + cycles[i], s=17)
+                color='red', edgecolors=edge_colors_r, marker=mark, label="R 20" + cycles[i], s=17, zorder=3)
     ax.scatter(waitlisted['sent_at'], waitlisted['decision_at'],
-                color='orange', edgecolors=edge_colors_w, marker=mark, label="W 20" + cycles[i], s=17)
+                color='orange', edgecolors=edge_colors_w, marker=mark, label="W 20" + cycles[i], s=17, zorder=3)
 
 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
 plt.gca().xaxis.set_major_locator(mdates.MonthLocator())
@@ -192,12 +192,20 @@ plt.title("Admissions Data for 20" + str(int(cycles[0])-1) + "-20" + cycles[0] +
           " to 20" + str(int(cycles[-1])-1) + "-20" + cycles[-1] + ", " + school_name +
           " (" + str(school_stack.shape[0]) + " samples)")
 
-custom_markers = [Line2D([0], [0], marker='v', markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
-                  Line2D([0], [0], marker='^', markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
-                  Line2D([0], [0], marker='<', markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
-                  Line2D([0], [0], marker='>', markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls='')]
-ax.legend(custom_markers, ['17/18', '18/19', '19/20', '20/21'])
+custom_markers = [Line2D([0], [0], marker=markers[0], markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
+                  Line2D([0], [0], marker=markers[1], markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
+                  Line2D([0], [0], marker=markers[2], markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
+                  Line2D([0], [0], marker=markers[3], markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
+                  Line2D([0], [0], marker='o', markerfacecolor='white', markeredgecolor='b', markersize=7, ls=''),
+                  Line2D([0], [0], marker='o', markerfacecolor='white', markeredgecolor='k', markersize=7, ls='')]
+ax.legend(custom_markers, [str(int(cycles[0])-1) + '/' + cycles[0],
+                           str(int(cycles[1])-1) + '/' + cycles[1],
+                           str(int(cycles[2])-1) + '/' + cycles[2],
+                           str(int(cycles[3])-1) + '/' + cycles[3],
+                           'Splitters',
+                           'Reverse Splitters'])
 
+plt.grid(zorder=0)
 plt.show()
 
 #####
@@ -250,7 +258,7 @@ colors_init[splitters] = 'c'
 colors_init[rev_splitters] = 'm'
 
 #  Establish scatter plot
-scat = ax.scatter(time_delim_init['decision_at'], time_delim_init['lsat'], s=5, c=colors_init)
+scat = ax.scatter(time_delim_init['decision_at'], time_delim_init['lsat'], s=5, c=colors_init, zorder=3)
 
 plt.title("Admissions Data (A) for 20" + str(int(cycles[0])-1) + "-20" + cycles[0] +
           " to 20" + str(int(cycles[-1])-1) + "-20" + cycles[-1] + ", " + school_name +
@@ -261,6 +269,9 @@ plt.gca().xaxis.set_minor_locator(mdates.WeekdayLocator(interval=1))
 plt.gcf().autofmt_xdate()
 ax.set_xlim([school_stack['decision_at'].min() - dt.timedelta(days=7),
              school_stack['decision_at'].max() + dt.timedelta(days=7)])
+
+plt.axhline(y=school_percentiles['L75'].values[0], linewidth=1, color='gray', linestyle='--', zorder=0)
+plt.axhline(y=school_percentiles['L25'].values[0], linewidth=1, color='gray', linestyle='--', zorder=0)
 
 plt.ylim([140, 181])
 
