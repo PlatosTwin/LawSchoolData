@@ -206,6 +206,13 @@ ax.legend(custom_markers, [str(int(cycles[0])-1) + '/' + cycles[0],
                            'Reverse Splitters'])
 
 plt.grid(zorder=0)
+
+ax.annotate('Current as of ' + max(df['decision_at']),
+            xy=(1, 0), xytext=(0, 5),
+            xycoords=('axes fraction', 'figure fraction'),
+            textcoords='offset points',
+            size=7, color='gray', ha='right', va='bottom')
+
 plt.show()
 
 #####
@@ -260,7 +267,7 @@ colors_init[rev_splitters] = 'm'
 #  Establish scatter plot
 scat = ax.scatter(time_delim_init['decision_at'], time_delim_init['lsat'], s=5, c=colors_init, zorder=3)
 
-plt.title("Admissions Data (A) for 20" + str(int(cycles[0])-1) + "-20" + cycles[0] +
+plt.title("Acceptances for 20" + str(int(cycles[0])-1) + "-20" + cycles[0] +
           " to 20" + str(int(cycles[-1])-1) + "-20" + cycles[-1] + ", " + school_name +
           " (" + str(school_stack.shape[0]) + " samples)")
 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
@@ -301,6 +308,12 @@ def update(val):
 
 #  Call update function on slider value change
 slider.on_changed(update)
+
+ax.annotate('Current as of ' + max(df['decision_at']),
+            xy=(1, 0), xytext=(0, 0),
+            xycoords=('axes fraction', 'figure fraction'),
+            textcoords='offset points',
+            size=7, color='gray', ha='right', va='bottom')
 
 plt.show()
 
