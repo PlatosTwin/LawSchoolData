@@ -21,7 +21,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestRegressor
 from sklearn import metrics
 
-school_name = 'Virginia'  # Select the school to analyze, below
+school_name = 'Stanford'  # Select the school to analyze, below
 
 #  Suppress Pandas SettingWithCopyWarning
 pd.options.mode.chained_assignment = None
@@ -141,7 +141,7 @@ cycle21.loc[:, 'decision_at'] = cycle21['decision_at'].map(lambda x: dt.datetime
 school_stack = pd.concat([cycle18, cycle19, cycle20, cycle21])
 
 #  Plot sent_at vs. decision_at, stacking cycles
-markers = ['v', '^', '<', '>']
+markers = ['v', '^', '<', 'o']
 cycles = ['18', '19', '20', '21']
 
 fig, ax = plt.subplots()
@@ -205,9 +205,12 @@ ax.legend(custom_markers, [str(int(cycles[0])-1) + '/' + cycles[0],
                            'Splitters',
                            'Reverse Splitters'])
 
+plt.axhline(y=dt.datetime.strptime(max(df['decision_at']), '%Y-%m-%d')-dt.timedelta(days=365*3),
+            linewidth=1, color='gray', linestyle='--', zorder=0)
+
 plt.grid(zorder=0)
 
-ax.annotate('Current as of ' + max(df['decision_at']),
+ax.annotate('Current as of ' + max(df['decision_at']) + ' (-----)',
             xy=(1, 0), xytext=(0, 5),
             xycoords=('axes fraction', 'figure fraction'),
             textcoords='offset points',
