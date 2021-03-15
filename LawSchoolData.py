@@ -206,7 +206,7 @@ ax.legend(custom_markers, [str(int(cycles[0])-1) + '/' + cycles[0],
                            'Reverse Splitters'])
 
 plt.axhline(y=dt.datetime.strptime(max(df['decision_at']), '%Y-%m-%d')-dt.timedelta(days=365*3),
-            linewidth=1, color='gray', linestyle='--', zorder=0)
+            linewidth=1, color='gray', linestyle='--', zorder=2)
 
 plt.grid(zorder=0)
 
