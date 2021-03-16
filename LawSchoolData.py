@@ -21,14 +21,14 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestRegressor
 from sklearn import metrics
 
-school_name = 'Stanford'  # Select the school to analyze, below
+school_name = 'Virginia'  # Select the school to analyze, below
 
 #  Suppress Pandas SettingWithCopyWarning
 pd.options.mode.chained_assignment = None
 
-#  Time-delimit the data (used to delimit 'decision_at')
-t_min = "10/01/2017"
-t_max = "08/31/2021"
+#  Time-delimit the data (used to delimit 'decision_at' of main dataframe)
+t_min = '09/01/2017'
+t_max = '08/31/2021'
 
 #  Read-in medians data, downloaded from https://7sage.com/top-law-school-admissions/
 filename_percentiles = '/Users/johnsmith/Desktop/lsmedians.csv'
@@ -39,7 +39,7 @@ dff = dff[:10]  # Limit to top ten schools
 filename_admitdata = '/Users/johnsmith/Desktop/lsdata.csv'
 df = pd.read_csv(filename_admitdata, skiprows=1, low_memory=False)
 
-print("\nShape of original file: " + str(df.shape))
+print('\nShape of original file: ' + str(df.shape))
 
 #  Drop unnecessary/uninteresting columns
 drop_cols = ['scholarship', 'attendance', 'is_in_state', 'is_fee_waived', 'is_conditional_scholarship',
@@ -55,15 +55,15 @@ df_filtered.loc[:, 'sent_at'] = pd.to_datetime(df_filtered['sent_at'])
 df_filtered.loc[:, 'decision_at'] = pd.to_datetime(df_filtered['decision_at'])
 
 #  Filter such that data falls within t_min and t_max range
-df_filtered = df_filtered[(df_filtered['decision_at'] > t_min) & (df_filtered['decision_at'] < t_max)]
+df_filtered = df_filtered[(df_filtered['decision_at'] >= t_min) & (df_filtered['decision_at'] <= t_max)]
 
-#  Format 'softs' column as int, removing leading "T" (NOTE: will not work if nan values are not filtered out of 'softs'
+#  Format 'softs' column as int, removing leading 'T' (NOTE: will not work if nan values are not filtered out of 'softs'
 # df_filtered.loc[:, 'softs'] = df_filtered['softs'].map(lambda x: int(x[1]))
 
 #  Filter by status: accepted, rejected, waitlisted, etc.
 # df_filtered = df_filtered[df_filtered['result'] == 'Accepted']
 
-print("Shape of trimmed and filtered file: " + str(df_filtered.shape))
+print('Shape of trimmed and filtered file: ' + str(df_filtered.shape))
 
 #####
 
@@ -96,21 +96,22 @@ top_four = df_filtered[df_filtered['school_name'].str.contains('|'.join(top_four
 school = None
 exec('school = ' + school_name.lower())
 
-print("\nNumber of samples for chosen school: %i" % (school.shape[0]))
+print('\nNumber of samples for chosen school: %i' % (school.shape[0]))
 
 #  Length of wait, from sent_at to decision_at, in days
 duration = ((school['decision_at'] - school['sent_at'])/np.timedelta64(1, 's'))/(60*60*24)
 
-print("Average wait: %0.f" % duration.mean())
+print('Average wait: %0.f' % duration.mean())
 
 
 def split_revsplit(input):
     splits = np.intersect1d(np.where(input['lsat'] > school_percentiles['L75'].values[0]),
-                               np.where(input['gpa'] < school_percentiles['G25'].values[0]))
+                            np.where(input['gpa'] < school_percentiles['G25'].values[0]))
     rev_splits = np.intersect1d(np.where(input['lsat'] < school_percentiles['L25'].values[0]),
-                                   np.where(input['gpa'] > school_percentiles['G75'].values[0]))
+                                np.where(input['gpa'] > school_percentiles['G75'].values[0]))
 
     return splits, rev_splits
+
 
 #####
 #  Plot sent_at vs. decision_at, stacking cycles
@@ -119,10 +120,10 @@ def split_revsplit(input):
 school_stack = school.copy()
 
 #  Break data down by cycles
-cycle18 = school_stack[(school_stack['decision_at'] > '10/01/2017') & (school_stack['decision_at'] < '08/31/2018')]
-cycle19 = school_stack[(school_stack['decision_at'] > '10/01/2018') & (school_stack['decision_at'] < '08/31/2019')]
-cycle20 = school_stack[(school_stack['decision_at'] > '10/01/2019') & (school_stack['decision_at'] < '08/31/2020')]
-cycle21 = school_stack[(school_stack['decision_at'] > '10/01/2020') & (school_stack['decision_at'] < '08/31/2021')]
+cycle18 = school_stack[(school_stack['sent_at'] >= '09/01/2017') & (school_stack['decision_at'] <= '08/31/2018')]
+cycle19 = school_stack[(school_stack['sent_at'] >= '09/01/2018') & (school_stack['decision_at'] <= '08/31/2019')]
+cycle20 = school_stack[(school_stack['sent_at'] >= '09/01/2019') & (school_stack['decision_at'] <= '08/31/2020')]
+cycle21 = school_stack[(school_stack['sent_at'] >= '09/01/2020') & (school_stack['decision_at'] <= '08/31/2021')]
 
 #  Account for 2020 being a leap year
 cycle20.loc[cycle20['sent_at'] == '02/29/2020', 'sent_at'] = dt.datetime(2020, 02, 28)
@@ -133,7 +134,7 @@ cycle19.loc[:, 'sent_at'] = cycle19['sent_at'].map(lambda x: dt.datetime(x.year-
 cycle20.loc[:, 'sent_at'] = cycle20['sent_at'].map(lambda x: dt.datetime(x.year-2, x.month, x.day))
 cycle21.loc[:, 'sent_at'] = cycle21['sent_at'].map(lambda x: dt.datetime(x.year-3, x.month, x.day))
 
-#  Standardize cycle years, sent_at
+#  Standardize cycle years, decision_at
 cycle19.loc[:, 'decision_at'] = cycle19['decision_at'].map(lambda x: dt.datetime(x.year-1, x.month, x.day))
 cycle20.loc[:, 'decision_at'] = cycle20['decision_at'].map(lambda x: dt.datetime(x.year-2, x.month, x.day))
 cycle21.loc[:, 'decision_at'] = cycle21['decision_at'].map(lambda x: dt.datetime(x.year-3, x.month, x.day))
@@ -172,11 +173,11 @@ for i, mark in enumerate(markers):
     edge_colors_w[rev_splitters_w] = 'k'
 
     ax.scatter(accepted['sent_at'], accepted['decision_at'],
-                color='green', edgecolors=edge_colors_a, marker=mark, label="A 20" + cycles[i], s=17, zorder=3)
+               color='green', edgecolors=edge_colors_a, marker=mark, label='A 20' + cycles[i], s=17, zorder=3)
     ax.scatter(rejected['sent_at'], rejected['decision_at'],
-                color='red', edgecolors=edge_colors_r, marker=mark, label="R 20" + cycles[i], s=17, zorder=3)
+               color='red', edgecolors=edge_colors_r, marker=mark, label='R 20' + cycles[i], s=17, zorder=3)
     ax.scatter(waitlisted['sent_at'], waitlisted['decision_at'],
-                color='orange', edgecolors=edge_colors_w, marker=mark, label="W 20" + cycles[i], s=17, zorder=3)
+               color='orange', edgecolors=edge_colors_w, marker=mark, label='W 20' + cycles[i], s=17, zorder=3)
 
 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
 plt.gca().xaxis.set_major_locator(mdates.MonthLocator())
@@ -186,11 +187,11 @@ plt.gca().yaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
 plt.gca().yaxis.set_major_locator(mdates.MonthLocator())
 plt.gca().yaxis.set_minor_locator(mdates.WeekdayLocator(interval=1))
 
-plt.xlabel("Date Sent")
-plt.ylabel("Date Decision Received")
-plt.title("Admissions Data for 20" + str(int(cycles[0])-1) + "-20" + cycles[0] +
-          " to 20" + str(int(cycles[-1])-1) + "-20" + cycles[-1] + ", " + school_name +
-          " (" + str(school_stack.shape[0]) + " samples)")
+plt.xlabel('Date Sent')
+plt.ylabel('Date Decision Received')
+plt.title('Admissions Data for 20' + str(int(cycles[0])-1) + '-20' + cycles[0] +
+          ' to 20' + str(int(cycles[-1])-1) + '-20' + cycles[-1] + ', ' + school_name +
+          ' (' + str(school_stack.shape[0]) + ' samples)')
 
 custom_markers = [Line2D([0], [0], marker=markers[0], markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
                   Line2D([0], [0], marker=markers[1], markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
@@ -206,7 +207,7 @@ ax.legend(custom_markers, [str(int(cycles[0])-1) + '/' + cycles[0],
                            'Reverse Splitters'])
 
 plt.axhline(y=dt.datetime.strptime(max(df['decision_at']), '%Y-%m-%d')-dt.timedelta(days=365*3),
-            linewidth=1, color='gray', linestyle='--', zorder=2)
+            linewidth=0.75, color='steelblue', linestyle='--', zorder=2)
 
 plt.grid(zorder=0)
 
@@ -215,6 +216,9 @@ ax.annotate('Current as of ' + max(df['decision_at']) + ' (-----)',
             xycoords=('axes fraction', 'figure fraction'),
             textcoords='offset points',
             size=7, color='gray', ha='right', va='bottom')
+
+plt.xlim(dt.datetime(2017, 8, 15), dt.datetime(2018, 4, 15))
+plt.ylim(dt.datetime(2017, 8, 15), dt.datetime(2018, 6, 15))
 
 plt.show()
 
@@ -241,13 +245,13 @@ regressor.fit(X_train, y_train)
 
 #  Assess model
 y_pred = regressor.predict(X_test)
-print("\nMean Absolute Error: %.2f" % metrics.mean_absolute_error(y_test, y_pred))
-print("Mean Squared Error: %.2f" % metrics.mean_squared_error(y_test, y_pred))
-print("Root Mean Squared Error: %.2f" % np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+print('\nMean Absolute Error: %.2f' % metrics.mean_absolute_error(y_test, y_pred))
+print('Mean Squared Error: %.2f' % metrics.mean_squared_error(y_test, y_pred))
+print('Root Mean Squared Error: %.2f' % np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
 
 #  Predict given input stats: sent_at, lsat, gpa
 to_predict = sc.transform(np.array([mdates.date2num(dt.datetime(2019, 11, 13)), 171, 3.89]).reshape(1, -1))
-print("\nPrediction: %.2f" % regressor.predict(to_predict)[0])
+print('\nPrediction: %.2f' % regressor.predict(to_predict)[0])
 
 #####
 #  Date slider with splitters/revsplitters, stacking cycles
@@ -270,9 +274,9 @@ colors_init[rev_splitters] = 'm'
 #  Establish scatter plot
 scat = ax.scatter(time_delim_init['decision_at'], time_delim_init['lsat'], s=5, c=colors_init, zorder=3)
 
-plt.title("Acceptances for 20" + str(int(cycles[0])-1) + "-20" + cycles[0] +
-          " to 20" + str(int(cycles[-1])-1) + "-20" + cycles[-1] + ", " + school_name +
-          " (" + str(school_stack.shape[0]) + " samples)")
+plt.title('Acceptances for 20' + str(int(cycles[0])-1) + '-20' + cycles[0] +
+          ' to 20' + str(int(cycles[-1])-1) + '-20' + cycles[-1] + ', ' + school_name +
+          ' (' + str(school_stack.shape[0]) + ' samples)')
 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
 plt.gca().xaxis.set_major_locator(mdates.MonthLocator())
 plt.gca().xaxis.set_minor_locator(mdates.WeekdayLocator(interval=1))
@@ -290,7 +294,7 @@ ax_slider = plt.axes([0.15, 0.05, 0.65, 0.03])
 slider = Slider(ax_slider, 'Date', mdates.date2num(school_stack['decision_at'].min()),
                 mdates.date2num(school_stack['decision_at'].max()),
                 valinit=mdates.date2num(initial_time),
-                valfmt="%i")
+                valfmt='%i')
 
 
 #  Update function, called upon slider movement
@@ -308,6 +312,7 @@ def update(val):
 
     xx = np.vstack((time_delim['decision_at'], time_delim['lsat']))
     scat.set_offsets(xx.T)
+
 
 #  Call update function on slider value change
 slider.on_changed(update)
