@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+import math
 import datetime as dt
 
 import pandas as pd
@@ -11,6 +12,7 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+from matplotlib.patches import Rectangle
 import matplotlib.dates as mdates
 from matplotlib.widgets import Slider
 from mpl_toolkits.mplot3d import Axes3D
@@ -21,7 +23,10 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestRegressor
 from sklearn import metrics
 
-school_name = 'Virginia'  # Select the school to analyze, below
+school_name = 'Columbia'  # Select the school to analyze, below
+
+##  Assess if this cycle decisions were delayed as compared with last cycle.
+##  Assess if being a splitter makes any difference to wait time (histogram; "Splitter Probabilites," below)
 
 #  Suppress Pandas SettingWithCopyWarning
 pd.options.mode.chained_assignment = None
@@ -67,7 +72,7 @@ print('Shape of trimmed and filtered file: ' + str(df_filtered.shape))
 
 #####
 
-#  Get school admissions medians
+#  Get admissions medians for selected school
 if school_name != 'NYU':
     school_percentiles = dff[dff['School'].str.contains(school_name[1:])]
 else:
@@ -101,14 +106,14 @@ print('\nNumber of samples for chosen school: %i' % (school.shape[0]))
 #  Length of wait, from sent_at to decision_at, in days
 duration = ((school['decision_at'] - school['sent_at'])/np.timedelta64(1, 's'))/(60*60*24)
 
-print('Average wait: %0.f' % duration.mean())
+print('Average wait across all data: %0.f' % duration.mean())
 
 
-def split_revsplit(input):
-    splits = np.intersect1d(np.where(input['lsat'] > school_percentiles['L75'].values[0]),
-                            np.where(input['gpa'] < school_percentiles['G25'].values[0]))
-    rev_splits = np.intersect1d(np.where(input['lsat'] < school_percentiles['L25'].values[0]),
-                                np.where(input['gpa'] > school_percentiles['G75'].values[0]))
+def split_revsplit(df_input):
+    splits = np.intersect1d(np.where(df_input['lsat'] > school_percentiles['L75'].values[0]),
+                            np.where(df_input['gpa'] < school_percentiles['G25'].values[0]))
+    rev_splits = np.intersect1d(np.where(df_input['lsat'] < school_percentiles['L25'].values[0]),
+                                np.where(df_input['gpa'] > school_percentiles['G75'].values[0]))
 
     return splits, rev_splits
 
@@ -120,10 +125,14 @@ def split_revsplit(input):
 school_stack = school.copy()
 
 #  Break data down by cycles
-cycle18 = school_stack[(school_stack['sent_at'] >= '09/01/2017') & (school_stack['decision_at'] <= '08/31/2018')]
-cycle19 = school_stack[(school_stack['sent_at'] >= '09/01/2018') & (school_stack['decision_at'] <= '08/31/2019')]
-cycle20 = school_stack[(school_stack['sent_at'] >= '09/01/2019') & (school_stack['decision_at'] <= '08/31/2020')]
-cycle21 = school_stack[(school_stack['sent_at'] >= '09/01/2020') & (school_stack['decision_at'] <= '08/31/2021')]
+cycle18 = school_stack[(school_stack['sent_at'] >= '09/01/2017') & (school_stack['sent_at'] <= '04/15/2018') &
+                       (school_stack['decision_at'] <= '08/31/2018') & (school_stack['decision_at'] >= '09/01/2017')]
+cycle19 = school_stack[(school_stack['sent_at'] >= '09/01/2018') & (school_stack['sent_at'] <= '04/15/2019') &
+                       (school_stack['decision_at'] <= '08/31/2019') & (school_stack['decision_at'] >= '09/01/2018')]
+cycle20 = school_stack[(school_stack['sent_at'] >= '09/01/2019') & (school_stack['sent_at'] <= '04/15/2020') &
+                       (school_stack['decision_at'] <= '08/31/2020') & (school_stack['decision_at'] >= '09/01/2019')]
+cycle21 = school_stack[(school_stack['sent_at'] >= '09/01/2020') & (school_stack['sent_at'] <= '04/15/2021') &
+                       (school_stack['decision_at'] <= '08/31/2021') & (school_stack['decision_at'] >= '09/01/2020')]
 
 #  Account for 2020 being a leap year
 cycle20.loc[cycle20['sent_at'] == '02/29/2020', 'sent_at'] = dt.datetime(2020, 02, 28)
@@ -145,8 +154,7 @@ school_stack = pd.concat([cycle18, cycle19, cycle20, cycle21])
 markers = ['v', '^', '<', 'o']
 cycles = ['18', '19', '20', '21']
 
-fig, ax = plt.subplots()
-
+#  Plot cycle by cycle
 for i, mark in enumerate(markers):
 
     cycle = None
@@ -172,12 +180,12 @@ for i, mark in enumerate(markers):
     edge_colors_w[splitters_w] = 'b'
     edge_colors_w[rev_splitters_w] = 'k'
 
-    ax.scatter(accepted['sent_at'], accepted['decision_at'],
-               color='green', edgecolors=edge_colors_a, marker=mark, label='A 20' + cycles[i], s=17, zorder=3)
-    ax.scatter(rejected['sent_at'], rejected['decision_at'],
-               color='red', edgecolors=edge_colors_r, marker=mark, label='R 20' + cycles[i], s=17, zorder=3)
-    ax.scatter(waitlisted['sent_at'], waitlisted['decision_at'],
-               color='orange', edgecolors=edge_colors_w, marker=mark, label='W 20' + cycles[i], s=17, zorder=3)
+    plt.scatter(accepted['sent_at'], accepted['decision_at'],
+                color='green', edgecolors=edge_colors_a, marker=mark, label='A 20' + cycles[i], s=17, zorder=3)
+    plt.scatter(rejected['sent_at'], rejected['decision_at'],
+                color='red', edgecolors=edge_colors_r, marker=mark, label='R 20' + cycles[i], s=17, zorder=3)
+    plt.scatter(waitlisted['sent_at'], waitlisted['decision_at'],
+                color='orange', edgecolors=edge_colors_w, marker=mark, label='W 20' + cycles[i], s=17, zorder=3)
 
 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
 plt.gca().xaxis.set_major_locator(mdates.MonthLocator())
@@ -193,32 +201,83 @@ plt.title('Admissions Data for 20' + str(int(cycles[0])-1) + '-20' + cycles[0] +
           ' to 20' + str(int(cycles[-1])-1) + '-20' + cycles[-1] + ', ' + school_name +
           ' (' + str(school_stack.shape[0]) + ' samples)')
 
+#  Format legend
 custom_markers = [Line2D([0], [0], marker=markers[0], markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
                   Line2D([0], [0], marker=markers[1], markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
                   Line2D([0], [0], marker=markers[2], markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
                   Line2D([0], [0], marker=markers[3], markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
                   Line2D([0], [0], marker='o', markerfacecolor='white', markeredgecolor='b', markersize=7, ls=''),
                   Line2D([0], [0], marker='o', markerfacecolor='white', markeredgecolor='k', markersize=7, ls='')]
-ax.legend(custom_markers, [str(int(cycles[0])-1) + '/' + cycles[0],
-                           str(int(cycles[1])-1) + '/' + cycles[1],
-                           str(int(cycles[2])-1) + '/' + cycles[2],
-                           str(int(cycles[3])-1) + '/' + cycles[3],
-                           'Splitters',
-                           'Reverse Splitters'])
+custom_labels = [str(int(cycles[0])-1) + '/' + cycles[0] + ' (n=' + str(cycle18.shape[0]) + ')',
+                 str(int(cycles[1])-1) + '/' + cycles[1] + ' (n=' + str(cycle19.shape[0]) + ')',
+                 str(int(cycles[2])-1) + '/' + cycles[2] + ' (n=' + str(cycle20.shape[0]) + ')',
+                 str(int(cycles[3])-1) + '/' + cycles[3] + ' (n=' + str(cycle21.shape[0]) + ')']
+plt.legend(custom_markers, custom_labels + ['Splitters', 'Reverse Splitters'])
 
 plt.axhline(y=dt.datetime.strptime(max(df['decision_at']), '%Y-%m-%d')-dt.timedelta(days=365*3),
             linewidth=0.75, color='steelblue', linestyle='--', zorder=2)
 
 plt.grid(zorder=0)
 
-ax.annotate('Current as of ' + max(df['decision_at']) + ' (-----)',
-            xy=(1, 0), xytext=(0, 5),
-            xycoords=('axes fraction', 'figure fraction'),
-            textcoords='offset points',
-            size=7, color='gray', ha='right', va='bottom')
+plt.annotate('Current as of ' + max(df['decision_at']) + ' (-----)',
+             xy=(1, 0), xytext=(0, 5),
+             xycoords=('axes fraction', 'figure fraction'),
+             textcoords='offset points',
+             size=7, color='gray', ha='right', va='bottom')
 
-plt.xlim(dt.datetime(2017, 8, 15), dt.datetime(2018, 4, 15))
-plt.ylim(dt.datetime(2017, 8, 15), dt.datetime(2018, 6, 15))
+# plt.xlim(dt.datetime(2017, 8, 15), dt.datetime(2018, 4, 15))
+# plt.ylim(dt.datetime(2017, 8, 15), dt.datetime(2018, 6, 15))
+
+plt.show()
+
+#####
+#  Study duration of wait by cycle (print output + histogram)
+#####
+
+print('\n' + '{0:<8} {1:<12} {2:<10}'.format('Cycle', 'Avg. Wait', 'Std. Dev.'))
+print('-'*35)
+
+#  Calculate duration statistics by cycle
+durations18 = durations19 = durations20 = durations21 = None
+cycle_wait_means = []
+for c in cycles:
+    c_temp = None
+    exec('c_temp = cycle' + c)
+    duration_c = ((c_temp['decision_at'] - c_temp['sent_at'])/np.timedelta64(1, 's'))/(60*60*24)
+    exec('durations' + c + ' = duration_c')
+
+    print('{0:<10} {1:<10} {2:<10}'.format(str(int(c)-1) + '/' + c,
+                                           str(int(duration_c.mean())),
+                                           str(int(duration_c.std()))))
+
+    cycle_wait_means.append(duration_c.mean())
+
+#  Plot histogram
+day_lim = 250
+num_bins = int(math.ceil(day_lim/7)) + 1
+n, bins, patches = plt.hist([durations18[durations18 < day_lim], durations19[durations19 < day_lim],
+                             durations20[durations20 < day_lim], durations21[durations21 < day_lim]],
+                            bins=num_bins, stacked=True, density=True, label=custom_labels)
+
+plt.title('Number of Days from Sent to Decision, ' + school_name + ' (' + str(school_stack.shape[0]) + ' samples)')
+plt.xlabel('Number of days')
+plt.ylabel('Frequency')
+
+#  Format legend
+handles, labels = plt.gca().get_legend_handles_labels()
+temp = ['; mean=' + str(int(i)) + ')' for i in cycle_wait_means]
+labels = [a[:-1] + b for a, b in zip(labels, temp)]
+plt.legend(handles[::-1], labels[::-1]) # Reverse legend to match order on histogram
+
+#  Demarcate means by cycle
+for cwm in cycle_wait_means:
+    plt.axvline(x=cwm, linewidth=0.75, color='k', linestyle='--')
+
+plt.annotate('Current as of ' + max(df['decision_at']) + '.',
+             xy=(1, 0), xytext=(0, 5),
+             xycoords=('axes fraction', 'figure fraction'),
+             textcoords='offset points',
+             size=7, color='gray', ha='right', va='bottom')
 
 plt.show()
 
@@ -286,8 +345,12 @@ ax.set_xlim([school_stack['decision_at'].min() - dt.timedelta(days=7),
 
 plt.axhline(y=school_percentiles['L75'].values[0], linewidth=1, color='gray', linestyle='--', zorder=0)
 plt.axhline(y=school_percentiles['L25'].values[0], linewidth=1, color='gray', linestyle='--', zorder=0)
+plt.axvline(x=dt.datetime.strptime(max(df['decision_at']), '%Y-%m-%d')-dt.timedelta(days=365*3),
+            linewidth=0.75, color='steelblue', linestyle='--', zorder=2)
 
 plt.ylim([140, 181])
+plt.xlim(school_stack['decision_at'].min() - dt.timedelta(weeks=3),
+         school_stack['decision_at'].max() + dt.timedelta(weeks=3))
 
 #  Define slider
 ax_slider = plt.axes([0.15, 0.05, 0.65, 0.03])
@@ -317,7 +380,7 @@ def update(val):
 #  Call update function on slider value change
 slider.on_changed(update)
 
-ax.annotate('Current as of ' + max(df['decision_at']),
+ax.annotate('Current as of ' + max(df['decision_at']) + ' (-----)',
             xy=(1, 0), xytext=(0, 0),
             xycoords=('axes fraction', 'figure fraction'),
             textcoords='offset points',
