@@ -12,7 +12,6 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
-from matplotlib.patches import Rectangle
 import matplotlib.dates as mdates
 from matplotlib.widgets import Slider
 from mpl_toolkits.mplot3d import Axes3D
@@ -23,7 +22,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestRegressor
 from sklearn import metrics
 
-school_name = 'Columbia'  # Select the school to analyze, below
+school_name = 'top_five'  # Select the school to analyze, below
 
 ##  Assess if this cycle decisions were delayed as compared with last cycle.
 ##  Assess if being a splitter makes any difference to wait time (histogram; "Splitter Probabilites," below)
@@ -38,7 +37,7 @@ t_max = '08/31/2021'
 #  Read-in medians data, downloaded from https://7sage.com/top-law-school-admissions/
 filename_percentiles = '/Users/johnsmith/Desktop/lsmedians.csv'
 dff = pd.read_csv(filename_percentiles, low_memory=False)
-dff = dff[:10]  # Limit to top ten schools
+dff = dff[:20]  # Limit to top twenty schools
 
 #  Read-in admissions data, downloaded from https://www.lawschooldata.org/download
 filename_admitdata = '/Users/johnsmith/Desktop/lsdata.csv'
@@ -73,10 +72,24 @@ print('Shape of trimmed and filtered file: ' + str(df_filtered.shape))
 #####
 
 #  Get admissions medians for selected school
-if school_name != 'NYU':
+if ('top' not in school_name) & (school_name != 'NYU'):
     school_percentiles = dff[dff['School'].str.contains(school_name[1:])]
-else:
+elif school_name == 'NYU':
     school_percentiles = dff[dff['School'] == 'New York University']
+elif 'top' in school_name:
+    if 'eleven' in school_name:
+        cutoff = 11
+    else:
+        cutoff = 5
+
+    temp_dff = dff[:cutoff]
+    L75 = temp_dff.groupby('School')['L75'].mean().mean()
+    L25 = temp_dff.groupby('School')['L25'].mean().mean()
+    G75 = temp_dff.groupby('School')['G75'].mean().mean()
+    G25 = temp_dff.groupby('School')['G25'].mean().mean()
+
+    temp = {'L75': [L75], 'L25': [L25], 'G75': [G75], 'G25': [G25]}
+    school_percentiles = pd.DataFrame(temp)
 
 #  Create data sets for individual schools
 yale = df_filtered[df_filtered['school_name'] == 'Yale University']
@@ -89,17 +102,21 @@ penn = df_filtered[df_filtered['school_name'] == 'University of Pennsylvania']
 virginia = df_filtered[df_filtered['school_name'] == 'University of Virginia']
 michigan = df_filtered[df_filtered['school_name'] == 'University of Michigan']
 berkeley = df_filtered[df_filtered['school_name'] == 'University of California—Berkeley']
+northwestern = df_filtered[df_filtered['school_name'] == 'Northwestern University']
 
-top_ten_list = ['Yale University', 'Harvard University', 'Stanford University', 'University of Chicago',
-                'Columbia University', 'New York University', 'University of Pennsylvania', 'University of Virginia',
-                'University of Michigan']
-top_ten = df_filtered[df_filtered['school_name'].str.contains('|'.join(top_ten_list))]
+top_eleven_list = ['Yale University', 'Harvard University', 'Stanford University', 'University of Chicago',
+                   'Columbia University', 'New York University', 'University of Pennsylvania', 'University of Virginia',
+                   'University of Michigan']
+top_eleven = df_filtered[df_filtered['school_name'].str.contains('|'.join(top_eleven_list))]
 
-top_four_list = ['Yale University', 'Harvard University', 'Stanford University', 'University of Chicago']
-top_four = df_filtered[df_filtered['school_name'].str.contains('|'.join(top_four_list))]
+top_five_list = ['Yale University', 'Harvard University', 'Stanford University', 'University of Chicago']
+top_five = df_filtered[df_filtered['school_name'].str.contains('|'.join(top_five_list))]
 
 school = None
 exec('school = ' + school_name.lower())
+
+if 'top' in school_name:
+    school_name = "Top " + school_name[4].upper() + school_name[5:]
 
 print('\nNumber of samples for chosen school: %i' % (school.shape[0]))
 
