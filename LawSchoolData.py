@@ -136,7 +136,7 @@ def split_revsplit(df_input):
 
 
 #####
-#  Plot sent_at vs. decision_at, stacking cycles
+#  Divide data into cycle-specific dataframes
 #####
 
 school_stack = school.copy()
@@ -171,7 +171,10 @@ cycle21.loc[:, 'decision_at'] = cycle21['decision_at'].map(lambda x: dt.datetime
 
 school_stack = pd.concat([cycle18, cycle19, cycle20, cycle21])
 
+#####
 #  Plot sent_at vs. decision_at, stacking cycles
+#####
+
 markers = ['v', '^', '<', 'o']
 cycles = ['18', '19', '20', '21']
 
