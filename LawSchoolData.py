@@ -141,11 +141,12 @@ def split_revsplit(df_input):
 
 school_stack = school.copy()
 
-snt_tstart = '09/01'  # 0000
-snt_tend = '04/15'  # 0001 (default: 04/15)
-dec_tstart = '08/31'  # 0000
-dec_tend = '09/01'  # 0001 (default: 09/01)
 #  Break data down by cycles
+snt_tstart = '09/01'  # 0000
+snt_tend = '03/13'  # 0001 (default: 04/15)
+dec_tstart = '08/31'  # 0000
+dec_tend = '03/13'  # 0001 (default: 09/01)
+
 cycle18 = school_stack[(school_stack['sent_at'] >= snt_tstart + '/2017') & (school_stack['sent_at'] <= snt_tend + '/2018') &
                        (school_stack['decision_at'] <= dec_tend + '/2018') & (school_stack['decision_at'] >= dec_tstart + '/2017')]
 cycle19 = school_stack[(school_stack['sent_at'] >= snt_tstart + '/2018') & (school_stack['sent_at'] <= snt_tend + '/2019') &
@@ -171,8 +172,38 @@ cycle21.loc[:, 'decision_at'] = cycle21['decision_at'].map(lambda x: dt.datetime
 
 school_stack = pd.concat([cycle18, cycle19, cycle20, cycle21])
 
+
 #####
-#  Plot sent_at vs. decision_at, stacking cycles
+#  EXPERIMENTAL
+#####
+# filter_rows = ['sent_at', 'lsat', 'gpa']
+# temp = df_dcol.dropna(subset=filter_rows)
+#
+# #  Convert sent_at and decision_at to datetime
+# temp.loc[:, 'sent_at'] = pd.to_datetime(df_filtered['sent_at'])
+# temp.loc[:, 'decision_at'] = pd.to_datetime(df_filtered['decision_at'])
+#
+# #  Filter such that data falls within t_min and t_max range
+# temp = temp[(temp['decision_at'] >= t_min) & (temp['decision_at'] <= t_max)]
+#
+# snt_tstart = '09/01'  # 0000
+# snt_tend = '04/15'  # 0001 (default: 04/15)
+# dec_tstart = '08/31'  # 0000
+# dec_tend = '09/01'  # 0001 (default: 09/01)
+# #  Break data down by cycles
+# cycle18a = temp[(temp['sent_at'] >= snt_tstart + '/2017') & (temp['sent_at'] <= snt_tend + '/2018')]
+# cycle19a = temp[(temp['sent_at'] >= snt_tstart + '/2018') & (temp['sent_at'] <= snt_tend + '/2019')]
+# cycle20a = temp[(temp['sent_at'] >= snt_tstart + '/2019') & (temp['sent_at'] <= snt_tend + '/2020')]
+# cycle21a = temp[(temp['sent_at'] >= snt_tstart + '/2020') & (temp['sent_at'] <= snt_tend + '/2021')]
+#
+# print("\ncycle18: " + str(cycle18a.shape[0]))
+# print("cycle19: " + str(cycle19a.shape[0]))
+# print("cycle20: " + str(cycle20a.shape[0]))
+# print("cycle21: " + str(cycle21a.shape[0]))
+
+
+#####
+#  Study and plot sent_at vs. decision_at, stacking cycles
 #####
 
 markers = ['v', '^', '<', 'o']
@@ -238,6 +269,7 @@ custom_labels = [str(int(cycles[0])-1) + '/' + cycles[0] + ' (n=' + str(cycle18.
                  str(int(cycles[3])-1) + '/' + cycles[3] + ' (n=' + str(cycle21.shape[0]) + ')']
 plt.legend(custom_markers, custom_labels + ['Splitters', 'Reverse Splitters'])
 
+#  Draw horizontal line at date of latest decision in file
 plt.axhline(y=dt.datetime.strptime(max(df['decision_at']), '%Y-%m-%d')-dt.timedelta(days=365*3),
             linewidth=0.75, color='steelblue', linestyle='--', zorder=2)
 
@@ -258,24 +290,45 @@ plt.show()
 #  Study duration of wait by cycle (print output + histogram)
 #####
 
-print('\n' + '{0:<8} {1:<12} {2:<10}'.format('Cycle', 'Avg. Wait', 'Std. Dev.'))
+print('\n' + '{0:<8} {1:<11} {2:<11} {3:<11}'.format('Cycle', 'Avg. Wait', 'Std. Dev.', 'n='))
 print('-'*35)
 
 #  Calculate duration statistics by cycle
 durations18 = durations19 = durations20 = durations21 = None
-cycle_wait_means = []
+durations18a = durations19a = durations20a = durations21a = None
+durations18r = durations19r = durations20r = durations21r = None
+durations18w = durations19w = durations20w = durations21w = None
+cycle_wait_means = []  # To store means for each cycle
 for c in cycles:
     c_temp = None
     exec('c_temp = cycle' + c)
-    duration_c = ((c_temp['decision_at'] - c_temp['sent_at'])/np.timedelta64(1, 's'))/(60*60*24)
-    exec('durations' + c + ' = duration_c')
+    duration_temp = ((c_temp['decision_at'] - c_temp['sent_at'])/np.timedelta64(1, 's'))/(60*60*24)
+    exec('durations' + c + ' = duration_temp')
 
-    print('{0:<10} {1:<10} {2:<10} {3:<10}'.format(str(int(c)-1) + '/' + c,
-                                           str(int(duration_c.mean())),
-                                           str(int(duration_c.std())),
-                                            c_temp.shape[0]))
+    print('{0:<8} {1:<11} {2:<11} {3:<11}'.format(str(int(c)-1) + '/' + c,
+                                                  str(int(duration_temp.mean())),
+                                                  str(int(duration_temp.std())),
+                                                  c_temp.shape[0]))
 
-    cycle_wait_means.append(duration_c.mean())
+    #  Store wait times by result, for processing below
+    accepted = c_temp[c_temp['result'] == 'Accepted']
+    rejected = c_temp[c_temp['result'] == 'Rejected']
+    waitlisted = c_temp[c_temp['result'].str.contains('Wait')]
+
+    exec('durations' + c + 'a' +
+         " = ((accepted['decision_at'] - accepted['sent_at']) / np.timedelta64(1, 's')) / (60 * 60 * 24)")
+    exec ('durations' + c + 'r' +
+          " = ((rejected['decision_at'] - rejected['sent_at']) / np.timedelta64(1, 's')) / (60 * 60 * 24)")
+    exec ('durations' + c + 'w' +
+          " = ((waitlisted['decision_at'] - waitlisted['sent_at']) / np.timedelta64(1, 's')) / (60 * 60 * 24)")
+
+    cycle_wait_means.append(duration_temp.mean())
+
+#  Create print output to assess how wait times have changed by cycle and by decision
+print('\n' + '{0:<8} {1:<8} {2:<11} {3:<11} {4:<11}'.format('Cycle', 'Dec.', 'Avg. Wait', 'Std. Dev.', 'n='))
+for s in ['a', 'r', 'w']:
+    for c in cycles:
+        exec("print('{0:<8} {1:<8} {2:<11} {3:<11} {4:<11}'.format(str(int(c)-1) + '/' + c, s, str(int(durations" + c + s + ".mean())), str(int(durations" + c + s + '.std())), ' + 'durations' + c + s + '.shape[0]))')
 
 #  Plot histogram
 day_lim = 250
@@ -368,6 +421,7 @@ plt.gcf().autofmt_xdate()
 ax.set_xlim([school_stack['decision_at'].min() - dt.timedelta(days=7),
              school_stack['decision_at'].max() + dt.timedelta(days=7)])
 
+#  Draw horizontal lines at L75 and L25 and vertical line at date of latest decision in file
 plt.axhline(y=school_percentiles['L75'].values[0], linewidth=1, color='gray', linestyle='--', zorder=0)
 plt.axhline(y=school_percentiles['L25'].values[0], linewidth=1, color='gray', linestyle='--', zorder=0)
 plt.axvline(x=dt.datetime.strptime(max(df['decision_at']), '%Y-%m-%d')-dt.timedelta(days=365*3),
