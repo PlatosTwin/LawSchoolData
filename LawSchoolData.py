@@ -109,7 +109,7 @@ top_eleven_list = ['Yale University', 'Harvard University', 'Stanford University
                    'University of Michigan', 'Northwestern University']
 top_eleven = df_filtered[df_filtered['school_name'].str.contains('|'.join(top_eleven_list))]
 
-top_five_list = ['Yale University', 'Harvard University', 'Stanford University', 'University of Chicago']
+top_five_list = ['Yale University', 'Harvard University', 'Stanford University', 'University of Chicago', 'Columbia University']
 top_five = df_filtered[df_filtered['school_name'].str.contains('|'.join(top_five_list))]
 
 school = None
