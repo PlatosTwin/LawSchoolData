@@ -106,7 +106,7 @@ northwestern = df_filtered[df_filtered['school_name'] == 'Northwestern Universit
 
 top_eleven_list = ['Yale University', 'Harvard University', 'Stanford University', 'University of Chicago',
                    'Columbia University', 'New York University', 'University of Pennsylvania', 'University of Virginia',
-                   'University of Michigan', 'Northwestern University']
+                   'University of Michigan', 'University of California—Berkeley', 'Northwestern University']
 top_eleven = df_filtered[df_filtered['school_name'].str.contains('|'.join(top_eleven_list))]
 
 top_five_list = ['Yale University', 'Harvard University', 'Stanford University', 'University of Chicago', 'Columbia University']
