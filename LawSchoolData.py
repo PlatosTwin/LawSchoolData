@@ -22,7 +22,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestRegressor
 from sklearn import metrics
 
-school_name = 'top_five'  # Select the school to analyze, below
+school_name = 'top_eleven'  # Select the school to analyze, below
 
 ##  Assess if this cycle decisions were delayed as compared with last cycle.
 ##  Assess if being a splitter makes any difference to wait time (histogram; "Splitter Probabilites," below)
@@ -141,15 +141,19 @@ def split_revsplit(df_input):
 
 school_stack = school.copy()
 
+snt_tstart = '09/01'  # 0000
+snt_tend = '04/15'  # 0001 (default: 04/15)
+dec_tstart = '08/31'  # 0000
+dec_tend = '09/01'  # 0001 (default: 09/01)
 #  Break data down by cycles
-cycle18 = school_stack[(school_stack['sent_at'] >= '09/01/2017') & (school_stack['sent_at'] <= '04/15/2018') &
-                       (school_stack['decision_at'] <= '08/31/2018') & (school_stack['decision_at'] >= '09/01/2017')]
-cycle19 = school_stack[(school_stack['sent_at'] >= '09/01/2018') & (school_stack['sent_at'] <= '04/15/2019') &
-                       (school_stack['decision_at'] <= '08/31/2019') & (school_stack['decision_at'] >= '09/01/2018')]
-cycle20 = school_stack[(school_stack['sent_at'] >= '09/01/2019') & (school_stack['sent_at'] <= '04/15/2020') &
-                       (school_stack['decision_at'] <= '08/31/2020') & (school_stack['decision_at'] >= '09/01/2019')]
-cycle21 = school_stack[(school_stack['sent_at'] >= '09/01/2020') & (school_stack['sent_at'] <= '04/15/2021') &
-                       (school_stack['decision_at'] <= '08/31/2021') & (school_stack['decision_at'] >= '09/01/2020')]
+cycle18 = school_stack[(school_stack['sent_at'] >= snt_tstart + '/2017') & (school_stack['sent_at'] <= snt_tend + '/2018') &
+                       (school_stack['decision_at'] <= dec_tend + '/2018') & (school_stack['decision_at'] >= dec_tstart + '/2017')]
+cycle19 = school_stack[(school_stack['sent_at'] >= snt_tstart + '/2018') & (school_stack['sent_at'] <= snt_tend + '/2019') &
+                       (school_stack['decision_at'] <= dec_tend + '/2019') & (school_stack['decision_at'] >= dec_tstart + '/2018')]
+cycle20 = school_stack[(school_stack['sent_at'] >= snt_tstart + '/2019') & (school_stack['sent_at'] <= snt_tend + '/2020') &
+                       (school_stack['decision_at'] <= dec_tend + '/2020') & (school_stack['decision_at'] >= dec_tstart + '/2019')]
+cycle21 = school_stack[(school_stack['sent_at'] >= snt_tstart + '/2020') & (school_stack['sent_at'] <= snt_tend + '/2021') &
+                       (school_stack['decision_at'] <= dec_tend + '/2021') & (school_stack['decision_at'] >= dec_tstart + '/2020')]
 
 #  Account for 2020 being a leap year
 cycle20.loc[cycle20['sent_at'] == '02/29/2020', 'sent_at'] = dt.datetime(2020, 02, 28)
@@ -263,9 +267,10 @@ for c in cycles:
     duration_c = ((c_temp['decision_at'] - c_temp['sent_at'])/np.timedelta64(1, 's'))/(60*60*24)
     exec('durations' + c + ' = duration_c')
 
-    print('{0:<10} {1:<10} {2:<10}'.format(str(int(c)-1) + '/' + c,
+    print('{0:<10} {1:<10} {2:<10} {3:<10}'.format(str(int(c)-1) + '/' + c,
                                            str(int(duration_c.mean())),
-                                           str(int(duration_c.std()))))
+                                           str(int(duration_c.std())),
+                                            c_temp.shape[0]))
 
     cycle_wait_means.append(duration_c.mean())
 
