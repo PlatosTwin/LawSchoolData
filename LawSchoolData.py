@@ -22,10 +22,12 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestRegressor
 from sklearn import metrics
 
-school_name = 'top_eleven'  # Select the school to analyze, below
+school_name = 'Stanford'  # Select the school to analyze, below
 
-##  Assess if this cycle decisions were delayed as compared with last cycle.
-##  Assess if being a splitter makes any difference to wait time (histogram; "Splitter Probabilites," below)
+##  Assess if this cycle decisions were delayed as compared with last cycle:
+##      By A/W/R, splitters/rev splitters.
+##      Histogram of distributions by above groupings.
+##  Number of applicants completing their LSD profiles, by group/school and by time, plot with % of total on y-axis
 
 #  Suppress Pandas SettingWithCopyWarning
 pd.options.mode.chained_assignment = None
@@ -35,12 +37,12 @@ t_min = '09/01/2017'
 t_max = '08/31/2021'
 
 #  Read-in medians data, downloaded from https://7sage.com/top-law-school-admissions/
-filename_percentiles = '/Users/johnsmith/Desktop/lsmedians.csv'
+filename_percentiles = '/Users/Shared/lsmedians.csv'
 dff = pd.read_csv(filename_percentiles, low_memory=False)
 dff = dff[:20]  # Limit to top twenty schools
 
 #  Read-in admissions data, downloaded from https://www.lawschooldata.org/download
-filename_admitdata = '/Users/johnsmith/Desktop/lsdata.csv'
+filename_admitdata = '/Users/Shared/lsdata.csv'
 df = pd.read_csv(filename_admitdata, skiprows=1, low_memory=False)
 
 print('\nShape of original file: ' + str(df.shape))
@@ -143,9 +145,9 @@ school_stack = school.copy()
 
 #  Break data down by cycles
 snt_tstart = '09/01'  # 0000
-snt_tend = '03/13'  # 0001 (default: 04/15)
+snt_tend = '04/15'  # 0001 (default: 04/15)
 dec_tstart = '08/31'  # 0000
-dec_tend = '03/13'  # 0001 (default: 09/01)
+dec_tend = '09/01'  # 0001 (default: 09/01)
 
 cycle18 = school_stack[(school_stack['sent_at'] >= snt_tstart + '/2017') & (school_stack['sent_at'] <= snt_tend + '/2018') &
                        (school_stack['decision_at'] <= dec_tend + '/2018') & (school_stack['decision_at'] >= dec_tstart + '/2017')]
@@ -291,7 +293,7 @@ plt.show()
 #####
 
 print('\n' + '{0:<8} {1:<11} {2:<11} {3:<11}'.format('Cycle', 'Avg. Wait', 'Std. Dev.', 'n='))
-print('-'*35)
+print('-'*36)
 
 #  Calculate duration statistics by cycle
 durations18 = durations19 = durations20 = durations21 = None
@@ -326,9 +328,24 @@ for c in cycles:
 
 #  Create print output to assess how wait times have changed by cycle and by decision
 print('\n' + '{0:<8} {1:<8} {2:<11} {3:<11} {4:<11}'.format('Cycle', 'Dec.', 'Avg. Wait', 'Std. Dev.', 'n='))
+print('-'*45)
 for s in ['a', 'r', 'w']:
     for c in cycles:
-        exec("print('{0:<8} {1:<8} {2:<11} {3:<11} {4:<11}'.format(str(int(c)-1) + '/' + c, s, str(int(durations" + c + s + ".mean())), str(int(durations" + c + s + '.std())), ' + 'durations' + c + s + '.shape[0]))')
+        t1 = str(int(c)-1) + '/' + c  # Cycle
+        t2 = s  # Result/decision
+        t3 = ''  # Avg. Wait
+        try:
+            exec('t3 = str(int(durations' + c + s + '.mean()))')
+        except ValueError:
+            t3 = '--'
+        t4 = ''  # Std. Dev.
+        try:
+            exec ('t4 = str(int(durations' + c + s + '.std()))')
+        except ValueError:
+            t4 = '--'
+        t5 = ''  # n=
+        exec ('t5 = str(durations' + c + s + '.shape[0])')
+        print('{0:<8} {1:<8} {2:<11} {3:<11} {4:<11}'.format(t1, t2, t3, t4, t5))
 
 #  Plot histogram
 day_lim = 250
