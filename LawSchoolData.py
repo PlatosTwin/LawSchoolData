@@ -178,6 +178,7 @@ school_stack = pd.concat([cycle18, cycle19, cycle20, cycle21])
 #####
 #  EXPERIMENTAL
 #####
+
 # filter_rows = ['sent_at', 'lsat', 'gpa']
 # temp = df_dcol.dropna(subset=filter_rows)
 #
@@ -207,10 +208,14 @@ school_stack = pd.concat([cycle18, cycle19, cycle20, cycle21])
 #####
 #  Study and plot sent_at vs. decision_at, stacking cycles
 #####
+fig = plt.figure()
+host = fig.add_subplot(111)
+par = host.twiny()
 
 markers = ['v', '^', '<', 'o']
 cycles = ['18', '19', '20', '21']
 
+#  Host
 #  Plot cycle by cycle
 for i, mark in enumerate(markers):
 
@@ -237,45 +242,66 @@ for i, mark in enumerate(markers):
     edge_colors_w[splitters_w] = 'b'
     edge_colors_w[rev_splitters_w] = 'k'
 
-    plt.scatter(accepted['sent_at'], accepted['decision_at'],
-                color='green', edgecolors=edge_colors_a, marker=mark, label='A 20' + cycles[i], s=17, zorder=3)
-    plt.scatter(rejected['sent_at'], rejected['decision_at'],
-                color='red', edgecolors=edge_colors_r, marker=mark, label='R 20' + cycles[i], s=17, zorder=3)
-    plt.scatter(waitlisted['sent_at'], waitlisted['decision_at'],
-                color='orange', edgecolors=edge_colors_w, marker=mark, label='W 20' + cycles[i], s=17, zorder=3)
+    host.scatter(accepted['sent_at'], accepted['decision_at'],
+                 color='green', edgecolors=edge_colors_a, marker=mark, label='A 20' + cycles[i], s=17, zorder=3)
+    host.scatter(rejected['sent_at'], rejected['decision_at'],
+                 color='red', edgecolors=edge_colors_r, marker=mark, label='R 20' + cycles[i], s=17, zorder=3)
+    host.scatter(waitlisted['sent_at'], waitlisted['decision_at'],
+                 color='orange', edgecolors=edge_colors_w, marker=mark, label='W 20' + cycles[i], s=17, zorder=3)
 
-plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
-plt.gca().xaxis.set_major_locator(mdates.MonthLocator())
-plt.gca().xaxis.set_minor_locator(mdates.WeekdayLocator(interval=1))
+host.xaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
+host.xaxis.set_major_locator(mdates.MonthLocator())
+host.xaxis.set_minor_locator(mdates.WeekdayLocator(interval=1))
+host.set_xlabel('Date Sent')
 
-plt.gca().yaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
-plt.gca().yaxis.set_major_locator(mdates.MonthLocator())
-plt.gca().yaxis.set_minor_locator(mdates.WeekdayLocator(interval=1))
+host.set_ylabel('Date Decision Received')
 
-plt.xlabel('Date Sent')
-plt.ylabel('Date Decision Received')
-plt.title('Admissions Data for 20' + str(int(cycles[0])-1) + '-20' + cycles[0] +
-          ' to 20' + str(int(cycles[-1])-1) + '-20' + cycles[-1] + ', ' + school_name +
-          ' (' + str(school_stack.shape[0]) + ' samples)')
+host.grid(zorder=0)
 
+#  Par
+num_weeks = (max(cycle20['decision_at']) - min(cycle20['decision_at'])).days/7
+earliest = min(cycle20['decision_at'])
+pct_completed = []
+total = float(cycle20[cycle20['result'] == 'Accepted'].shape[0])
+dates = []
+
+for i in range(num_weeks):
+    temp = cycle20[cycle20['decision_at'] < earliest + i*dt.timedelta(weeks=1)]
+    num = temp[temp['result'] == 'Accepted'].shape[0]
+    pct_completed.append(num/total*100)
+    dates.append(earliest + i*dt.timedelta(weeks=1))
+
+par_line,  = par.plot(pct_completed, dates, color='aqua', linewidth=0.66)
+par.set_xlabel('Percent of Total Acceptance Offers Extended (19/20) (n=' + str(int(total)) + ')')
+
+#  Plt
 #  Format legend
 custom_markers = [Line2D([0], [0], marker=markers[0], markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
                   Line2D([0], [0], marker=markers[1], markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
                   Line2D([0], [0], marker=markers[2], markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
                   Line2D([0], [0], marker=markers[3], markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
                   Line2D([0], [0], marker='o', markerfacecolor='white', markeredgecolor='b', markersize=7, ls=''),
-                  Line2D([0], [0], marker='o', markerfacecolor='white', markeredgecolor='k', markersize=7, ls='')]
+                  Line2D([0], [0], marker='o', markerfacecolor='white', markeredgecolor='k', markersize=7, ls=''),
+                  par_line]
 custom_labels = [str(int(cycles[0])-1) + '/' + cycles[0] + ' (n=' + str(cycle18.shape[0]) + ')',
                  str(int(cycles[1])-1) + '/' + cycles[1] + ' (n=' + str(cycle19.shape[0]) + ')',
                  str(int(cycles[2])-1) + '/' + cycles[2] + ' (n=' + str(cycle20.shape[0]) + ')',
                  str(int(cycles[3])-1) + '/' + cycles[3] + ' (n=' + str(cycle21.shape[0]) + ')']
-plt.legend(custom_markers, custom_labels + ['Splitters', 'Reverse Splitters'])
+plt.legend(custom_markers, custom_labels +
+           ['Splitters', 'Reverse Splitters', 'Pct. of Acceptances Sent'], loc=4)
 
 #  Draw horizontal line at date of latest decision in file
 plt.axhline(y=dt.datetime.strptime(max(df['decision_at']), '%Y-%m-%d')-dt.timedelta(days=365*3),
             linewidth=0.75, color='steelblue', linestyle='--', zorder=2)
 
-plt.grid(zorder=0)
+plt.gca().yaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
+plt.gca().yaxis.set_major_locator(mdates.MonthLocator())
+plt.gca().yaxis.set_minor_locator(mdates.WeekdayLocator(interval=1))
+
+plt.title('Admissions Data for 20' + str(int(cycles[0])-1) + '-20' + cycles[0] +
+          ' to 20' + str(int(cycles[-1])-1) + '-20' + cycles[-1] + ', ' + school_name +
+          ' (' + str(school_stack.shape[0]) + ' samples)',
+          y=1.08)
 
 plt.annotate('Current as of ' + max(df['decision_at']) + ' (-----)',
              xy=(1, 0), xytext=(0, 5),
