@@ -22,12 +22,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestRegressor
 from sklearn import metrics
 
-school_name = 'Stanford'  # Select the school to analyze, below
-
-##  Assess if this cycle decisions were delayed as compared with last cycle:
-##      By A/W/R, splitters/rev splitters.
-##      Histogram of distributions by above groupings.
-##  Number of applicants completing their LSD profiles, by group/school and by time, plot with % of total on y-axis
+school_name = 'Columbia'  # Select the school to analyze, below
 
 #  Suppress Pandas SettingWithCopyWarning
 pd.options.mode.chained_assignment = None
@@ -176,36 +171,6 @@ school_stack = pd.concat([cycle18, cycle19, cycle20, cycle21])
 
 
 #####
-#  EXPERIMENTAL
-#####
-
-# filter_rows = ['sent_at', 'lsat', 'gpa']
-# temp = df_dcol.dropna(subset=filter_rows)
-#
-# #  Convert sent_at and decision_at to datetime
-# temp.loc[:, 'sent_at'] = pd.to_datetime(df_filtered['sent_at'])
-# temp.loc[:, 'decision_at'] = pd.to_datetime(df_filtered['decision_at'])
-#
-# #  Filter such that data falls within t_min and t_max range
-# temp = temp[(temp['decision_at'] >= t_min) & (temp['decision_at'] <= t_max)]
-#
-# snt_tstart = '09/01'  # 0000
-# snt_tend = '04/15'  # 0001 (default: 04/15)
-# dec_tstart = '08/31'  # 0000
-# dec_tend = '09/01'  # 0001 (default: 09/01)
-# #  Break data down by cycles
-# cycle18a = temp[(temp['sent_at'] >= snt_tstart + '/2017') & (temp['sent_at'] <= snt_tend + '/2018')]
-# cycle19a = temp[(temp['sent_at'] >= snt_tstart + '/2018') & (temp['sent_at'] <= snt_tend + '/2019')]
-# cycle20a = temp[(temp['sent_at'] >= snt_tstart + '/2019') & (temp['sent_at'] <= snt_tend + '/2020')]
-# cycle21a = temp[(temp['sent_at'] >= snt_tstart + '/2020') & (temp['sent_at'] <= snt_tend + '/2021')]
-#
-# print("\ncycle18: " + str(cycle18a.shape[0]))
-# print("cycle19: " + str(cycle19a.shape[0]))
-# print("cycle20: " + str(cycle20a.shape[0]))
-# print("cycle21: " + str(cycle21a.shape[0]))
-
-
-#####
 #  Study and plot sent_at vs. decision_at, stacking cycles
 #####
 fig = plt.figure()
@@ -215,7 +180,7 @@ par = host.twiny()
 markers = ['v', '^', '<', 'o']
 cycles = ['18', '19', '20', '21']
 
-#  Host
+#  HOST
 #  Plot cycle by cycle
 for i, mark in enumerate(markers):
 
@@ -258,7 +223,7 @@ host.set_ylabel('Date Decision Received')
 
 host.grid(zorder=0)
 
-#  Par
+#  PAR
 num_weeks = (max(cycle20['decision_at']) - min(cycle20['decision_at'])).days/7
 earliest = min(cycle20['decision_at'])
 pct_completed = []
@@ -272,9 +237,9 @@ for i in range(num_weeks):
     dates.append(earliest + i*dt.timedelta(weeks=1))
 
 par_line,  = par.plot(pct_completed, dates, color='aqua', linewidth=0.66)
-par.set_xlabel('Percent of Total Acceptance Offers Extended (19/20) (n=' + str(int(total)) + ')')
+par.set_xlabel('Percent of Total Acceptance Offers Sent (19/20) (n=' + str(int(total)) + ')')
 
-#  Plt
+#  PLT
 #  Format legend
 custom_markers = [Line2D([0], [0], marker=markers[0], markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
                   Line2D([0], [0], marker=markers[1], markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
@@ -315,9 +280,11 @@ plt.annotate('Current as of ' + max(df['decision_at']) + ' (-----)',
 plt.show()
 
 #####
-#  Study duration of wait by cycle (print output + histogram)
+#  Study duration of wait by cycle (print output + histogram) TODO: Add assessment by splitters.
 #####
 
+print('\nWait time results based on assessment of decisions from prior cycles '
+      'rendered prior to equivalent of latest available results for latest cycle.')
 print('\n' + '{0:<8} {1:<11} {2:<11} {3:<11}'.format('Cycle', 'Avg. Wait', 'Std. Dev.', 'n='))
 print('-'*36)
 
@@ -330,6 +297,9 @@ cycle_wait_means = []  # To store means for each cycle
 for c in cycles:
     c_temp = None
     exec('c_temp = cycle' + c)
+    c_temp[c_temp['decision_at'] < dt.datetime.strptime(max(df['decision_at']), '%Y-%m-%d') - dt.timedelta(365*3)]
+    c_temp[c_temp['sent_at'] < dt.datetime.strptime(max(df['decision_at']), '%Y-%m-%d') - dt.timedelta(365*3)]
+
     duration_temp = ((c_temp['decision_at'] - c_temp['sent_at'])/np.timedelta64(1, 's'))/(60*60*24)
     exec('durations' + c + ' = duration_temp')
 
