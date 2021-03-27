@@ -22,7 +22,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestRegressor
 from sklearn import metrics
 
-school_name = 'Columbia'  # Select the school to analyze, below
+school_name = 'NYU'  # Select the school to analyze, below
 
 #  Suppress Pandas SettingWithCopyWarning
 pd.options.mode.chained_assignment = None
@@ -169,7 +169,6 @@ cycle21.loc[:, 'decision_at'] = cycle21['decision_at'].map(lambda x: dt.datetime
 
 school_stack = pd.concat([cycle18, cycle19, cycle20, cycle21])
 
-
 #####
 #  Study and plot sent_at vs. decision_at, stacking cycles
 #####
@@ -180,7 +179,7 @@ par = host.twiny()
 markers = ['v', '^', '<', 'o']
 cycles = ['18', '19', '20', '21']
 
-#  HOST
+#  Host
 #  Plot cycle by cycle
 for i, mark in enumerate(markers):
 
@@ -223,7 +222,7 @@ host.set_ylabel('Date Decision Received')
 
 host.grid(zorder=0)
 
-#  PAR
+#  Par
 num_weeks = (max(cycle20['decision_at']) - min(cycle20['decision_at'])).days/7
 earliest = min(cycle20['decision_at'])
 pct_completed = []
@@ -239,7 +238,7 @@ for i in range(num_weeks):
 par_line,  = par.plot(pct_completed, dates, color='aqua', linewidth=0.66)
 par.set_xlabel('Percent of Total Acceptance Offers Sent (19/20) (n=' + str(int(total)) + ')')
 
-#  PLT
+#  Plt
 #  Format legend
 custom_markers = [Line2D([0], [0], marker=markers[0], markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
                   Line2D([0], [0], marker=markers[1], markerfacecolor='grey', markeredgecolor='grey', markersize=7, ls=''),
@@ -348,9 +347,10 @@ day_lim = 250
 num_bins = int(math.ceil(day_lim/7)) + 1
 n, bins, patches = plt.hist([durations18[durations18 < day_lim], durations19[durations19 < day_lim],
                              durations20[durations20 < day_lim], durations21[durations21 < day_lim]],
-                            bins=num_bins, stacked=True, density=True, label=custom_labels)
+                            bins=num_bins, stacked=True, density=True, label=custom_labels, zorder=3)
 
-plt.title('Number of Days from Sent to Decision, ' + school_name + ' (' + str(school_stack.shape[0]) + ' samples)')
+plt.title('Number of Days from Sent to Decision, ' + school_name +
+          ', through ' + max(df['decision_at'])[5:] + ' Each Cycle (' + str(school_stack.shape[0]) + ' samples)')
 plt.xlabel('Number of days')
 plt.ylabel('Frequency')
 
@@ -362,13 +362,18 @@ plt.legend(handles[::-1], labels[::-1]) # Reverse legend to match order on histo
 
 #  Demarcate means by cycle
 for cwm in cycle_wait_means:
-    plt.axvline(x=cwm, linewidth=0.75, color='k', linestyle='--')
+    plt.axvline(x=cwm, linewidth=0.75, color='k', linestyle='--', zorder=5)
 
 plt.annotate('Current as of ' + max(df['decision_at']) + '.',
              xy=(1, 0), xytext=(0, 5),
              xycoords=('axes fraction', 'figure fraction'),
              textcoords='offset points',
              size=7, color='gray', ha='right', va='bottom')
+
+plt.gca().margins(x=0)
+
+plt.xticks(range(int(min(bins)), int(max(bins)), 25))
+plt.grid(zorder=0)
 
 plt.show()
 
