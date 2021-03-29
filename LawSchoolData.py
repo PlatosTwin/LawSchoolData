@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import division
+
 import numpy as np
 import math
 import datetime as dt
@@ -22,7 +24,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestRegressor
 from sklearn import metrics
 
-school_name = 'NYU'  # Select the school to analyze, below
+school_name = 'Columbia'  # Select the school to analyze, below
 
 #  Suppress Pandas SettingWithCopyWarning
 pd.options.mode.chained_assignment = None
@@ -106,7 +108,8 @@ top_eleven_list = ['Yale University', 'Harvard University', 'Stanford University
                    'University of Michigan', 'University of California—Berkeley', 'Northwestern University']
 top_eleven = df_filtered[df_filtered['school_name'].str.contains('|'.join(top_eleven_list))]
 
-top_five_list = ['Yale University', 'Harvard University', 'Stanford University', 'University of Chicago', 'Columbia University']
+top_five_list = ['Yale University', 'Harvard University', 'Stanford University',
+                 'University of Chicago', 'Columbia University']
 top_five = df_filtered[df_filtered['school_name'].str.contains('|'.join(top_five_list))]
 
 school = None
@@ -144,18 +147,22 @@ snt_tend = '04/15'  # 0001 (default: 04/15)
 dec_tstart = '08/31'  # 0000
 dec_tend = '09/01'  # 0001 (default: 09/01)
 
-cycle18 = school_stack[(school_stack['sent_at'] >= snt_tstart + '/2017') & (school_stack['sent_at'] <= snt_tend + '/2018') &
-                       (school_stack['decision_at'] <= dec_tend + '/2018') & (school_stack['decision_at'] >= dec_tstart + '/2017')]
-cycle19 = school_stack[(school_stack['sent_at'] >= snt_tstart + '/2018') & (school_stack['sent_at'] <= snt_tend + '/2019') &
-                       (school_stack['decision_at'] <= dec_tend + '/2019') & (school_stack['decision_at'] >= dec_tstart + '/2018')]
-cycle20 = school_stack[(school_stack['sent_at'] >= snt_tstart + '/2019') & (school_stack['sent_at'] <= snt_tend + '/2020') &
-                       (school_stack['decision_at'] <= dec_tend + '/2020') & (school_stack['decision_at'] >= dec_tstart + '/2019')]
-cycle21 = school_stack[(school_stack['sent_at'] >= snt_tstart + '/2020') & (school_stack['sent_at'] <= snt_tend + '/2021') &
-                       (school_stack['decision_at'] <= dec_tend + '/2021') & (school_stack['decision_at'] >= dec_tstart + '/2020')]
+cycle18 = school_stack[
+    (school_stack['sent_at'] >= snt_tstart + '/2017') & (school_stack['sent_at'] <= snt_tend + '/2018') &
+    (school_stack['decision_at'] <= dec_tend + '/2018') & (school_stack['decision_at'] >= dec_tstart + '/2017')]
+cycle19 = school_stack[
+    (school_stack['sent_at'] >= snt_tstart + '/2018') & (school_stack['sent_at'] <= snt_tend + '/2019') &
+    (school_stack['decision_at'] <= dec_tend + '/2019') & (school_stack['decision_at'] >= dec_tstart + '/2018')]
+cycle20 = school_stack[
+    (school_stack['sent_at'] >= snt_tstart + '/2019') & (school_stack['sent_at'] <= snt_tend + '/2020') &
+    (school_stack['decision_at'] <= dec_tend + '/2020') & (school_stack['decision_at'] >= dec_tstart + '/2019')]
+cycle21 = school_stack[
+    (school_stack['sent_at'] >= snt_tstart + '/2020') & (school_stack['sent_at'] <= snt_tend + '/2021') &
+    (school_stack['decision_at'] <= dec_tend + '/2021') & (school_stack['decision_at'] >= dec_tstart + '/2020')]
 
 #  Account for 2020 being a leap year
-cycle20.loc[cycle20['sent_at'] == '02/29/2020', 'sent_at'] = dt.datetime(2020, 02, 28)
-cycle20.loc[cycle20['decision_at'] == '02/29/2020', 'decision_at'] = dt.datetime(2020, 02, 28)
+cycle20.loc[cycle20['sent_at'] == '02/29/2020', 'sent_at'] = dt.datetime(2020, 2, 28)
+cycle20.loc[cycle20['decision_at'] == '02/29/2020', 'decision_at'] = dt.datetime(2020, 2, 28)
 
 #  Standardize cycle years, sent_at
 cycle19.loc[:, 'sent_at'] = cycle19['sent_at'].map(lambda x: dt.datetime(x.year-1, x.month, x.day))
@@ -223,7 +230,7 @@ host.set_ylabel('Date Decision Received')
 host.grid(zorder=0)
 
 #  Par
-num_weeks = (max(cycle20['decision_at']) - min(cycle20['decision_at'])).days/7
+num_weeks = int((max(cycle20['decision_at']) - min(cycle20['decision_at'])).days/7)
 earliest = min(cycle20['decision_at'])
 pct_completed = []
 total = float(cycle20[cycle20['result'] == 'Accepted'].shape[0])
@@ -376,6 +383,65 @@ plt.xticks(range(int(min(bins)), int(max(bins)), 25))
 plt.grid(zorder=0)
 
 plt.show()
+
+#####
+#  Study number of completed vs. total profiles on LSData by school
+#####
+
+df_temp = df.dropna(subset=['sent_at', 'decision_at'])
+df_temp.loc[:, 'sent_at'] = pd.to_datetime(df_temp['sent_at'])
+df_temp.loc[:, 'decision_at'] = pd.to_datetime(df_temp['decision_at'])
+school_df_uf = df_temp.copy()
+school_df_f = df_filtered.copy()
+
+#  Break data down by cycles
+snt_tstart = '09/01'  # 0000
+snt_tend = '04/15'  # 0001 (default: 04/15)
+dec_tstart = '08/31'  # 0000
+dec_tend = '09/01'  # 0001 (default: 09/01)
+
+for n in top_eleven_list:
+    school_temp_uf = school_df_uf[school_df_uf['school_name'] == n]
+    school_temp_f = school_df_f[school_df_f['school_name'] == n]
+
+    cycle18_temp_uf = school_temp_uf[
+        (school_temp_uf['sent_at'] >= snt_tstart + '/2017') & (school_temp_uf['sent_at'] <= snt_tend + '/2018') &
+        (school_temp_uf['decision_at'] <= dec_tend + '/2018') & (school_temp_uf['decision_at'] >= dec_tstart + '/2017')]
+    cycle19_temp_uf = school_temp_uf[
+        (school_temp_uf['sent_at'] >= snt_tstart + '/2018') & (school_temp_uf['sent_at'] <= snt_tend + '/2019') &
+        (school_temp_uf['decision_at'] <= dec_tend + '/2019') & (school_temp_uf['decision_at'] >= dec_tstart + '/2018')]
+    cycle20_temp_uf = school_temp_uf[
+        (school_temp_uf['sent_at'] >= snt_tstart + '/2019') & (school_temp_uf['sent_at'] <= snt_tend + '/2020') &
+        (school_temp_uf['decision_at'] <= dec_tend + '/2020') & (school_temp_uf['decision_at'] >= dec_tstart + '/2019')]
+    cycle21_temp_uf = school_temp_uf[
+        (school_temp_uf['sent_at'] >= snt_tstart + '/2020') & (school_temp_uf['sent_at'] <= snt_tend + '/2021') &
+        (school_temp_uf['decision_at'] <= dec_tend + '/2021') & (school_temp_uf['decision_at'] >= dec_tstart + '/2020')]
+
+    cycle18_temp_f = school_temp_f[
+        (school_temp_f['sent_at'] >= snt_tstart + '/2017') & (school_temp_f['sent_at'] <= snt_tend + '/2018') &
+        (school_temp_f['decision_at'] <= dec_tend + '/2018') & (school_temp_f['decision_at'] >= dec_tstart + '/2017')]
+    cycle19_temp_f = school_temp_f[
+        (school_temp_f['sent_at'] >= snt_tstart + '/2018') & (school_temp_f['sent_at'] <= snt_tend + '/2019') &
+        (school_temp_f['decision_at'] <= dec_tend + '/2019') & (school_temp_f['decision_at'] >= dec_tstart + '/2018')]
+    cycle20_temp_f = school_temp_f[
+        (school_temp_f['sent_at'] >= snt_tstart + '/2019') & (school_temp_f['sent_at'] <= snt_tend + '/2020') &
+        (school_temp_f['decision_at'] <= dec_tend + '/2020') & (school_temp_f['decision_at'] >= dec_tstart + '/2019')]
+    cycle21_temp_f = school_temp_f[
+        (school_temp_f['sent_at'] >= snt_tstart + '/2020') & (school_temp_f['sent_at'] <= snt_tend + '/2021') &
+        (school_temp_f['decision_at'] <= dec_tend + '/2021') & (school_temp_f['decision_at'] >= dec_tstart + '/2020')]
+
+    print('\nSchool: ' + n)
+    print('18: n (f) = ' + str(cycle18_temp_f.shape[0]) + ', n (uf) = ' + str(cycle18_temp_uf.shape[0]) +
+          ', Pct. = %.2f' % (100*cycle18_temp_f.shape[0]/cycle18_temp_uf.shape[0]))
+
+    print('19: n (f) = ' + str(cycle19_temp_f.shape[0]) + ', n (uf) = ' + str(cycle19_temp_uf.shape[0]) +
+          ', Pct. = %.2f' % (100*cycle19_temp_f.shape[0]/cycle19_temp_uf.shape[0]))
+
+    print('20: n (f) = ' + str(cycle20_temp_f.shape[0]) + ', n (uf) = ' + str(cycle20_temp_uf.shape[0]) +
+          ', Pct. = %.2f' % (100*cycle20_temp_f.shape[0]/cycle20_temp_uf.shape[0]))
+
+    print('21: n (f) = ' + str(cycle21_temp_f.shape[0]) + ', n (uf) = ' + str(cycle21_temp_uf.shape[0]) +
+          ', Pct. = %.2f' % (100*cycle21_temp_f.shape[0]/cycle21_temp_uf.shape[0]))
 
 #####
 #  Random Forest, to predict wait time
