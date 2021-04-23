@@ -1,0 +1,179 @@
+# -*- coding: utf-8 -*-
+
+import datetime as dt
+
+import pandas as pd
+from pandas.plotting import register_matplotlib_converters
+
+register_matplotlib_converters()
+
+#  Suppress Pandas SettingWithCopyWarning
+pd.options.mode.chained_assignment = None
+
+#  Time-delimit the data (used to delimit 'decision_at' of main dataframe)
+t_min = dt.datetime.strptime('2017-09-12', '%Y-%m-%d')
+t_max = dt.datetime.strptime('2021-08-31', '%Y-%m-%d')
+
+#  Read-in medians data, downloaded from https://7sage.com/top-law-school-admissions/
+fname_percentiles = '/Users/Shared/lsmedians.csv'
+dff = pd.read_csv(fname_percentiles, low_memory=False)
+dff = dff[:20]  # Limit to top twenty schools
+
+#  Read-in admissions data, downloaded from https://www.lawschooldata.org/download
+fname_admit = '/Users/Shared/lsdata.csv'
+df = pd.read_csv(fname_admit, skiprows=1, low_memory=False)
+
+print('Preparing to clean ' + fname_admit + '...')
+print('\nShape of original file: ' + str(df.shape))
+
+#  Drop unnecessary/uninteresting columns
+drop_cols = ['scholarship', 'attendance', 'is_in_state', 'is_fee_waived', 'is_conditional_scholarship',
+             'is_international', 'international_gpa', 'is_lsn_import', 'cycle_id']
+df_dcol = df.drop(drop_cols, axis=1)
+
+#  Remove rows that are missing crucial values
+filter_rows = ['sent_at', 'decision_at', 'lsat', 'gpa', 'result']
+df_filtered = df_dcol.dropna(subset=filter_rows)
+
+df_filtered.loc[:, 'sent_at'] = pd.to_datetime(df_filtered['sent_at'])
+df_filtered.loc[:, 'decision_at'] = pd.to_datetime(df_filtered['decision_at'])
+
+#  Filter such that data falls within t_min and t_max range
+df_filtered = df_filtered[(df_filtered['decision_at'] >= t_min) & (df_filtered['decision_at'] <= t_max) &
+                          (df_filtered['sent_at'] <= t_max) & (df_filtered['sent_at'] >= t_min)]
+
+print('Shape of trimmed and filtered file: ' + str(df_filtered.shape))
+
+top_eleven_list = ['Yale University', 'Harvard University', 'Stanford University', 'University of Chicago',
+                   'Columbia University', 'New York University', 'University of Pennsylvania', 'University of Virginia',
+                   'University of Michigan', 'University of California—Berkeley', 'Northwestern University']
+
+df11 = df_filtered[df_filtered['school_name'].str.contains('|'.join(top_eleven_list))]
+
+
+def label_cycle(row):
+    #  Break data down by cycles
+    snt_tstart = '09/01'  # 0000
+    snt_tend = '04/15'  # 0001 (default: 04/15)
+    dec_tstart = '08/31'  # 0000
+    dec_tend = '09/01'  # 0001 (default: 09/01)
+
+    if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2017', '%m/%d/%Y')) & \
+            (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2018', '%m/%d/%Y')) & \
+            (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2018', '%m/%d/%Y')) & \
+            (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2017', '%m/%d/%Y')):
+        return 18
+
+    if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2018', '%m/%d/%Y')) & \
+            (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2019', '%m/%d/%Y')) & \
+            (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2019', '%m/%d/%Y')) & \
+            (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2018', '%m/%d/%Y')):
+        return 19
+
+    if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2019', '%m/%d/%Y')) & \
+            (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2020', '%m/%d/%Y')) & \
+            (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2020', '%m/%d/%Y')) & \
+            (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2019', '%m/%d/%Y')):
+        return 20
+
+    if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2020', '%m/%d/%Y')) & \
+            (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2021', '%m/%d/%Y')) & \
+            (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2021', '%m/%d/%Y')) & \
+            (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2020', '%m/%d/%Y')):
+        return 21
+
+    return 0
+
+
+def simplify_result(row):
+    if row['result'] == 'Accepted':
+        return 'A'
+
+    if row['result'] == 'Rejected':
+        return 'R'
+
+    if any(s in row['result'] for s in ('Wait', 'WL')):
+        return 'WL'
+
+    if row['result'] == 'Pending':
+        return 'P'
+
+    if row['result'] == 'Withdrawn':
+        return 'WD'
+
+    if 'Hold' in row['result']:
+        return 'H'
+
+    return '?'
+
+
+def label_color(row):
+    if row['decision'] == 'A':
+        return 'green'
+
+    if row['decision'] == 'R':
+        return 'red'
+
+    if row['decision'] == 'WL':
+        return 'orange'
+
+    return 'black'
+
+
+def label_marker(row):
+    if row['cycle'] == 18:
+        return 'triangle-ne'
+
+    if row['cycle'] == 19:
+        return 'triangle-se'
+
+    if row['cycle'] == 20:
+        return 'triangle-sw'
+
+    if row['cycle'] == 21:
+        return 'circle'
+
+
+def label_splitter(row):
+    if (row['lsat'] > dff[dff['School'] == row['school_name']]['L75'].values[0]) & \
+            (row['gpa'] < dff[dff['School'] == row['school_name']]['G25'].values[0]):
+        return 'blue'
+
+    if (row['lsat'] < dff[dff['School'] == row['school_name']]['L25'].values[0]) & \
+            (row['gpa'] > dff[dff['School'] == row['school_name']]['G75'].values[0]):
+        return 'black'
+
+    if row['decision'] == 'A':
+        return 'green'
+
+    if row['decision'] == 'WL':
+        return 'orange'
+
+    if row['decision'] == 'R':
+        return 'red'
+
+
+#  Label cycles: 18, 19, 20, 21
+df11['cycle'] = df11.apply(lambda row: label_cycle(row), axis=1)
+df11 = df11[df11['cycle'] > 15]
+
+#  Simplify results
+df11['decision'] = df11.apply(lambda row: simplify_result(row), axis=1)
+
+#  Add color indicator by result, for plotting
+df11['color'] = df11.apply(lambda row: label_color(row), axis=1)
+
+#  Create markers based on cycle
+df11['marker'] = df11.apply(lambda row: label_marker(row), axis=1)
+
+#  Mark splitters/reverse splitters
+df11['splitter'] = df11.apply(lambda row: label_splitter(row), axis=1)
+
+#  Account for 2020 being a leap year
+df11.loc[df11['sent_at'] == '02/29/2020', 'sent_at'] = dt.datetime(2020, 2, 28)
+df11.loc[df11['decision_at'] == '02/29/2020', 'decision_at'] = dt.datetime(2020, 2, 28)
+
+fname_save = 'lsdata_clean.csv'
+df11.to_csv(fname_save, index=False)
+
+print('Completed and saved reference file to: ' + fname_save)
