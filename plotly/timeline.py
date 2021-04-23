@@ -1,3 +1,5 @@
+from os import getcwd
+from pathlib import Path
 import numpy as np
 import datetime as dt
 import plotly.graph_objects as go
@@ -314,6 +316,7 @@ fig.add_annotation(
     showarrow=False, font=dict(size=8, color='lightgray')
 )
 
-fig.show(config=dict(modeBarButtonsToRemove=['autoScale2d']))
+#fig.show(config=dict(modeBarButtonsToRemove=['autoScale2d']))
 
-# pio.write_html(fig, file='index.html', auto_open=False, config=dict(modeBarButtonsToRemove=['autoScale2d']))
+cwd = Path(getcwd())
+pio.write_html(fig, file=str(cwd.parent.absolute()) + '/docs/_includes/timeline.html', auto_open=False, config=dict(modeBarButtonsToRemove=['autoScale2d']))
