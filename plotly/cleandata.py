@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime as dt
-
+import numpy as np
 import pandas as pd
 from pandas.plotting import register_matplotlib_converters
 
@@ -27,7 +27,7 @@ print('Preparing to clean ' + fname_admit + '...')
 print('\nShape of original file: ' + str(df.shape))
 
 #  Drop unnecessary/uninteresting columns
-drop_cols = ['scholarship', 'attendance', 'is_in_state', 'is_fee_waived', 'is_conditional_scholarship',
+drop_cols = ['simple_status', 'scholarship', 'attendance', 'is_in_state', 'is_fee_waived', 'is_conditional_scholarship',
              'is_international', 'international_gpa', 'is_lsn_import', 'cycle_id']
 df_dcol = df.drop(drop_cols, axis=1)
 
@@ -153,6 +153,10 @@ def label_splitter(row):
         return 'red'
 
 
+def label_wait(row):
+    return ((row['decision_at'] - row['sent_at'])/np.timedelta64(1, 's'))/(60*60*24)
+
+
 #  Label cycles: 18, 19, 20, 21
 df11['cycle'] = df11.apply(lambda row: label_cycle(row), axis=1)
 df11 = df11[df11['cycle'] > 15]
@@ -168,6 +172,9 @@ df11['marker'] = df11.apply(lambda row: label_marker(row), axis=1)
 
 #  Mark splitters/reverse splitters
 df11['splitter'] = df11.apply(lambda row: label_splitter(row), axis=1)
+
+#  Calculate wait time
+df11['wait'] = df11.apply(lambda row: label_wait(row), axis=1)
 
 #  Account for 2020 being a leap year
 df11.loc[df11['sent_at'] == '02/29/2020', 'sent_at'] = dt.datetime(2020, 2, 28)
