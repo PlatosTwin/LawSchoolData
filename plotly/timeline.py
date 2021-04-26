@@ -252,7 +252,7 @@ fig.update_layout(
     yaxis_title='Decision Date',
     legend_title='App. Cycle',
     title={
-        'text': 'LSData Admissions Data 2017/2018 - 2020/2021',
+        'text': 'Decision Timeline',
         'y': 0.98,
         'x': 0.46,
         'xanchor': 'center',

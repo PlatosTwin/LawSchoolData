@@ -99,7 +99,7 @@ fig.update_layout(
     yaxis_title='Count',
     legend_title='App. Cycle',
     title={
-        'text': 'LSData Admissions Data 2017/2018 - 2020/2021<br>Wait Times Distribution',
+        'text': 'Wait Times Distribution',
         'y': 0.945,
         'x': 0.46,
         'xanchor': 'center',
