@@ -58,20 +58,20 @@ fig = go.Figure(layout=layout)
 #  Add decision (A, R, WL) traces
 for c in cycles:
     fig.add_trace(go.Scatter(
-        x=df11[(df11['school_name'] == 'Yale University') & (df11['cycle'] == c)]['sent_at'],
-        y=df11[(df11['school_name'] == 'Yale University') & (df11['cycle'] == c)]['decision_at'],
+        x=df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c)]['sent_at'],
+        y=df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c)]['decision_at'],
         mode='markers',
         marker=dict(
             size=5,
-            color=df11[(df11['school_name'] == 'Yale University') & (df11['cycle'] == c)]['color'],
-            symbol=df11[(df11['school_name'] == 'Yale University') & (df11['cycle'] == c)]['marker'],
+            color=df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c)]['color'],
+            symbol=df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c)]['marker'],
             line=dict(
                 width=1,
-                color=df11[(df11['school_name'] == 'Yale University') & (df11['cycle'] == c)]['splitter'])),
+                color=df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c)]['splitter'])),
         name=str(c-1) + '/' + str(c) +
-             ' (n=' + str(df11[(df11['school_name'] == 'Yale University') & (df11['cycle'] == c) &
+             ' (n=' + str(df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c) &
                                (df11['decision'].str.contains('|'.join(['A', 'R', 'WL'])))].shape[0]) + ')',
-        customdata=df11[(df11['school_name'] == 'Yale University') & (df11['cycle'] == c)],
+        customdata=df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c)],
         hovertemplate='LSAT: %{customdata[10]:.0f}<br>GPA: %{customdata[14]}<br>'
                       'Sent: %{customdata[2]|%m/%d}<br>Decision: %{customdata[8]|%m/%d}<extra></extra>'
         )
@@ -119,63 +119,63 @@ for school in T11:
 #  Notified
 pct_trace_alpha = '0.4)'
 fig.add_trace(go.Scatter(
-    x=pct_trace[pct_trace['school_name'] == 'Yale University']['pctn'],
-    y=pct_trace[pct_trace['school_name'] == 'Yale University']['date'],
+    x=pct_trace[pct_trace['school_name'] == T11[0]]['pctn'],
+    y=pct_trace[pct_trace['school_name'] == T11[0]]['date'],
     line=dict(color='RGBA(0,0,0,' + pct_trace_alpha, width=1.25),
     mode='lines',
     xaxis='x2',
-    name='Hist. Pct. Notified (n=%0.f' % max(pct_trace[pct_trace['school_name'] == 'Yale University']['totaln']) + ')'),
+    name='Hist. Pct. Notified (n=%0.f' % max(pct_trace[pct_trace['school_name'] == T11[0]]['totaln']) + ')'),
 )
 
 #  Accepted
 fig.add_trace(go.Scatter(
-    x=pct_trace[pct_trace['school_name'] == 'Yale University']['pcta'],
-    y=pct_trace[pct_trace['school_name'] == 'Yale University']['date'],
+    x=pct_trace[pct_trace['school_name'] == T11[0]]['pcta'],
+    y=pct_trace[pct_trace['school_name'] == T11[0]]['date'],
     line=dict(color='RGBA(0,177,64,' + pct_trace_alpha, width=1.25),
     mode='lines',
     xaxis='x2',
-    name='Hist. Pct. A (n=%0.f' % max(pct_trace[pct_trace['school_name'] == 'Yale University']['totala']) + ')')
+    name='Hist. Pct. A (n=%0.f' % max(pct_trace[pct_trace['school_name'] == T11[0]]['totala']) + ')')
 )
 
 #  Rejected
 fig.add_trace(go.Scatter(
-    x=pct_trace[pct_trace['school_name'] == 'Yale University']['pctr'],
-    y=pct_trace[pct_trace['school_name'] == 'Yale University']['date'],
+    x=pct_trace[pct_trace['school_name'] == T11[0]]['pctr'],
+    y=pct_trace[pct_trace['school_name'] == T11[0]]['date'],
     line=dict(color='RGBA(255,0,0,' + pct_trace_alpha, width=1.25),
     mode='lines',
     xaxis='x2',
-    name='Hist. Pct. R (n=%0.f' % max(pct_trace[pct_trace['school_name'] == 'Yale University']['totalr']) + ')')
+    name='Hist. Pct. R (n=%0.f' % max(pct_trace[pct_trace['school_name'] == T11[0]]['totalr']) + ')')
 )
 
 #  Waitlisted
 fig.add_trace(go.Scatter(
-    x=pct_trace[pct_trace['school_name'] == 'Yale University']['pctw'],
-    y=pct_trace[pct_trace['school_name'] == 'Yale University']['date'],
+    x=pct_trace[pct_trace['school_name'] == T11[0]]['pctw'],
+    y=pct_trace[pct_trace['school_name'] == T11[0]]['date'],
     line=dict(color='RGBA(255,165,0,' + pct_trace_alpha, width=1.25),
     mode='lines',
     xaxis='x2',
-    name='Hist. Pct. WL (n=%0.f' % max(pct_trace[pct_trace['school_name'] == 'Yale University']['totalw']) + ')')
+    name='Hist. Pct. WL (n=%0.f' % max(pct_trace[pct_trace['school_name'] == T11[0]]['totalw']) + ')')
 )
 
 #  Chance of acceptance
 fig.add_trace(go.Scatter(
-    x=pct_trace[pct_trace['school_name'] == 'Yale University']['chancea'],
-    y=pct_trace[pct_trace['school_name'] == 'Yale University']['date'],
+    x=pct_trace[pct_trace['school_name'] == T11[0]]['chancea'],
+    y=pct_trace[pct_trace['school_name'] == T11[0]]['date'],
     line=dict(color='RGBA(0,255,255,' + pct_trace_alpha, width=1.25),
     mode='lines',
     xaxis='x2',
     name='Acceptance Likelihood')
 )
 
-fig.data[4].update(customdata=pct_trace[pct_trace['school_name'] == 'Yale University'],
+fig.data[4].update(customdata=pct_trace[pct_trace['school_name'] == T11[0]],
                    hovertemplate='%{customdata[1]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>')
-fig.data[5].update(customdata=pct_trace[pct_trace['school_name'] == 'Yale University'],
+fig.data[5].update(customdata=pct_trace[pct_trace['school_name'] == T11[0]],
                    hovertemplate='%{customdata[2]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>')
-fig.data[6].update(customdata=pct_trace[pct_trace['school_name'] == 'Yale University'],
+fig.data[6].update(customdata=pct_trace[pct_trace['school_name'] == T11[0]],
                    hovertemplate='%{customdata[3]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>')
-fig.data[7].update(customdata=pct_trace[pct_trace['school_name'] == 'Yale University'],
+fig.data[7].update(customdata=pct_trace[pct_trace['school_name'] == T11[0]],
                    hovertemplate='%{customdata[4]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>')
-fig.data[8].update(customdata=pct_trace[pct_trace['school_name'] == 'Yale University'],
+fig.data[8].update(customdata=pct_trace[pct_trace['school_name'] == T11[0]],
                    hovertemplate='%{customdata[5]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>')
 
 #  Dropdown menu
