@@ -48,7 +48,7 @@ for c in cycles:
             end=max(df_temp['wait']),
             size=5
             ),
-        hovertemplate='Wait: %{x}<extra></extra>'
+        hovertemplate='Wait: %{x} days<extra></extra>'
         )
     )
 
@@ -71,7 +71,7 @@ for i, school in enumerate(T11):
             args=[{
                 'x': x,
                 'name': name,
-                'hovertemplate': 'Wait: %{x}<extra></extra>'
+                'hovertemplate': 'Wait: %{x} days<extra></extra>'
                 },
             ],
         )
