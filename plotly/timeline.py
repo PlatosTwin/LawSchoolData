@@ -72,8 +72,8 @@ for c in cycles:
              ' (n=' + str(df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c) &
                                (df11['decision'].str.contains('|'.join(['A', 'R', 'WL'])))].shape[0]) + ')',
         customdata=df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c)],
-        hovertemplate='LSAT: %{customdata[10]:.0f}<br>GPA: %{customdata[14]}<br>'
-                      'Sent: %{customdata[2]|%m/%d}<br>Decision: %{customdata[8]|%m/%d}<extra></extra>'
+        hovertemplate='LSAT: %{customdata[9]:.0f}<br>GPA: %{customdata[13]}<br>'
+                      'Sent: %{customdata[1]|%m/%d}<br>Decision: %{customdata[7]|%m/%d}<extra></extra>'
         )
     )
 
@@ -220,8 +220,8 @@ for i, school in enumerate(T11):
                 'name': name,
                 'customdata': [np.array(df11[(df11['school_name'] == school) & (df11['cycle'] == c)]) for c in cycles] +
                               [np.array(pct_trace[pct_trace['school_name'] == school]) for i in range(4, 9)],
-                'hovertemplate':['LSAT: %{customdata[10]:.0f}<br>GPA: %{customdata[14]}<br>'
-                                 'Sent: %{customdata[2]|%m/%d}<br>Decision: %{customdata[8]|%m/%d}<extra></extra>']*4 +
+                'hovertemplate':['LSAT: %{customdata[9]:.0f}<br>GPA: %{customdata[13]}<br>'
+                                 'Sent: %{customdata[1]|%m/%d}<br>Decision: %{customdata[7]|%m/%d}<extra></extra>']*4 +
                                 ['%{customdata[1]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>',
                                  '%{customdata[2]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>',
                                  '%{customdata[3]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>',
