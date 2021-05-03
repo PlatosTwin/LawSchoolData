@@ -132,11 +132,8 @@ fig.add_annotation(
 fig.show(config=dict(modeBarButtonsToRemove=['autoScale2d']))
 
 # cwd = Path(getcwd())
-# pio.write_html(fig, file=str(cwd.parent.absolute()) + '/docs/_includes/histogram.html', auto_open=False, config=dict(modeBarButtonsToRemove=['autoScale2d']))
-# print('\nFinished writing to histogram.html.')
-
-
-
+# pio.write_html(fig, file=str(cwd.parent.absolute()) + '/docs/_includes/waithistogram.html', auto_open=False, config=dict(modeBarButtonsToRemove=['autoScale2d']))
+# print('\nFinished writing to waithistogram.html.')
 
 #
 # #  Create print output to assess how wait times have changed by cycle and by decision
