@@ -135,10 +135,12 @@ def label_marker(row):
 
 
 def label_splitter(row):
+    #  Splitters = blue
     if (row['lsat'] > dff[dff['School'] == row['school_name']]['L75'].values[0]) & \
             (row['gpa'] < dff[dff['School'] == row['school_name']]['G25'].values[0]):
         return 'blue'
 
+    #  Reverse splitters = black
     if (row['lsat'] < dff[dff['School'] == row['school_name']]['L25'].values[0]) & \
             (row['gpa'] > dff[dff['School'] == row['school_name']]['G75'].values[0]):
         return 'black'

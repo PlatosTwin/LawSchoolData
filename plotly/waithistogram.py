@@ -2,7 +2,9 @@ from os import getcwd
 from pathlib import Path
 import datetime as dt
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import plotly.io as pio
+import numpy as np
 import pandas as pd
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
@@ -33,46 +35,87 @@ T11_short = ['Yale', 'Harvard', 'Stanford', 'UChicago', 'Columbia', 'NYU', 'UPen
              'Berkeley', 'Northwestern ']
 
 #  Create figure
-fig = go.Figure()
+fig = make_subplots(rows=2, cols=2, start_cell="top-left")
 
 current_of = max(df11[df11['cycle'] == 21]['decision_at'])
 
 #  Set initial histogram traces
-for c in cycles:
-    df_temp = df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c) & (df11['decision_at'] <= current_of)]
-    fig.add_trace(go.Histogram(
-        x=df_temp['wait'],
-        name=str(c-1) + '/' + str(c) + ' (n=%0.f' % df_temp.shape[0] + ')<br>Avg. Wait: %0.f' % df_temp['wait'].mean(),
-        xbins=dict(
-            start=min(df_temp['wait']),
-            end=max(df_temp['wait']),
-            size=5
+row = 1
+col = 1
+showlegend = False
+
+for r in ['all', 'A', 'R', 'WL']:
+    for c in cycles:
+        if r == 'all':
+            df_temp = df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c) & (df11['decision_at'] <= current_of)]
+            showlegend = True
+        else:
+            df_temp = df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c) &
+                           (df11['decision_at'] <= current_of) & (df11['decision'] == r)]
+            showlegend = False
+
+        fig.add_trace(go.Histogram(
+            x=df_temp['wait'],
+            name=str(c-1) + '/' + str(c) + ' (n=%0.f' % df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c) & (df11['decision_at'] <= current_of)].shape[0] + ')',
+            xbins=dict(
+                start=min(df_temp['wait']),
+                end=max(df_temp['wait']),
+                size=7
+                ),
+            meta='Yale, ' + str(c-1) + '/' + str(c) + ' (n=%0.f' % df_temp.shape[0] + ')<br>Avg. Wait: %0.f' % df_temp['wait'].mean(),
+            hovertemplate='%{meta}<br>%{x} days<extra></extra>',
+            showlegend=showlegend,
+            legendgroup=str(c)
             ),
-        hovertemplate='Wait: %{x} days<extra></extra>'
+            row=row,
+            col=col
         )
-    )
+
+    if (row == 2) & (col == 2):
+        col -= 1
+
+    if (row == 1) & (col == 2):
+        row += 1
+
+    if (row == 1) & (col == 1):
+        col += 1
+
+
 
 updatemenu = []
 button_schools = []
 
 #  Button with one option for each school
 for i, school in enumerate(T11):
-    df_temp = df11[(df11['school_name'] == school) & (df11['decision_at'] <= current_of)]
+    x = []
+    name = []
+    meta = []
 
-    x = [df_temp[df_temp['cycle'] == c]['wait'] for c in cycles]
-    name = [str(c-1) + '/' + str(c) + ' (n=%0.f' % df_temp[df_temp['cycle'] == c].shape[0] +
-            ')<br>Avg. Wait: %0.f' % df_temp[df_temp['cycle'] == c]['wait'].mean() for c in cycles]
+    for r in ['all', 'A', 'R', 'WL']:
+        for c in cycles:
+            if r == 'all':
+                df_temp = df11[(df11['school_name'] == school) &
+                               (df11['decision_at'] <= current_of) & (df11['cycle'] == c)]
+            else:
+                df_temp = df11[(df11['school_name'] == school) & (df11['decision_at'] <= current_of) &
+                                (df11['cycle'] == c) & (df11['decision'] == r)]
+
+            x.append(df_temp['wait'])
+            name.append(str(c-1) + '/' + str(c) + ' (n=%0.f' % df11[(df11['school_name'] == school) & (df11['cycle'] == c) & (df11['decision_at'] <= current_of)].shape[0] + ')')
+            meta.append(T11_short[i] + ', ' + str(c-1) + '/' + str(c) + ' (n=%0.f' % df_temp.shape[0] + ')<br>Avg. Wait: %0.f' % df_temp['wait'].mean())
 
     button_schools.append(
         dict(
             method='update',
             label=T11_short[i],
             visible=True,
-            args=[{
-                'x': x,
-                'name': name,
-                'hovertemplate': 'Wait: %{x} days<extra></extra>'
-                },
+            args=[
+                dict(
+                x=x,
+                name=name,
+                meta=meta,
+                hovertemplate='%{meta}<br>%{x} days<extra></extra>'
+                )
             ],
         )
     )
@@ -95,9 +138,8 @@ updatemenu[0]['yanchor'] = 'top'
 fig.update_layout(
     updatemenus=updatemenu,
     barmode='stack',
-    xaxis_title='Wait Time (days)',
-    yaxis_title='Count',
     legend_title='App. Cycle',
+    colorway=['violet', 'seagreen', 'coral', 'cornflowerblue']*4,
     title={
         'text': 'Wait Times Distribution',
         'y': 0.945,
@@ -113,6 +155,17 @@ fig.update_layout(
         traceorder='reversed'
     )
 )
+
+fig.update_xaxes(title_text="Wait Time (days) - All", range=[10, 200], row=1, col=1)
+fig.update_xaxes(title_text="Wait Time (days) - Accepted", range=[10, 200], row=1, col=2)
+fig.update_xaxes(title_text="Wait Time (days) - Rejected", range=[10, 200], row=2, col=2)
+fig.update_xaxes(title_text="Wait Time (days) - Waitlisted", range=[10, 200], row=2, col=1)
+
+# Update yaxis properties
+fig.update_yaxes(title_text="Count", row=1, col=1)
+fig.update_yaxes(title_text="Count", row=1, col=2)
+fig.update_yaxes(title_text="Count", row=2, col=1)
+fig.update_yaxes(title_text="Count", row=2, col=2)
 
 current_of = max(df11[df11['cycle'] == 21]['decision_at'])
 fig.add_annotation(
