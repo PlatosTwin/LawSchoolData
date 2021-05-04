@@ -33,7 +33,7 @@ T11_short = ['Yale', 'Harvard', 'Stanford', 'UChicago', 'Columbia', 'NYU', 'UPen
 
 fig = go.Figure()
 
-#  Percentage of applicants who reported sent_at date on LSData
+#  Percentage of applicants who reported sent_at date on LSData, in T11
 total_a = 0
 total_app = 0
 for school in T11:
@@ -52,7 +52,7 @@ for school in T11:
         )
     )
 
-#  Across the T11
+#  Across the T11 in aggregate
 fig.add_trace(go.Scatter(
     x=cycles,
     y=[100*df11[(df11['school_name'].str.contains('|'.join(T11))) & (df11['cycle'] == c)].shape[0]/total_app for c in cycles],
@@ -63,7 +63,7 @@ fig.add_trace(go.Scatter(
     )
 )
 
-updatemenu = []
+#  Add dropdown buttons
 buttons = []
 
 x1 = np.tile(cycles, (len(T11)+1, 1))
@@ -87,7 +87,6 @@ buttons = list([
         args=[{
             'x': x1,
             'y': y1,
-            'mode': 'lines+markers',
             'name': T11_short + ['Top 11']
             }],
         label='All Applicants'),
@@ -97,7 +96,6 @@ buttons = list([
         args=[{
             'x': x2,
             'y': y2,
-            'mode': 'lines+markers',
             'name': T11_short + ['Top 11']
             }],
         label='Accepted Applicants')

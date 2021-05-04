@@ -77,7 +77,6 @@ for c in cycles:
         )
     )
 
-
 #  Add percent lines for past cycles
 pct_trace = pd.DataFrame(columns=['school_name', 'pctn', 'pcta', 'pctr', 'pctw', 'chancea',
                                   'totaln', 'totala', 'totalr', 'totalw', 'date'])
@@ -219,14 +218,7 @@ for i, school in enumerate(T11):
                             color=df11[(df11['school_name'] == school) & (df11['cycle'] == c)]['splitter'])) for c in cycles],
                 'name': name,
                 'customdata': [np.array(df11[(df11['school_name'] == school) & (df11['cycle'] == c)]) for c in cycles] +
-                              [np.array(pct_trace[pct_trace['school_name'] == school]) for i in range(4, 9)],
-                'hovertemplate':['LSAT: %{customdata[9]:.0f}<br>GPA: %{customdata[13]}<br>'
-                                 'Sent: %{customdata[1]|%m/%d}<br>Decision: %{customdata[7]|%m/%d}<extra></extra>']*4 +
-                                ['%{customdata[1]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>',
-                                 '%{customdata[2]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>',
-                                 '%{customdata[3]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>',
-                                 '%{customdata[4]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>',
-                                 '%{customdata[5]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>']
+                              [np.array(pct_trace[pct_trace['school_name'] == school]) for i in range(4, 9)]
                 },
             ],
         )
@@ -267,6 +259,7 @@ fig.update_layout(
     )
 )
 
+#  Add current-of line
 fig.add_shape(
     type='line',
     x0=dt.datetime(2017, 5, 1),
@@ -280,6 +273,7 @@ fig.add_shape(
     )
 )
 
+#  Add one-month spaced y=x lines
 for i in range(7):
     fig.add_shape(
         type='line',
