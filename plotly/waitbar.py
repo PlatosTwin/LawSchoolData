@@ -34,9 +34,9 @@ T11_short = ['Yale', 'Harvard', 'Stanford', 'UChicago', 'Columbia', 'NYU', 'UPen
 
 current_of = max(df11[df11['cycle'] == 21]['decision_at'])
 
+#  Calculate mean wait times and other wait statistics
 dfwait = pd.DataFrame(columns=['school_name', 'cycle', 'decision', 'wait', 'stdev', 'n'])
 
-#  Calculate mean wait times and other wait statistics
 dec = ['all', 'A', 'R', 'WL']
 for school in T11:
     for d in dec:

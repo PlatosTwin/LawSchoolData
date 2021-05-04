@@ -78,7 +78,7 @@ for c in cycles:
     )
 
 #  Add percent lines for past cycles
-pct_trace = pd.DataFrame(columns=['school_name', 'pctn', 'pcta', 'pctr', 'pctw', 'chancea',
+dfpct = pd.DataFrame(columns=['school_name', 'pctn', 'pcta', 'pctr', 'pctw', 'chancea',
                                   'totaln', 'totala', 'totalr', 'totalw', 'date'])
 
 for school in T11:
@@ -102,8 +102,8 @@ for school in T11:
         except ZeroDivisionError:
             chance_a = 0
 
-        index = len(pct_trace)
-        pct_trace.loc[index] = [school,
+        index = len(dfpct)
+        dfpct.loc[index] = [school,
                                 100*(num_a + num_r + num_w)/total_n,
                                 100*num_a/total_a,
                                 100*num_r/total_r,
@@ -116,65 +116,65 @@ for school in T11:
                                 earliest + i*dt.timedelta(weeks=1)]
 
 #  Notified
-pct_trace_alpha = '0.4)'
+dfpct_alpha = '0.4)'
 fig.add_trace(go.Scatter(
-    x=pct_trace[pct_trace['school_name'] == T11[0]]['pctn'],
-    y=pct_trace[pct_trace['school_name'] == T11[0]]['date'],
-    line=dict(color='RGBA(0,0,0,' + pct_trace_alpha, width=1.25),
+    x=dfpct[dfpct['school_name'] == T11[0]]['pctn'],
+    y=dfpct[dfpct['school_name'] == T11[0]]['date'],
+    line=dict(color='RGBA(0,0,0,' + dfpct_alpha, width=1.25),
     mode='lines',
     xaxis='x2',
-    name='Hist. Pct. Notified (n=%0.f' % max(pct_trace[pct_trace['school_name'] == T11[0]]['totaln']) + ')'),
+    name='Hist. Pct. Notified (n=%0.f' % max(dfpct[dfpct['school_name'] == T11[0]]['totaln']) + ')'),
 )
 
 #  Accepted
 fig.add_trace(go.Scatter(
-    x=pct_trace[pct_trace['school_name'] == T11[0]]['pcta'],
-    y=pct_trace[pct_trace['school_name'] == T11[0]]['date'],
-    line=dict(color='RGBA(0,177,64,' + pct_trace_alpha, width=1.25),
+    x=dfpct[dfpct['school_name'] == T11[0]]['pcta'],
+    y=dfpct[dfpct['school_name'] == T11[0]]['date'],
+    line=dict(color='RGBA(0,177,64,' + dfpct_alpha, width=1.25),
     mode='lines',
     xaxis='x2',
-    name='Hist. Pct. A (n=%0.f' % max(pct_trace[pct_trace['school_name'] == T11[0]]['totala']) + ')')
+    name='Hist. Pct. A (n=%0.f' % max(dfpct[dfpct['school_name'] == T11[0]]['totala']) + ')')
 )
 
 #  Rejected
 fig.add_trace(go.Scatter(
-    x=pct_trace[pct_trace['school_name'] == T11[0]]['pctr'],
-    y=pct_trace[pct_trace['school_name'] == T11[0]]['date'],
-    line=dict(color='RGBA(255,0,0,' + pct_trace_alpha, width=1.25),
+    x=dfpct[dfpct['school_name'] == T11[0]]['pctr'],
+    y=dfpct[dfpct['school_name'] == T11[0]]['date'],
+    line=dict(color='RGBA(255,0,0,' + dfpct_alpha, width=1.25),
     mode='lines',
     xaxis='x2',
-    name='Hist. Pct. R (n=%0.f' % max(pct_trace[pct_trace['school_name'] == T11[0]]['totalr']) + ')')
+    name='Hist. Pct. R (n=%0.f' % max(dfpct[dfpct['school_name'] == T11[0]]['totalr']) + ')')
 )
 
 #  Waitlisted
 fig.add_trace(go.Scatter(
-    x=pct_trace[pct_trace['school_name'] == T11[0]]['pctw'],
-    y=pct_trace[pct_trace['school_name'] == T11[0]]['date'],
-    line=dict(color='RGBA(255,165,0,' + pct_trace_alpha, width=1.25),
+    x=dfpct[dfpct['school_name'] == T11[0]]['pctw'],
+    y=dfpct[dfpct['school_name'] == T11[0]]['date'],
+    line=dict(color='RGBA(255,165,0,' + dfpct_alpha, width=1.25),
     mode='lines',
     xaxis='x2',
-    name='Hist. Pct. WL (n=%0.f' % max(pct_trace[pct_trace['school_name'] == T11[0]]['totalw']) + ')')
+    name='Hist. Pct. WL (n=%0.f' % max(dfpct[dfpct['school_name'] == T11[0]]['totalw']) + ')')
 )
 
 #  Chance of acceptance
 fig.add_trace(go.Scatter(
-    x=pct_trace[pct_trace['school_name'] == T11[0]]['chancea'],
-    y=pct_trace[pct_trace['school_name'] == T11[0]]['date'],
-    line=dict(color='RGBA(0,255,255,' + pct_trace_alpha, width=1.25),
+    x=dfpct[dfpct['school_name'] == T11[0]]['chancea'],
+    y=dfpct[dfpct['school_name'] == T11[0]]['date'],
+    line=dict(color='RGBA(0,255,255,' + dfpct_alpha, width=1.25),
     mode='lines',
     xaxis='x2',
     name='Acceptance Likelihood')
 )
 
-fig.data[4].update(customdata=pct_trace[pct_trace['school_name'] == T11[0]],
+fig.data[4].update(customdata=dfpct[dfpct['school_name'] == T11[0]],
                    hovertemplate='%{customdata[1]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>')
-fig.data[5].update(customdata=pct_trace[pct_trace['school_name'] == T11[0]],
+fig.data[5].update(customdata=dfpct[dfpct['school_name'] == T11[0]],
                    hovertemplate='%{customdata[2]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>')
-fig.data[6].update(customdata=pct_trace[pct_trace['school_name'] == T11[0]],
+fig.data[6].update(customdata=dfpct[dfpct['school_name'] == T11[0]],
                    hovertemplate='%{customdata[3]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>')
-fig.data[7].update(customdata=pct_trace[pct_trace['school_name'] == T11[0]],
+fig.data[7].update(customdata=dfpct[dfpct['school_name'] == T11[0]],
                    hovertemplate='%{customdata[4]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>')
-fig.data[8].update(customdata=pct_trace[pct_trace['school_name'] == T11[0]],
+fig.data[8].update(customdata=dfpct[dfpct['school_name'] == T11[0]],
                    hovertemplate='%{customdata[5]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>')
 
 #  Dropdown menu
@@ -184,19 +184,19 @@ buttons = []
 #  Button with one option for each school
 for i, school in enumerate(T11):
     x = [df11[(df11['school_name'] == school) & (df11['cycle'] == c)]['sent_at'] for c in cycles] + \
-        [pct_trace[pct_trace['school_name'] == school][c] for c in ['pctn', 'pcta', 'pctr', 'pctw', 'chancea']]
+        [dfpct[dfpct['school_name'] == school][c] for c in ['pctn', 'pcta', 'pctr', 'pctw', 'chancea']]
 
     y = [df11[(df11['school_name'] == school) & (df11['cycle'] == c)]['decision_at'] for c in cycles] +\
-        [pct_trace[pct_trace['school_name'] == school]['date']]*5
+        [dfpct[dfpct['school_name'] == school]['date']]*5
 
     name = [str(c-1) + '/' + str(c) +
             ' (n=' + str(df11[(df11['school_name'] == school) & (df11['cycle'] == c) &
                               (df11['decision'].str.contains('|'.join(['A', 'R', 'WL'])))].shape[0]) + ')'
             for c in cycles] + \
-           ['Hist. Pct. Notified (n=%0.f' % max(pct_trace[pct_trace['school_name'] == school]['totaln']) + ')',
-            'Hist. Pct. A (n=%0.f' % max(pct_trace[pct_trace['school_name'] == school]['totala']) + ')',
-            'Hist. Pct. R (n=%0.f' % max(pct_trace[pct_trace['school_name'] == school]['totalr']) + ')',
-            'Hist. Pct. W (n=%0.f' % max(pct_trace[pct_trace['school_name'] == school]['totalw']) + ')',
+           ['Hist. Pct. Notified (n=%0.f' % max(dfpct[dfpct['school_name'] == school]['totaln']) + ')',
+            'Hist. Pct. A (n=%0.f' % max(dfpct[dfpct['school_name'] == school]['totala']) + ')',
+            'Hist. Pct. R (n=%0.f' % max(dfpct[dfpct['school_name'] == school]['totalr']) + ')',
+            'Hist. Pct. W (n=%0.f' % max(dfpct[dfpct['school_name'] == school]['totalw']) + ')',
             'Acceptance Likelihood']
 
     buttons.append(
@@ -218,13 +218,12 @@ for i, school in enumerate(T11):
                             color=df11[(df11['school_name'] == school) & (df11['cycle'] == c)]['splitter'])) for c in cycles],
                 'name': name,
                 'customdata': [np.array(df11[(df11['school_name'] == school) & (df11['cycle'] == c)]) for c in cycles] +
-                              [np.array(pct_trace[pct_trace['school_name'] == school]) for i in range(4, 9)]
+                              [np.array(dfpct[dfpct['school_name'] == school]) for i in range(4, 9)]
                 },
             ],
         )
     )
 
-#  Adjust updatemenus
 updatemenu = []
 menu = dict()
 updatemenu.append(menu)
@@ -238,11 +237,12 @@ updatemenu[0]['xanchor'] = 'left'
 updatemenu[0]['y'] = 1.06
 updatemenu[0]['yanchor'] = 'top'
 
+#  Adjust layout
 fig.update_layout(
     updatemenus=updatemenu,
     xaxis_title='Sent Date',
     yaxis_title='Decision Date',
-    legend_title='App. Cycle',
+    legend_title='App. Cycle + Percentages',
     title={
         'text': 'Decision Timeline',
         'y': 0.98,

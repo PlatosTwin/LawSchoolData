@@ -116,11 +116,12 @@ updatemenu[0]['xanchor'] = 'left'
 updatemenu[0]['y'] = 1.06
 updatemenu[0]['yanchor'] = 'top'
 
+#  Adjust layout
 fig.update_layout(
     updatemenus=updatemenu,
     xaxis_title='Cycle',
     yaxis_title='Percentage',
-    legend_title='App. Cycle',
+    legend_title='School',
     title={
         'text': 'LSData Applicant Pool vs. Total Applicant Pool',
         'y': 0.945,

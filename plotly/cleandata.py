@@ -16,8 +16,8 @@ t_max = dt.datetime.strptime('2021-08-31', '%Y-%m-%d')
 
 #  Read-in medians data, downloaded from https://7sage.com/top-law-school-admissions/
 fname_percentiles = '/Users/Shared/lsmedians.csv'
-dff = pd.read_csv(fname_percentiles, low_memory=False)
-dff = dff[:20]  # Limit to top twenty schools
+dfmeds = pd.read_csv(fname_percentiles, low_memory=False)
+dfmeds = dfmeds[:20]  # Limit to top twenty schools
 
 #  Read-in admissions data, downloaded from https://www.lawschooldata.org/download
 fname_admit = '/Users/Shared/lsdata.csv'
@@ -136,13 +136,13 @@ def label_marker(row):
 
 def label_splitter(row):
     #  Splitters = blue
-    if (row['lsat'] > dff[dff['School'] == row['school_name']]['L75'].values[0]) & \
-            (row['gpa'] < dff[dff['School'] == row['school_name']]['G25'].values[0]):
+    if (row['lsat'] > dfmeds[dfmeds['School'] == row['school_name']]['L75'].values[0]) & \
+            (row['gpa'] < dfmeds[dfmeds['School'] == row['school_name']]['G25'].values[0]):
         return 'blue'
 
     #  Reverse splitters = black
-    if (row['lsat'] < dff[dff['School'] == row['school_name']]['L25'].values[0]) & \
-            (row['gpa'] > dff[dff['School'] == row['school_name']]['G75'].values[0]):
+    if (row['lsat'] < dfmeds[dfmeds['School'] == row['school_name']]['L25'].values[0]) & \
+            (row['gpa'] > dfmeds[dfmeds['School'] == row['school_name']]['G75'].values[0]):
         return 'black'
 
     if row['decision'] == 'A':
