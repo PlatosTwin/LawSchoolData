@@ -69,7 +69,9 @@ for i, c in enumerate(cycles):
     fig.add_trace(go.Bar(
         x=x,
         y=y,
-        name=str(c-1) + '/' + str(c),
+        name=str(c-1) + '/' + str(c) + ' (n=%0.f' % df11[(df11['decision'].str.contains('|'.join(['A', 'R', 'WL']))) &
+                                                         (df11['school_name'] == T11[0]) & (df11['cycle'] == c) &
+                                                         (df11['decision_at'] <= current_of)].shape[0] + ')',
         text=y,
         textposition='auto',
         marker={'color': barcolor[i]},
@@ -98,7 +100,10 @@ for i, school in enumerate(T11):
     for c in cycles:
         y.append([dfwait[(dfwait['school_name'] == school) & (dfwait['cycle'] == c) &
                          (dfwait['decision'] == d)]['wait'].values[0] for d in dec])
-        name.append(str(c - 1) + '/' + str(c))
+        name.append(str(c-1) + '/' + str(c) + ' (n=%0.f' %
+                    df11[(df11['decision'].str.contains('|'.join(['A', 'R', 'WL']))) &
+                         (df11['school_name'] == school) & (df11['cycle'] == c) &
+                         (df11['decision_at'] <= current_of)].shape[0] + ')')
         eb.append(
             dict(
                 type='data',
@@ -114,7 +119,9 @@ for i, school in enumerate(T11):
     button_schools.append(
         dict(
             method='update',
-            label=T11_short[i],
+            label=T11_short[i] + ' (n=%0.f' % df11[(df11['decision'].str.contains('|'.join(['A', 'R', 'WL']))) &
+                                                   (df11['school_name'] == school) &
+                                                   (df11['decision_at'] <= current_of)].shape[0] + ')',
             visible=True,
             args=[
                 dict(
@@ -172,5 +179,8 @@ fig.update_yaxes(title_text='Wait Time (days)')
 # fig.show(config=dict(modeBarButtonsToRemove=['autoScale2d']))
 
 cwd = Path(getcwd())
-pio.write_html(fig, file=str(cwd.parent.absolute()) + '/docs/_includes/waitbar.html', auto_open=False, config=dict(modeBarButtonsToRemove=['autoScale2d']))
+pio.write_html(fig,
+               file=str(cwd.parent.absolute()) + '/docs/_includes/waitbar.html',
+               auto_open=False,
+               config=dict(modeBarButtonsToRemove=['autoScale2d']))
 print('\nFinished writing to waitbar.html.')

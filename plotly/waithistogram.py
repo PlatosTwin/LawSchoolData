@@ -55,8 +55,7 @@ for d in ['all', 'A', 'R', 'WL']:
 
         fig.add_trace(go.Histogram(
             x=df_temp['wait'],
-            name=str(c-1) + '/' + str(c) + ' (n=%0.f' % df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c) &
-                                                             (df11['decision_at'] <= current_of)].shape[0] + ')',
+            name=str(c-1) + '/' + str(c) + ' (n=%0.f' % df_temp.shape[0] + ')',
             xbins=dict(
                 start=min(df_temp['wait']),
                 end=max(df_temp['wait']),
@@ -101,9 +100,7 @@ for i, school in enumerate(T11):
                                (df11['cycle'] == c) & (df11['decision'] == d)]
 
             x.append(df_temp['wait'])
-            name.append(str(c-1) + '/' + str(c) + ' (n=%0.f' % df11[(df11['school_name'] == school) &
-                                                                    (df11['cycle'] == c) &
-                                                                    (df11['decision_at'] <= current_of)].shape[0] + ')')
+            name.append(str(c-1) + '/' + str(c) + ' (n=%0.f' % df_temp.shape[0] + ')')
             meta.append(T11_short[i] + ', ' + str(c-1) + '/' + str(c) +
                         ' (n=%0.f' % df_temp.shape[0] + ')<br>Avg. Wait: %0.f' % df_temp['wait'].mean())
 
@@ -177,5 +174,8 @@ fig.update_yaxes(title_text='Count', row=2, col=2)
 # fig.show(config=dict(modeBarButtonsToRemove=['autoScale2d']))
 
 cwd = Path(getcwd())
-pio.write_html(fig, file=str(cwd.parent.absolute()) + '/docs/_includes/waithistogram.html', auto_open=False, config=dict(modeBarButtonsToRemove=['autoScale2d']))
+pio.write_html(fig,
+               file=str(cwd.parent.absolute()) + '/docs/_includes/waithistogram.html',
+               auto_open=False,
+               config=dict(modeBarButtonsToRemove=['autoScale2d']))
 print('\nFinished writing to waithistogram.html.')

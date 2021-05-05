@@ -282,5 +282,8 @@ fig.update_yaxes(title_text='Percentage')
 # fig.show(config=dict(modeBarButtonsToRemove=['autoScale2d']))
 
 cwd = Path(getcwd())
-pio.write_html(fig, file=str(cwd.parent.absolute()) + '/docs/_includes/splitters.html', auto_open=False, config=dict(modeBarButtonsToRemove=['autoScale2d']))
+pio.write_html(fig,
+               file=str(cwd.parent.absolute()) + '/docs/_includes/splitters.html',
+               auto_open=False,
+               config=dict(modeBarButtonsToRemove=['autoScale2d']))
 print('\nFinished writing to splitters.html.')
