@@ -122,6 +122,9 @@ fig.update_layout(
     xaxis_title='Cycle',
     yaxis_title='Percentage',
     legend_title='School',
+    autosize=False,
+    height=700,
+    width=1400,
     title={
         'text': 'LSData Applicant Pool vs. Total Applicant Pool',
         'y': 0.945,
@@ -144,23 +147,8 @@ fig.update_xaxes(
     range=[min(cycles)-0.25, max(cycles)+0.25]
 )
 
-current_of = max(df11[df11['cycle'] == 21]['decision_at'])
-fig.add_annotation(
-    text='Current as of ' + str(current_of.month) + '/' + str(current_of.day) + '/2021 (-----)',
-    xref='paper', yref='paper',
-    x=1.175, y=-0.1,
-    showarrow=False, font=dict(size=8, color='gray')
-)
+# fig.show(config=dict(modeBarButtonsToRemove=['autoScale2d']))
 
-fig.add_annotation(
-    text='Admissions data from LSData.org. Medians data from 7Sage.com. (c) 2021',
-    xref='paper', yref='paper',
-    x=0, y=-0.1,
-    showarrow=False, font=dict(size=8, color='lightgray')
-)
-
-fig.show(config=dict(modeBarButtonsToRemove=['autoScale2d']))
-
-# cwd = Path(getcwd())
-# pio.write_html(fig, file=str(cwd.parent.absolute()) + '/docs/_includes/poolscatter.html', auto_open=False, config=dict(modeBarButtonsToRemove=['autoScale2d']))
-# print('\nFinished writing to poolscatter.html.')
+cwd = Path(getcwd())
+pio.write_html(fig, file=str(cwd.parent.absolute()) + '/docs/_includes/poolscatter.html', auto_open=False, config=dict(modeBarButtonsToRemove=['autoScale2d']))
+print('\nFinished writing to poolscatter.html.')

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-
+from os import getcwd
+from pathlib import Path
 import datetime as dt
 import numpy as np
 import pandas as pd
@@ -186,3 +187,13 @@ fname_save = 'lsdata_clean.csv'
 df11.to_csv(fname_save, index=False)
 
 print('Completed and saved reference file to: ' + fname_save)
+
+current_of = max(df11[df11['cycle'] == 21]['decision_at'])
+current = 'Current as of ' + str(current_of.month) + '/' + str(current_of.day) + '/2021.'
+reference = 'Admissions data from LawSchoolData.org. Medians data from 7Sage.com. (c) 2021'
+footer = current + ' ' + reference
+
+cwd = Path(getcwd())
+fname_footer = str(cwd.parent.absolute()) + '/docs/_includes/footer.html'
+with open(fname_footer, 'w') as f:
+    f.write(footer)

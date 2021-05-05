@@ -6,21 +6,13 @@ layout: home
 title: Admissions Analysis
 heading: Law School Data Admissions Analyses (2017/2018 - 2020/2021)
 ---
+{% include timeline.html %}
+___
+{% include waithistogram.html %}
+___
+{% include waitbar.html %}
+___
+{% include splitters.html %}
+___
+{% include poolscatter.html %}
 
-[comment]: <> ({% include timeline.html %})
-
-[comment]: <> (<hr>)
-
-[comment]: <> ({% include waithistogram.html %})
-
-[comment]: <> (<hr>)
-
-[comment]: <> ({% include waitbar.html %})
-
-[comment]: <> (<hr>)
-
-[comment]: <> ({% include splitters.html %})
-
-[comment]: <> (<hr>)
-
-[comment]: <> ({% include poolscatter.html %})
