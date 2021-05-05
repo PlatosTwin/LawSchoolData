@@ -52,15 +52,16 @@ for school in T11:
             index = len(dfwait)
             dfwait.loc[index] = [school, c, d, df_temp['wait'].mean(), df_temp['wait'].std(), df_temp['wait'].shape[0]]
 
-dfwait['wait'] = dfwait.apply(lambda row: int(row['wait']), axis=1)
-dfwait['stdev'] = dfwait.apply(lambda row: int(row['stdev']), axis=1)
+dfwait['wait'] = dfwait.apply(lambda row: int(round(row['wait'], 0)), axis=1)
+dfwait['stdev'] = dfwait.apply(lambda row: int(round(row['stdev'], 0)), axis=1)
 
 #  Set initial traces
 fig = go.Figure()
 
 x = ['Total', 'Accepted', 'Rejected', 'Waitlisted']
+barcolor = ['violet', 'seagreen', 'coral', 'cornflowerblue']
 
-for c in cycles:
+for i, c in enumerate(cycles):
     y = [dfwait[(dfwait['school_name'] == T11[0]) & (dfwait['cycle'] == c) &
                 (dfwait['decision'] == d)]['wait'].values[0] for d in dec]
     eb = [dfwait[(dfwait['school_name'] == T11[0]) & (dfwait['cycle'] == c) &
@@ -71,6 +72,7 @@ for c in cycles:
         name=str(c-1) + '/' + str(c),
         text=y,
         textposition='auto',
+        marker={'color': barcolor[i]},
         meta=[dfwait[(dfwait['school_name'] == T11[0]) & (dfwait['cycle'] == c) &
                      (dfwait['decision'] == d)]['n'].values[0] for d in dec],
         hovertemplate='%{y} days<br>(n=%{meta})<extra></extra>',
