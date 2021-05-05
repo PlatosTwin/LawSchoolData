@@ -145,9 +145,8 @@ fig.update_layout(
     updatemenus=updatemenu,
     barmode='group',
     legend_title='App. Cycle',
-    autosize=False,
+    autosize=True,
     height=700,
-    width=1400,
     title={
         'text': 'Wait Times Through ' + str(current_of.month) + '/' + str(current_of.day) + ' Each Cycle',
         'y': 0.945,

@@ -142,9 +142,8 @@ fig.update_layout(
     barmode='stack',
     legend_title='App. Cycle',
     colorway=['violet', 'seagreen', 'coral', 'cornflowerblue']*4,
-    autosize=False,
+    autosize=True,
     height=700,
-    width=1400,
     title={
         'text': 'Wait Times Distribution Through ' + str(current_of.month) + '/' + str(current_of.day) + ' Each Cycle',
         'y': 0.945,

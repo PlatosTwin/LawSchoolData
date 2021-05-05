@@ -249,9 +249,8 @@ fig.update_layout(
     updatemenus=updatemenu,
     barmode='group',
     legend_title='App. Cycle',
-    autosize=False,
+    autosize=True,
     height=700,
-    width=1400,
     title={
         'text': 'Chance of Acceptance by Stats. Type',
         'y': 0.945,

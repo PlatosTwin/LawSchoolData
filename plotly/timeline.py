@@ -243,9 +243,8 @@ fig.update_layout(
     xaxis_title='Sent Date',
     yaxis_title='Decision Date',
     legend_title='App. Cycle + Percentages',
-    autosize=False,
+    autosize=True,
     height=700,
-    width=1400,
     title={
         'text': 'Decision Timeline',
         'y': 0.98,

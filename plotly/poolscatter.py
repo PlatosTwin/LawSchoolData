@@ -122,9 +122,8 @@ fig.update_layout(
     xaxis_title='Cycle',
     yaxis_title='Percentage',
     legend_title='School',
-    autosize=False,
+    autosize=True,
     height=700,
-    width=1400,
     title={
         'text': 'LSData Applicant Pool vs. Total Applicant Pool',
         'y': 0.945,
