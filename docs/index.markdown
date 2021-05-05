@@ -80,10 +80,11 @@ ___
 {% include poolscatter.html %}
 <div style="margin: 0px 100px 18px 100px; font-family: calibri; text-align: justify">
 
-  <i>Note</i>: Percentages calculated by dividing the total number of applicants and admits, as determined by the 
-    2020 acceptance rate and yield as reported by the ABA and made available in convenient format by 
+  <i>Note</i>: Percentages calculated by dividing the total number of applicants and admits from LawSchoolData.org by 
+    the total number of applicants and admits as determined by the 
+    2020 acceptance rate and yield, as reported by the ABA and made available in convenient format by 
     <a href="https://7sage.com/top-law-school-admissions/" target="_blank">7Sage</a>. An 
     applicant counts as having used LawSchoolData.org to report their applying to or hearing from a given school 
-    if they entered at minimum the date they sent their application, their LSAT score, and their GPA.
+    if they entered at minimum the date they sent their application, their LSAT score, and their GPA. Note that,
 
 </div>
