@@ -7,7 +7,7 @@ title: Admissions Analysis
 heading: Law School Data Admissions Analyses (2017/2018 - 2020/2021)
 ---
 
-<div style="margin: 35px 100px 18px 100px; font-family:calibri">
+<div style="margin: 35px 100px 18px 100px; font-family: calibri; text-align: justify">
     
   The plots below pull self-reported data from <a href="https://lawschooldata.org" target="_blank">LawSchoolData.org</a> and utilize 
     <a href="https://plotly.com" target="_blank">Plotly</a> to visualize different slices of this data. Plotly makes possible an 
@@ -31,7 +31,7 @@ ___
 
 {% include timeline.html %}
 
-<div style="margin: 0px 100px 18px 100px; font-family:calibri">
+<div style="margin: 0px 100px 18px 100px; font-family: calibri; text-align: justify">
 
   <i>Note</i>: Historical percentages and likelihood are calculated based on the past three cycles (17/18, 18/19, and 
     19/20). The <i>Notified</i> trace includes only those who have received an acceptance, rejection, or waitlist—thus 
@@ -47,7 +47,7 @@ ___
 ___
 
 {% include waithistogram.html %}
-<div style="margin: 0px 100px 18px 100px; font-family:calibri">
+<div style="margin: 0px 100px 18px 100px; font-family: calibri; text-align: justify">
 
   <i>Note</i>: Wait times are calculated for each group (<i>All</i>, <i>Accepted</i>, <i>Rejected</i>, <i>Waitlisted</i>) 
     by averaging the number of days from the time an applicant sent their application to the time the applicant receieved a decision. See plot below for a further breakdown of wait time data.
@@ -56,7 +56,7 @@ ___
 ___
 
 {% include waitbar.html %}
-<div style="margin: 0px 100px 18px 100px; font-family:calibri">
+<div style="margin: 0px 100px 18px 100px; font-family: calibri; text-align: justify">
 
   <i>Note</i>: Error bars represent one standard deviation. Use this plot in conjunction with the plot above.
 
@@ -64,7 +64,7 @@ ___
 ___
 
 {% include splitters.html %}
-<div style="margin: 0px 100px 18px 100px; font-family:calibri">
+<div style="margin: 0px 100px 18px 100px; font-family: calibri; text-align: justify">
 
   <i>Note</i>: The number of splitters and reverse splitters who applied and were admitted is for several
     schools so small as to make meaningful inferences impossible. For each school, <i>Index</i> values are calculated 
@@ -78,7 +78,7 @@ ___
 ___
 
 {% include poolscatter.html %}
-<div style="margin: 0px 100px 18px 100px; font-family:calibri">
+<div style="margin: 0px 100px 18px 100px; font-family: calibri; text-align: justify">
 
   <i>Note</i>: Percentages calculated by dividing the total number of applicants and admits, as determined by the 
     2020 acceptance rate and yield as reported by the ABA and made available in convenient format by 
