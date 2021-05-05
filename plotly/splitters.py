@@ -41,7 +41,7 @@ T11_short = ['Yale', 'Harvard', 'Stanford', 'UChicago', 'Columbia', 'NYU', 'UPen
 current_of = max(df11[df11['cycle'] == 21]['decision_at'])
 
 #  Calculate regular and splitter acceptance rates
-dfpct = pd.DataFrame(columns=['school_name', 'cycle', 'Regular', 'Splitters', 'Rev. Splitters', 'rn', 'sn', 'rsn'])
+dfpct = pd.DataFrame(columns=['school_name', 'cycle', 'Regular', 'Splitters', 'R. Splitters', 'rn', 'sn', 'rsn'])
 
 for school in T11:
     for c in cycles + ['all']:
@@ -97,13 +97,13 @@ fig = make_subplots(
            [{'type': 'table'}]]
 )
 
-for s in [['Regular', 'lime', 'rn'], ['Splitters', 'dodgerblue', 'sn'], ['Rev. Splitters', 'black', 'rsn']]:
+for s in [['Regular', 'lime', 'rn'], ['Splitters', 'dodgerblue', 'sn'], ['R. Splitters', 'black', 'rsn']]:
     fig.add_trace(
         go.Scatter(
             x=cycles,
             y=dfpct[dfpct['school_name'] == T11[0]][s[0]],
             mode='markers',
-            name=s[0],
+            name=s[0] + ' (n=%0.f' % dfpct[dfpct['school_name'] == T11[0]][s[2]][:-1].sum() + ')',
             meta=[dfpct[(dfpct['school_name'] == T11[0]) & (dfpct['cycle'] == c)][s[2]] for c in cycles],
             hovertemplate='%{y:.2f}%<br>(n=%{meta})<extra></extra>',
             marker=dict(
@@ -115,8 +115,9 @@ for s in [['Regular', 'lime', 'rn'], ['Splitters', 'dodgerblue', 'sn'], ['Rev. S
         col=1
     )
 
+#  Table formatting: index colors, alternating colors
 index_s = [round(x, 2) for x in dfpct['Splitters'].values/dfpct['Regular'].values]
-index_r = [round(x, 2) for x in dfpct['Rev. Splitters'].values/dfpct['Regular'].values]
+index_r = [round(x, 2) for x in dfpct['R. Splitters'].values/dfpct['Regular'].values]
 
 colors_pos = n_colors('rgb(200, 255, 200)', 'rgb(0, 200, 0)', 9, colortype='rgb')
 colors_neg = n_colors('rgb(255, 200, 200)', 'rgb(200, 0, 0)', 9, colortype='rgb')
@@ -151,10 +152,10 @@ fill_color = [
     alternating_color,  # Regular n=
     alternating_color,  # Splitters %
     alternating_color,  # Splitters n=
-    alternating_color,  # Rev. Splitters %
-    alternating_color,  # Rev. Splitters n=
+    alternating_color,  # R. Splitters %
+    alternating_color,  # R. Splitters n=
     index_s_c,  # Splitter index
-    index_r_c  # Rev. Splitter index
+    index_r_c  # R. Splitter index
 ]
 
 #  Add table
@@ -165,9 +166,9 @@ fig.add_trace(
             values=['School', 'Cycle',
                     'Regular (%)', 'Regular (n=)',
                     'Splitters (%)', 'Splitters (n=)',
-                    'Rev. Splitters (%)', 'Rev. Splitters (n=)',
+                    'R. Splitters (%)', 'R. Splitters (n=)',
                     'Splitter Index',
-                    'Rev. Splitter Index'],
+                    'R. Splitter Index'],
             font=dict(size=11),
             align=['left']*2 + ['center']*8
         ),
@@ -178,10 +179,10 @@ fig.add_trace(
                     dfpct['rn'].values,  # Regular n=
                     [int(x) for x in dfpct['Splitters'].values],  # Splitters %
                     dfpct['sn'].values,  # Splitters n=
-                    [int(x) for x in dfpct['Rev. Splitters'].values],  # Rev. Splitters %
-                    dfpct['rsn'].values,  # Rev. Splitters n=
+                    [int(x) for x in dfpct['R. Splitters'].values],  # R. Splitters %
+                    dfpct['rsn'].values,  # R. Splitters n=
                     index_s,  # Splitters index
-                    index_r],  # Rev. Splitters index
+                    index_r],  # R. Splitters index
             fill_color=fill_color,
             line_color=fill_color,
             align=['left']*2 + ['center']*8,
@@ -204,9 +205,9 @@ for i, school in enumerate(T11):
     marker = []
     meta = []
 
-    for s in [['Regular', 'lime', 'rn'], ['Splitters', 'dodgerblue', 'sn'], ['Rev. Splitters', 'black', 'rsn']]:
+    for s in [['Regular', 'lime', 'rn'], ['Splitters', 'dodgerblue', 'sn'], ['R. Splitters', 'black', 'rsn']]:
         y.append(dfpct[(dfpct['school_name'] == school)][s[0]])
-        name.append(s[0])
+        name.append(s[0] + ' (n=%0.f' % dfpct[dfpct['school_name'] == school][s[2]][:-1].sum() + ')',)
         marker.append(
             dict(
                 size=10,
@@ -218,7 +219,8 @@ for i, school in enumerate(T11):
     button_schools.append(
         dict(
             method='update',
-            label=T11_short[i],
+            label=T11_short[i] + ' (n=%0.f' % df11[(df11['school_name'] == school) &
+                                                   (df11['decision'] == 'A')].shape[0] + ')',
             visible=True,
             args=[
                 dict(
@@ -250,7 +252,7 @@ fig.update_layout(
     barmode='group',
     legend_title='App. Cycle',
     autosize=True,
-    height=700,
+    height=715,
     margin=dict(l=75, r=100, autoexpand=True),
     title={
         'text': 'Chance of Acceptance by Stats. Type',

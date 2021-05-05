@@ -72,7 +72,7 @@ ___
     who were neither. The greater above 1.0 a value is the <i>easier</i> it was for splitters or reverse splitters to 
     gain admission, compared to regular applicants; the lower below 1.0 a value is the <i>harder</i> it was. Splitters 
     are applicants with an LSAT score greather than the 75th percentile and a GPA less than the 25th percentile; 
-    reverse splitters have a low LSAT and high GPA.
+    reverse splitters have a low LSAT and high GPA. Table columns may be rearranged by dragging.
 
 </div>
 ___
