@@ -92,7 +92,7 @@ for school in T11:
 fig = make_subplots(
     rows=2, cols=1,
     shared_xaxes=True,
-    vertical_spacing=0.1,
+    vertical_spacing=0.15,
     specs=[[{'type': 'scatter'}],
            [{'type': 'table'}]]
 )

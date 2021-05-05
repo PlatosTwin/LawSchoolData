@@ -7,8 +7,8 @@ title: Admissions Analysis
 heading: Law School Data Admissions Analyses (2017/2018 - 2020/2021)
 ---
 <div style="margin: 35px 100px 18px 100px; font-family:calibri">
-The graphs below pull self-reported data from <a href="https://lawschooldata.org">LawSchoolData.org</a> and utilize 
-<a href="https://plotly.com">Plotly</a> to visualize different slices of this data. Plotly makes possible an 
+The graphs below pull self-reported data from <a href="https://lawschooldata.org" target="_blank">LawSchoolData.org</a> and utilize 
+<a href="https://plotly.com" target="_blank">Plotly</a> to visualize different slices of this data. Plotly makes possible an 
 interactive experience, among other things allowing users to: pan and zoom, using the toolbar at the top of each plot; 
 adjust the x and y axes, by hovering over an axis at the middle or at either end; and highlight and hide the data sets 
 represented in the legend, by single- or double-clicking on the traces.
@@ -16,9 +16,9 @@ represented in the legend, by single- or double-clicking on the traces.
 <p></p>
 
 Those interested in examining the source code may wish to visit the 
-<a href="https://github.com/PlatosTwin/LawSchoolData/tree/gh-pages">GitHub repository</a> for this project. Feedback, 
+<a href="https://github.com/PlatosTwin/LawSchoolData/tree/gh-pages" target="_blank">GitHub repository</a> for this project. Feedback, 
 suggestions, and other notes may be directed to 
-<a href="https://www.reddit.com/user/IneffablePhilospoher">u/IneffablePhilosopher</a>.
+<a href="https://www.reddit.com/user/IneffablePhilospoher" target="_blank">u/IneffablePhilosopher</a>.
 
 <p></p>
 
