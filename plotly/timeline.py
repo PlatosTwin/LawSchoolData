@@ -244,6 +244,7 @@ fig.update_layout(
     yaxis_title='Decision Date',
     legend_title='App. Cycle + Percentages',
     autosize=True,
+    margin=dict(l=120, r=100, autoexpand=True),
     height=700,
     title={
         'text': 'Decision Timeline',

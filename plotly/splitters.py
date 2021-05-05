@@ -251,6 +251,7 @@ fig.update_layout(
     legend_title='App. Cycle',
     autosize=True,
     height=700,
+    margin=dict(l=75, r=100, autoexpand=True),
     title={
         'text': 'Chance of Acceptance by Stats. Type',
         'y': 0.945,

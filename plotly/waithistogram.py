@@ -143,6 +143,7 @@ fig.update_layout(
     legend_title='App. Cycle',
     colorway=['violet', 'seagreen', 'coral', 'cornflowerblue']*4,
     autosize=True,
+    margin=dict(l=75, r=100, autoexpand=True),
     height=700,
     title={
         'text': 'Wait Times Distribution Through ' + str(current_of.month) + '/' + str(current_of.day) + ' Each Cycle',

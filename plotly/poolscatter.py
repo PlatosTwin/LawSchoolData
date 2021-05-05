@@ -123,6 +123,7 @@ fig.update_layout(
     yaxis_title='Percentage',
     legend_title='School',
     autosize=True,
+    margin=dict(l=75, r=100, autoexpand=True),
     height=700,
     title={
         'text': 'LSData Applicant Pool vs. Total Applicant Pool',

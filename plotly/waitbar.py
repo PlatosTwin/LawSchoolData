@@ -146,6 +146,7 @@ fig.update_layout(
     barmode='group',
     legend_title='App. Cycle',
     autosize=True,
+    margin=dict(l=75, r=100, autoexpand=True),
     height=700,
     title={
         'text': 'Wait Times Through ' + str(current_of.month) + '/' + str(current_of.day) + ' Each Cycle',
