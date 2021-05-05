@@ -264,7 +264,7 @@ fig.update_layout(
         y=0.00,
         xanchor='left',
         x=1.02,
-        traceorder='reversed'
+        traceorder='normal'
     )
 )
 

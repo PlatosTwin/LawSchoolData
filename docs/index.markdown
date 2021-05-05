@@ -67,9 +67,9 @@ ___
 {% include splitters.html %}
 <div style="margin: 0px 100px 18px 100px; font-family:calibri">
 
-  <i>Note</i>: The number of splitters and reverse splitters who applied or applied and were admitted is for several
+  <i>Note</i>: The number of splitters and reverse splitters who applied and were admitted is for several
     schools so small as to make meaningful inferences impossible. For each school, <i>Index</i> values are calculated 
-    by dividing the acceptance percentage of splitters or reverse splitters by the acceptance percentage for applicants
+    by dividing the acceptance percentage of splitters or reverse splitters by the acceptance percentage of applicants
     who were neither. Splitters are applicants with an LSAT score greather than the 75th percentile and a GPA
     less than the 25th percentile; reverse splitters have a low LSAT and high GPA.
 
