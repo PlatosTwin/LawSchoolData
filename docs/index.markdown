@@ -49,9 +49,8 @@ ___
 {% include waithistogram.html %}
 <div style="margin: 0px 100px 18px 100px; font-family:calibri">
 
-  <i>Note</i>: Wait times are calculated for each group (All, Accepted, Rejected, Waitlisted) by averaging the number 
-    of days from the time an applicant sent their application to the time the applicant receieved a decision. Error bars 
-    represent one standard deviation. See plot below for a further breakdown of wait time data.
+  <i>Note</i>: Wait times are calculated for each group (<i>All</i>, <i>Accepted</i>, <i>Rejected</i>, <i>Waitlisted</i>) 
+    by averaging the number of days from the time an applicant sent their application to the time the applicant receieved a decision. See plot below for a further breakdown of wait time data.
 
 </div>
 ___
@@ -59,7 +58,7 @@ ___
 {% include waitbar.html %}
 <div style="margin: 0px 100px 18px 100px; font-family:calibri">
 
-  <i>Note</i>: Use this plot in conjunction with the plot above.
+  <i>Note</i>: Error bars represent one standard deviation. Use this plot in conjunction with the plot above.
 
 </div>
 ___
@@ -70,8 +69,10 @@ ___
   <i>Note</i>: The number of splitters and reverse splitters who applied and were admitted is for several
     schools so small as to make meaningful inferences impossible. For each school, <i>Index</i> values are calculated 
     by dividing the acceptance percentage of splitters or reverse splitters by the acceptance percentage of applicants
-    who were neither. Splitters are applicants with an LSAT score greather than the 75th percentile and a GPA
-    less than the 25th percentile; reverse splitters have a low LSAT and high GPA.
+    who were neither. The greater above 1.0 a value is the <i>easier</i> it was for splitters or reverse splitters to 
+    gain admission, compared to regular applicants; the lower below 1.0 a value is the <i>harder</i> it was. Splitters 
+    are applicants with an LSAT score greather than the 75th percentile and a GPA less than the 25th percentile; 
+    reverse splitters have a low LSAT and high GPA.
 
 </div>
 ___
@@ -79,6 +80,10 @@ ___
 {% include poolscatter.html %}
 <div style="margin: 0px 100px 18px 100px; font-family:calibri">
 
-  <i>Note</i>: 
+  <i>Note</i>: Percentages calculated by dividing the total number of applicants and admits, as determined by the 
+    2020 acceptance rate and yield as reported by the ABA and made available in convenient format by 
+    <a href="https://7sage.com/top-law-school-admissions/" target="_blank">7Sage</a>. An 
+    applicant counts as having used LawSchoolData.org to report their applying to or hearing from a given school 
+    if they entered at minimum the date they sent their application, their LSAT score, and their GPA.
 
 </div>

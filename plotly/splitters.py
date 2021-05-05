@@ -36,7 +36,7 @@ T11 = ['Yale University', 'Harvard University', 'Stanford University', 'Universi
        'University of Michigan', 'University of California—Berkeley', 'Northwestern University']
 
 T11_short = ['Yale', 'Harvard', 'Stanford', 'UChicago', 'Columbia', 'NYU', 'UPenn', 'Virginia', 'Michigan',
-             'Berkeley', 'Northwestern ']
+             'Berkeley', 'Northwestern']
 
 current_of = max(df11[df11['cycle'] == 21]['decision_at'])
 

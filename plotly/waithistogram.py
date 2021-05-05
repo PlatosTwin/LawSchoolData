@@ -31,7 +31,7 @@ T11 = ['Yale University', 'Harvard University', 'Stanford University', 'Universi
        'University of Michigan', 'University of California—Berkeley', 'Northwestern University']
 
 T11_short = ['Yale', 'Harvard', 'Stanford', 'UChicago', 'Columbia', 'NYU', 'UPenn', 'Virginia', 'Michigan',
-             'Berkeley', 'Northwestern ']
+             'Berkeley', 'Northwestern']
 
 #  Create 2x2 figure with origin at upper-left quadrant
 fig = make_subplots(rows=2, cols=2, start_cell='top-left')
@@ -110,7 +110,8 @@ for i, school in enumerate(T11):
     button_schools.append(
         dict(
             method='update',
-            label=T11_short[i],
+            label=T11_short[i] + ' (n=%0.f' % df11[(df11['school_name'] == school) &
+                                                   (df11['decision_at'] <= current_of)].shape[0] + ')',
             visible=True,
             args=[
                 dict(
