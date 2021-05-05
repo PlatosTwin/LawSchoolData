@@ -190,7 +190,7 @@ print('Completed and saved reference file to: ' + fname_save)
 
 current_of = max(df11[df11['cycle'] == 21]['decision_at'])
 current = 'Current as of ' + str(current_of.month) + '/' + str(current_of.day) + '/2021.'
-reference = 'Admissions data from LawSchoolData.org. Medians data from 7Sage.com. (c) 2021'
+reference = 'Admissions data from LawSchoolData.org. Medians data from 7Sage.com.'
 footer = current + ' ' + reference
 
 cwd = Path(getcwd())
