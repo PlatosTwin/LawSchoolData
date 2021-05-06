@@ -139,7 +139,7 @@ fig.update_layout(
     updatemenus=updatemenu,
     barmode='stack',
     legend_title='App. Cycle',
-    colorway=['violet', 'seagreen', 'coral', 'cornflowerblue']*4,
+    colorway=['violet', 'seagreen', 'coral', 'cornflowerblue'],
     autosize=True,
     margin=dict(l=75, r=100, autoexpand=True),
     height=700,

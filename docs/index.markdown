@@ -66,13 +66,31 @@ ___
 {% include splitters.html %}
 <div style="margin: 0px 100px 18px 100px; font-family: calibri; text-align: justify">
 
-  <i>Note</i>: The number of splitters and reverse splitters who applied and were admitted is for several
+  <i>Note</i>: Acceptance rates are calculated by dividing the number of regular, splitter, or reverse splitter
+    applicants admitted by the total number of applicants who applied, whatever their end result, including if they never 
+    updated their status on LawSchoolData.org. This method of calculation assumes, therefore, that the overwhelming
+    majority of those applicants who were admitted updated their LawSchoolData.org status to reflect this. 
+    The number of splitters and reverse splitters who applied and were admitted is for several
     schools so small as to make meaningful inferences impossible. For each school, <i>Index</i> values are calculated 
     by dividing the acceptance percentage of splitters or reverse splitters by the acceptance percentage of applicants
     who were neither. The greater above 1.0 a value is the <i>easier</i> it was for splitters or reverse splitters to 
     gain admission, compared to regular applicants; the lower below 1.0 a value is the <i>harder</i> it was. Splitters 
     are applicants with an LSAT score greather than the 75th percentile and a GPA less than the 25th percentile; 
     reverse splitters have a low LSAT and high GPA. Table columns may be rearranged by dragging.
+
+</div>
+___
+
+{% include timelinebar.html %}
+<div style="margin: 0px 100px 18px 100px; font-family: calibri; text-align: justify">
+
+  <i>Note</i>: The top-left plot shows the acceptance rate by date of application submissions, calculated by dividing the 
+    number of acceptances among applicants who submitted their application in a given month by the total number of 
+    applicants who submitted applications that month, whatever their end result, as for the plot above. The top-right and 
+    bottom-right plots show the mean of the LSAT and GPA, respectively, of <i>all</i> applicants who applied in a given 
+    month. The bottom-left plot shows, for each month, the percentage of the total volume of submitted applications 
+    submitted that month. For example, that December of the 18/19 cycle shows 23% indicates that 23% of the <i>total</i> 
+    number of applications submitted that cycle were submitted in December.
 
 </div>
 ___
@@ -85,6 +103,6 @@ ___
     2020 acceptance rate and yield, as reported by the ABA and made available in convenient format by 
     <a href="https://7sage.com/top-law-school-admissions/" target="_blank">7Sage</a>. An 
     applicant counts as having used LawSchoolData.org to report their applying to or hearing from a given school 
-    if they entered at minimum the date they sent their application, their LSAT score, and their GPA. Note that,
+    if they entered at minimum the date they sent their application, their LSAT score, and their GPA.
 
 </div>

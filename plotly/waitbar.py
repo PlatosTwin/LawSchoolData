@@ -59,7 +59,6 @@ dfwait['stdev'] = dfwait.apply(lambda row: int(round(row['stdev'], 0)), axis=1)
 fig = go.Figure()
 
 x = ['Total', 'Accepted', 'Rejected', 'Waitlisted']
-barcolor = ['violet', 'seagreen', 'coral', 'cornflowerblue']
 
 for i, c in enumerate(cycles):
     y = [dfwait[(dfwait['school_name'] == T11[0]) & (dfwait['cycle'] == c) &
@@ -74,7 +73,6 @@ for i, c in enumerate(cycles):
                                                          (df11['decision_at'] <= current_of)].shape[0] + ')',
         text=y,
         textposition='auto',
-        marker={'color': barcolor[i]},
         meta=[dfwait[(dfwait['school_name'] == T11[0]) & (dfwait['cycle'] == c) &
                      (dfwait['decision'] == d)]['n'].values[0] for d in dec],
         hovertemplate='%{y} days<br>(n=%{meta})<extra></extra>',
@@ -157,6 +155,7 @@ fig.update_layout(
     autosize=True,
     margin=dict(l=75, r=100, autoexpand=True),
     height=700,
+    colorway=['violet', 'seagreen', 'coral', 'cornflowerblue'],
     title={
         'text': 'Wait Times Through ' + str(current_of.month) + '/' + str(current_of.day) + ' Each Cycle',
         'y': 0.945,

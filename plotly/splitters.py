@@ -53,8 +53,7 @@ for school in T11:
         reg = 100*df_temp[(df_temp['decision'] == 'A') &
                           (df_temp['splitter'] != 'blue') &
                           (df_temp['splitter'] != 'black')].shape[0] / \
-              df_temp[(df_temp['decision'].str.contains('|'.join(['A', 'R', 'WL']))) &
-                      (df_temp['splitter'] != 'blue') &
+              df_temp[(df_temp['splitter'] != 'blue') &
                       (df_temp['splitter'] != 'black')].shape[0]
 
         rn = df_temp[(df_temp['decision'] == 'A') &
@@ -64,8 +63,7 @@ for school in T11:
         split = 100*df_temp[(df_temp['decision'] == 'A') &
                             (df_temp['splitter'] == 'blue') &
                             (df_temp['splitter'] != 'black')].shape[0] / \
-                df_temp[(df_temp['decision'].str.contains('|'.join(['A', 'R', 'WL']))) &
-                        (df_temp['splitter'] == 'blue') &
+                df_temp[(df_temp['splitter'] == 'blue') &
                         (df_temp['splitter'] != 'black')].shape[0]
 
         sn = df_temp[(df_temp['decision'] == 'A') &
@@ -75,8 +73,7 @@ for school in T11:
         rsplit = 100*df_temp[(df_temp['decision'] == 'A') &
                              (df_temp['splitter'] != 'blue') &
                              (df_temp['splitter'] == 'black')].shape[0] / \
-                 df_temp[(df_temp['decision'].str.contains('|'.join(['A', 'R', 'WL']))) &
-                         (df_temp['splitter'] != 'blue') &
+                 df_temp[(df_temp['splitter'] != 'blue') &
                          (df_temp['splitter'] == 'black')].shape[0]
 
         rsn = df_temp[(df_temp['decision'] == 'A') &
