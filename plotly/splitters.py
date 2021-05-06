@@ -274,7 +274,7 @@ fig.update_xaxes(
     range=[min(cycles)-0.25, max(cycles)+0.25]
 )
 
-fig.update_yaxes(title_text='Percentage')
+fig.update_yaxes(title_text='Acceptance Rate')
 
 # fig.show(config=dict(modeBarButtonsToRemove=['autoScale2d']))
 

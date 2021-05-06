@@ -36,7 +36,7 @@ fig = go.Figure()
 #  Percentage of applicants who reported sent_at date on LSData, in T11
 total_a = 0
 total_app = 0
-for school in T11:
+for i, school in enumerate(T11):
     school_t_a = dff[dff['School'] == school]['1st Yr Class'].values[0]/dff[dff['School'] == school]['Yield'].values[0]
     total_a += school_t_a
     school_t_app = school_t_a/dff[dff['School'] == school]['Acceptance Rate'].values[0]
@@ -46,8 +46,8 @@ for school in T11:
         x=cycles,
         y=[100*df11[(df11['school_name'] == school) & (df11['cycle'] == c)].shape[0]/school_t_app for c in cycles],
         mode='lines+markers',
-        name=school,
-        meta=school,
+        name=T11_short[i],
+        meta=T11_short[i],
         hovertemplate='%{meta}<br>20%{x} - %{y:.1f}%<extra></extra>'
         )
     )

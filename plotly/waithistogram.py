@@ -46,7 +46,9 @@ showlegend = False
 for d in ['all', 'A', 'R', 'WL']:
     for c in cycles:
         if d == 'all':
-            df_temp = df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c) & (df11['decision_at'] <= current_of)]
+            df_temp = df11[(df11['school_name'] == T11[0]) &
+                           (df11['decision'].str.contains('|'.join(['A', 'R', 'WL']))) &
+                           (df11['cycle'] == c) & (df11['decision_at'] <= current_of)]
             showlegend = True
         else:
             df_temp = df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c) &
@@ -94,9 +96,11 @@ for i, school in enumerate(T11):
         for c in cycles:
             if d == 'all':
                 df_temp = df11[(df11['school_name'] == school) &
+                               (df11['decision'].str.contains('|'.join(['A', 'R', 'WL']))) &
                                (df11['decision_at'] <= current_of) & (df11['cycle'] == c)]
             else:
-                df_temp = df11[(df11['school_name'] == school) & (df11['decision_at'] <= current_of) &
+                df_temp = df11[(df11['school_name'] == school) &
+                               (df11['decision_at'] <= current_of) &
                                (df11['cycle'] == c) & (df11['decision'] == d)]
 
             x.append(df_temp['wait'])
@@ -107,7 +111,8 @@ for i, school in enumerate(T11):
     button_schools.append(
         dict(
             method='update',
-            label=T11_short[i] + ' (n=%0.f' % df11[(df11['school_name'] == school) &
+            label=T11_short[i] + ' (n=%0.f' % df11[(df11['decision'].str.contains('|'.join(['A', 'R', 'WL']))) &
+                                                   (df11['school_name'] == school) &
                                                    (df11['decision_at'] <= current_of)].shape[0] + ')',
             visible=True,
             args=[
@@ -160,7 +165,7 @@ fig.update_layout(
 )
 
 # Update xaxis properties
-fig.update_xaxes(title_text='Wait Time (days) - All', range=[10, 200], row=1, col=1)
+fig.update_xaxes(title_text='Wait Time (days) - A/R/WL', range=[10, 200], row=1, col=1)
 fig.update_xaxes(title_text='Wait Time (days) - Accepted', range=[10, 200], row=1, col=2)
 fig.update_xaxes(title_text='Wait Time (days) - Rejected', range=[10, 200], row=2, col=2)
 fig.update_xaxes(title_text='Wait Time (days) - Waitlisted', range=[10, 200], row=2, col=1)
