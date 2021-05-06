@@ -13,6 +13,8 @@ register_matplotlib_converters()
 fname_admit = 'lsdata_clean.csv'
 df11 = pd.read_csv(fname_admit, low_memory=False)
 
+df11 = df11.dropna(subset=['sent_at'])
+
 #  Convert sent_at and decision_at to datetime
 df11.loc[:, 'sent_at'] = pd.to_datetime(df11['sent_at'])
 df11.loc[:, 'decision_at'] = pd.to_datetime(df11['decision_at'])
@@ -140,10 +142,9 @@ for c in cycles:
          dftime[(dftime['school_name'] == T11[0]) & (dftime['cycle'] == c)]['n'].sum() for m in months]
     y = [round(elem, 1) for elem in y]
 
-    meta = [str(c - 1) + '/' + str(c) + '<br>' + str(y[i]) + '%' +
-            '<br>(n=%i' % dftime[(dftime['month'] == m) &
-                                 (dftime['cycle'] == c) &
-                                 (dftime['school_name'] == T11[0])]['n'] + ')' for i, m in enumerate(months)]
+    meta = ['%' + '<br>(n=%i' % dftime[(dftime['month'] == m) &
+                                       (dftime['cycle'] == c) &
+                                       (dftime['school_name'] == T11[0])]['n'] + ')' for m in months]
 
     fig.add_trace(go.Bar(
         x=months,
@@ -153,7 +154,7 @@ for c in cycles:
         text=y,
         textposition='auto',
         meta=meta,
-        hovertemplate='%{y}<br>%{meta}<extra></extra>',
+        hovertemplate='%{y}%{meta}<extra></extra>',
         legendgroup=str(c),
         showlegend=showlegend
         ),
@@ -216,7 +217,7 @@ for i, school in enumerate(T11):
                   for m in months]
         y.append(y_temp)
 
-        meta.append(['(n=%i' % dftime[(dftime['month'] == m) &
+        meta.append(['%' + '<br>(n=%i' % dftime[(dftime['month'] == m) &
                                           (dftime['cycle'] == c) &
                                           (dftime['school_name'] == school)]['n'] + ')' for m in months])
 
@@ -258,7 +259,7 @@ updatemenu[0]['yanchor'] = 'top'
 fig.update_layout(
     updatemenus=updatemenu,
     barmode='group',
-    legend_title='Data Set',
+    legend_title='App. Cycle',
     autosize=True,
     colorway=['violet', 'seagreen', 'coral', 'cornflowerblue'],
     margin=dict(l=75, r=100, autoexpand=True),

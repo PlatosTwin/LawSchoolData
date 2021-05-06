@@ -18,10 +18,6 @@ dff = dff[:20]  # Limit to top twenty schools
 dff.loc[:, 'Yield'] = dff['Yield'].map(lambda x: float(x[:-1])/100)
 dff.loc[:, 'Acceptance Rate'] = dff['Acceptance Rate'].map(lambda x: float(x[:-1])/100)
 
-#  Convert sent_at and decision_at to datetime
-df11.loc[:, 'sent_at'] = pd.to_datetime(df11['sent_at'])
-df11.loc[:, 'decision_at'] = pd.to_datetime(df11['decision_at'])
-
 cycles = [18, 19, 20, 21]
 
 T11 = ['Yale University', 'Harvard University', 'Stanford University', 'University of Chicago',

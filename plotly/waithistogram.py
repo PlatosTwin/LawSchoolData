@@ -16,6 +16,8 @@ df11 = pd.read_csv(fname_admit, low_memory=False)
 df11.loc[:, 'sent_at'] = pd.to_datetime(df11['sent_at'])
 df11.loc[:, 'decision_at'] = pd.to_datetime(df11['decision_at'])
 
+df11 = df11.dropna(subset=['sent_at'])
+
 cycles = [18, 19, 20, 21]
 
 #  Normalize years

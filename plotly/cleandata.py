@@ -29,7 +29,7 @@ print('\nShape of original file: ' + str(df.shape))
 
 #  Drop unnecessary/uninteresting columns
 drop_cols = ['simple_status', 'scholarship', 'attendance', 'is_in_state', 'is_fee_waived', 'is_conditional_scholarship',
-             'is_international', 'international_gpa', 'is_lsn_import', 'cycle_id']
+             'is_international', 'international_gpa', 'is_lsn_import']
 df_dcol = df.drop(drop_cols, axis=1)
 
 #  Remove rows that are missing crucial values
@@ -53,37 +53,7 @@ df11 = df_filtered[df_filtered['school_name'].str.contains('|'.join(top_eleven_l
 
 
 def label_cycle(row):
-    #  Break data down by cycles
-    snt_tstart = '09/01'  # 0000
-    snt_tend = '04/15'  # 0001 (default: 04/15)
-    dec_tstart = '08/31'  # 0000
-    dec_tend = '09/01'  # 0001 (default: 09/01)
-
-    if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2017', '%m/%d/%Y')) & \
-            (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2018', '%m/%d/%Y')) & \
-            (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2018', '%m/%d/%Y')) & \
-            (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2017', '%m/%d/%Y')):
-        return 18
-
-    if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2018', '%m/%d/%Y')) & \
-            (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2019', '%m/%d/%Y')) & \
-            (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2019', '%m/%d/%Y')) & \
-            (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2018', '%m/%d/%Y')):
-        return 19
-
-    if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2019', '%m/%d/%Y')) & \
-            (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2020', '%m/%d/%Y')) & \
-            (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2020', '%m/%d/%Y')) & \
-            (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2019', '%m/%d/%Y')):
-        return 20
-
-    if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2020', '%m/%d/%Y')) & \
-            (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2021', '%m/%d/%Y')) & \
-            (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2021', '%m/%d/%Y')) & \
-            (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2020', '%m/%d/%Y')):
-        return 21
-
-    return 0
+    return row['cycle_id'] + 3
 
 
 def simplify_result(row):
@@ -161,7 +131,8 @@ def label_wait(row):
 
 
 #  Label cycles: 18, 19, 20, 21
-df11['cycle'] = df11.apply(lambda row: label_cycle(row), axis=1)
+df11['cycle_id'] = df11.apply(lambda row: label_cycle(row), axis=1)
+df11.rename(columns={'cycle_id': 'cycle'}, inplace=True)
 df11 = df11[df11['cycle'] > 15]
 
 #  Simplify results

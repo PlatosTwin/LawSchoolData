@@ -17,19 +17,7 @@ register_matplotlib_converters()
 fname_admit = 'lsdata_clean.csv'
 df11 = pd.read_csv(fname_admit, low_memory=False)
 
-#  Convert sent_at and decision_at to datetime
-df11.loc[:, 'sent_at'] = pd.to_datetime(df11['sent_at'])
-df11.loc[:, 'decision_at'] = pd.to_datetime(df11['decision_at'])
-
 cycles = [18, 19, 20, 21]
-
-#  Normalize years
-for i, cycle in enumerate(cycles[1:]):
-    df11.loc[df11['cycle'] == cycle, 'sent_at'] = \
-        df11[df11['cycle'] == cycle]['sent_at'].map(lambda t: dt.datetime(t.year - (i + 1), t.month, t.day))
-
-    df11.loc[df11['cycle'] == cycle, 'decision_at'] = \
-        df11[df11['cycle'] == cycle]['decision_at'].map(lambda t: dt.datetime(t.year - (i + 1), t.month, t.day))
 
 T11 = ['Yale University', 'Harvard University', 'Stanford University', 'University of Chicago',
        'Columbia University', 'New York University', 'University of Pennsylvania', 'University of Virginia',
@@ -247,7 +235,7 @@ updatemenu[0]['yanchor'] = 'top'
 fig.update_layout(
     updatemenus=updatemenu,
     barmode='group',
-    legend_title='App. Cycle',
+    legend_title='Stats. Type',
     autosize=True,
     height=715,
     margin=dict(l=75, r=100, autoexpand=True),
