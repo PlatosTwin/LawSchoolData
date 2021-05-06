@@ -47,25 +47,26 @@ for i, school in enumerate(T11):
         y=[100*df11[(df11['school_name'] == school) & (df11['cycle'] == c)].shape[0]/school_t_app for c in cycles],
         mode='lines+markers',
         name=T11_short[i],
-        meta=T11_short[i],
-        hovertemplate='%{meta}<br>20%{x} - %{y:.1f}%<extra></extra>'
+        meta=[T11_short[i] + '<br>' + 'LSData Volume: ' +
+              str(df11[(df11['school_name'] == school) & (df11['cycle'] == c)].shape[0]) for c in cycles],
+        hovertemplate='%{meta}<br>Pct. of Total: %{y:.1f}%<extra></extra>'
         )
     )
 
 #  Across the T11 in aggregate
 fig.add_trace(go.Scatter(
     x=cycles,
-    y=[100*df11[(df11['school_name'].str.contains('|'.join(T11))) & (df11['cycle'] == c)].shape[0]/total_app for c in cycles],
+    y=[100*df11[(df11['school_name'].str.contains('|'.join(T11))) & (df11['cycle'] == c)].shape[0]/total_app
+       for c in cycles],
     mode='lines+markers',
     name='Top 11',
-    meta='Top 11',
-    hovertemplate='%{meta}<br>20%{x} - %{y:.1f}%<extra></extra>'
+    meta=['Top 11' + '<br>' + 'LSData Volume: ' +
+          str(df11[(df11['school_name'].str.contains('|'.join(T11))) & (df11['cycle'] == c)].shape[0]) for c in cycles],
+    hovertemplate='%{meta}<br>Pct. of Total: %{y:.1f}%<extra></extra>'
     )
 )
 
 #  Add dropdown buttons
-buttons = []
-
 x1 = np.tile(cycles, (len(T11)+1, 1))
 x2 = np.tile(cycles, (len(T11)+1, 1))
 y1 = []
@@ -80,6 +81,21 @@ for school in T11:
 y1.append([100*df11[(df11['school_name'].str.contains('|'.join(T11))) & (df11['cycle'] == c)].shape[0]/total_app for c in cycles])
 y2.append([100*df11[(df11['school_name'].str.contains('|'.join(T11))) & (df11['cycle'] == c) & (df11['decision'] == 'A')].shape[0]/total_a for c in cycles])
 
+meta1 = [[T11_short[i] + '<br>' + 'LSData Volume: ' +
+          str(df11[(df11['school_name'] == school) & (df11['cycle'] == c)].shape[0]) for c in cycles]
+         for i, school in enumerate(T11)]
+meta1.append(['Top 11' + '<br>' + 'LSData Volume: ' +
+              str(df11[(df11['school_name'].str.contains('|'.join(T11))) &
+                       (df11['cycle'] == c)].shape[0]) for c in cycles])
+
+meta2 = [[T11_short[i] + '<br>' + 'LSData Volume: ' +
+          str(df11[(df11['school_name'] == school) & (df11['decision'] == 'A') &
+                   (df11['cycle'] == c)].shape[0]) for c in cycles] for i, school in enumerate(T11)]
+meta2.append(['Top 11' + '<br>' + 'LSData Volume: ' +
+              str(df11[(df11['school_name'].str.contains('|'.join(T11))) &
+                       (df11['decision'] == 'A') &
+                       (df11['cycle'] == c)].shape[0]) for c in cycles])
+
 buttons = list([
     dict(                   # All applicants
         method='update',
@@ -87,7 +103,8 @@ buttons = list([
         args=[{
             'x': x1,
             'y': y1,
-            'name': T11_short + ['Top 11']
+            'name': T11_short + ['Top 11'],
+            'meta': meta1,
             }],
         label='All Applicants'),
     dict(                   # Accepted applicants
@@ -96,7 +113,8 @@ buttons = list([
         args=[{
             'x': x2,
             'y': y2,
-            'name': T11_short + ['Top 11']
+            'name': T11_short + ['Top 11'],
+            'meta': meta2,
             }],
         label='Accepted Applicants')
 ]

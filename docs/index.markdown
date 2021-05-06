@@ -22,7 +22,10 @@ heading: Law School Data Admissions Analyses (2017/2018 - 2020/2021)
     treated as waitlists. Because there appears to be some inconsistency in the self-reporting of the decision date for
     waitlist -> rejected, waitlist -> accepted, and waitlist -> withdrawn reports—some users update their decision date 
     upon second notification while others leave it unchanged since receiving the waitlist notice—it is likely that some 
-    waitlist data are erroneous.
+    waitlist data are erroneous. Finally, the plots below are generated from the pool of applicants who have entered on 
+    LawSchoolData.org at minimum the date they sent their application, their LSAT score, and their GPA; because of this 
+    choice, counts here may differ from those available on LawSchoolData.org itself, which allows users to update their decision 
+    without providing other information.
 
   <p></p>
     
