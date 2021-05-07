@@ -68,7 +68,10 @@ ___
 
   <i>Note</i>: The top-left plot shows the acceptance rate by date of application submissions, calculated by dividing the 
     number of acceptances among applicants who submitted their application in a given month by the total number of 
-    applicants who submitted applications that month, whatever their end result, as for the plot above. The top-right and 
+    applicants who submitted applications that month, whatever their end result. Accordingly, the n= totals per school 
+    may differ between this plot and the plot above because the plot above reports the total number of acceptances, 
+    rejections, and waitlists only. The remaining subplots in the present figure draw on the same data set as does 
+    the top-left plot. The top-right and 
     bottom-right plots show the mean of the LSAT and GPA, respectively, of <i>all</i> applicants who applied in a given 
     month. The bottom-left plot shows, for each month, the percentage of the total volume of submitted applications 
     submitted that month. For example, if December of the 18/19 cycle were to show 23% it would indicate that 23% of the <i>total</i> 
