@@ -225,7 +225,8 @@ df11.to_csv(fname_save, index=False)
 print('\nCompleted and saved reference file to: ' + fname_save + '.')
 
 #  Update footer with date of latest entry in lsdata.csv
-current_of = max(df11[df11['cycle'] == 21]['decision_at'])
+df_temp = df11.dropna(subset=['decision_at'])
+current_of = max(df_temp[df_temp['cycle'] == 21]['decision_at'])
 current = 'Current as of ' + str(current_of.month) + '/' + str(current_of.day) + '/2021.'
 reference = 'Admissions data from LawSchoolData.org. Medians data from 7Sage.com.'
 footer = current + ' ' + reference
