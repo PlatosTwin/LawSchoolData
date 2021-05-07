@@ -25,7 +25,7 @@ dfmeds = dfmeds[:20]  # Limit to top twenty schools
 fname_admit = '/Users/Shared/lsdata.csv'
 df = pd.read_csv(fname_admit, skiprows=1, low_memory=False)
 
-print('Preparing to clean ' + fname_admit + '...')
+print('\nPreparing to clean ' + fname_admit + '...')
 print('\nShape of original file: ' + str(df.shape))
 
 #  Drop unnecessary/uninteresting columns
@@ -222,7 +222,7 @@ df11.loc[df11['decision_at'] == '02/29/2020', 'decision_at'] = dt.datetime(2020,
 fname_save = 'lsdata_clean.csv'
 df11.to_csv(fname_save, index=False)
 
-print('\nCompleted and saved reference file to: ' + fname_save)
+print('\nCompleted and saved reference file to: ' + fname_save + '.')
 
 #  Update footer with date of latest entry in lsdata.csv
 current_of = max(df11[df11['cycle'] == 21]['decision_at'])
