@@ -16,7 +16,7 @@ df11 = pd.read_csv(fname_admit, low_memory=False)
 df11.loc[:, 'sent_at'] = pd.to_datetime(df11['sent_at'])
 df11.loc[:, 'decision_at'] = pd.to_datetime(df11['decision_at'])
 
-df11 = df11.dropna(subset=['sent_at'])
+df11 = df11.dropna(subset=['sent_at', 'decision_at'])
 
 cycles = [18, 19, 20, 21]
 
@@ -65,7 +65,7 @@ for d in ['all', 'A', 'R', 'WL']:
                 end=max(df_temp['wait']),
                 size=7
                 ),
-            meta='Yale, ' + str(c-1) + '/' + str(c) + ' (n=%0.f' % df_temp.shape[0] +
+            meta=str(c-1) + '/' + str(c) + ' (n=%0.f' % df_temp.shape[0] +
                  ')<br>Avg. Wait: %0.f' % df_temp['wait'].mean(),
             hovertemplate='%{meta}<br>%{x} days<extra></extra>',
             showlegend=showlegend,
@@ -107,7 +107,7 @@ for i, school in enumerate(T11):
 
             x.append(df_temp['wait'])
             name.append(str(c-1) + '/' + str(c) + ' (n=%0.f' % df_temp.shape[0] + ')')
-            meta.append(T11_short[i] + ', ' + str(c-1) + '/' + str(c) +
+            meta.append(str(c-1) + '/' + str(c) +
                         ' (n=%0.f' % df_temp.shape[0] + ')<br>Avg. Wait: %0.f' % df_temp['wait'].mean())
 
     button_schools.append(

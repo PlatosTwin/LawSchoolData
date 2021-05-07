@@ -22,11 +22,13 @@ heading: Law School Data Admissions Analyses (2017/2018 - 2020/2021)
     treated as waitlists. Because there appears to be some inconsistency in the self-reporting of the decision date for
     waitlist -> rejected, waitlist -> accepted, and waitlist -> withdrawn reports—some users update their decision date 
     upon second notification while others leave it unchanged since receiving the waitlist notice—it is likely that some 
-    waitlist data are erroneous. Finally, the plots below are generated from the pool of applicants who have entered on 
-    LawSchoolData.org at minimum their LSAT score and their GPA. Plots 1, 2, 3, and 5 have the additional restriction, because 
+    waitlist data are erroneous. If cycles are not reported in the format <i>15/16</i> then the cycle number listed represents the 
+    year in which applicants for that cycle would begin law school, such that cycle 17/18 is equivalent to cycle 18. 
+    Finally, the plots below are generated from the pool of applicants who have entered on 
+    LawSchoolData.org at minimum their LSAT score and their GPA. Plots 1, 2, 3, and 4 have the additional restriction, because 
     they analyze time data, that applicants are included only if they entered on LawSchoolData.org the date at which they sent 
     their application; accordingly, counts for those four plots may differ from those available on LawSchoolData.org itself, 
-    which allows users to update their decision without providing other information.
+    which allows users to update their decision without providing any other information.
 
   <p></p>
     
@@ -57,6 +59,20 @@ ___
     <span style="color: blue"><i>blue</i></span> represent splitters (>75th percentile LSAT and <25th percentile GPA) while marker 
     outlines in <i>black</i> represent reverse splitters (<25th percentile LSAT and >75th percentile GPA). The dashed blue line 
     marks the date of the last data update.
+
+</div>
+___
+
+{% include timelinebar.html %}
+<div style="margin: 0px 100px 18px 100px; font-family: calibri; text-align: justify">
+
+  <i>Note</i>: The top-left plot shows the acceptance rate by date of application submissions, calculated by dividing the 
+    number of acceptances among applicants who submitted their application in a given month by the total number of 
+    applicants who submitted applications that month, whatever their end result, as for the plot above. The top-right and 
+    bottom-right plots show the mean of the LSAT and GPA, respectively, of <i>all</i> applicants who applied in a given 
+    month. The bottom-left plot shows, for each month, the percentage of the total volume of submitted applications 
+    submitted that month. For example, if December of the 18/19 cycle were to show 23% it would indicate that 23% of the <i>total</i> 
+    number of applications submitted that cycle were submitted in December.
 
 </div>
 ___
@@ -93,20 +109,6 @@ ___
     gain admission, compared to regular applicants; the lower below 1.0 a value is the <i>harder</i> it was. Splitters 
     are applicants with an LSAT score greather than the 75th percentile and a GPA less than the 25th percentile; 
     reverse splitters have a low LSAT and high GPA. Table columns may be rearranged by dragging.
-
-</div>
-___
-
-{% include timelinebar.html %}
-<div style="margin: 0px 100px 18px 100px; font-family: calibri; text-align: justify">
-
-  <i>Note</i>: The top-left plot shows the acceptance rate by date of application submissions, calculated by dividing the 
-    number of acceptances among applicants who submitted their application in a given month by the total number of 
-    applicants who submitted applications that month, whatever their end result, as for the plot above. The top-right and 
-    bottom-right plots show the mean of the LSAT and GPA, respectively, of <i>all</i> applicants who applied in a given 
-    month. The bottom-left plot shows, for each month, the percentage of the total volume of submitted applications 
-    submitted that month. For example, if December of the 18/19 cycle were to show 23% it would indicate that 23% of the <i>total</i> 
-    number of applications submitted that cycle were submitted in December.
 
 </div>
 ___

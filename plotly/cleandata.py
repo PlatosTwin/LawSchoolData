@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import math
 from os import getcwd
 from pathlib import Path
 import datetime as dt
@@ -33,15 +34,15 @@ drop_cols = ['simple_status', 'scholarship', 'attendance', 'is_in_state', 'is_fe
 df_dcol = df.drop(drop_cols, axis=1)
 
 #  Remove rows that are missing crucial values
-filter_rows = ['sent_at', 'decision_at', 'lsat', 'gpa', 'result']
+filter_rows = ['lsat', 'gpa', 'result']
 df_filtered = df_dcol.dropna(subset=filter_rows)
 
 df_filtered.loc[:, 'sent_at'] = pd.to_datetime(df_filtered['sent_at'])
 df_filtered.loc[:, 'decision_at'] = pd.to_datetime(df_filtered['decision_at'])
 
 #  Filter such that data falls within t_min and t_max range
-df_filtered = df_filtered[(df_filtered['decision_at'] >= t_min) & (df_filtered['decision_at'] <= t_max) &
-                          (df_filtered['sent_at'] <= t_max) & (df_filtered['sent_at'] >= t_min)]
+# df_filtered = df_filtered[(df_filtered['decision_at'] >= t_min) & (df_filtered['decision_at'] <= t_max) &
+#                           (df_filtered['sent_at'] <= t_max) & (df_filtered['sent_at'] >= t_min)]
 
 print('Shape of trimmed and filtered file: ' + str(df_filtered.shape))
 
@@ -53,7 +54,65 @@ df11 = df_filtered[df_filtered['school_name'].str.contains('|'.join(top_eleven_l
 
 
 def label_cycle(row):
-    return row['cycle_id'] + 3
+    #  Break data down by cycles
+    snt_tstart = '09/01'  # 0000
+    snt_tend = '04/15'  # 0001 (default: 04/15)
+    dec_tstart = '08/31'  # 0000
+    dec_tend = '09/01'  # 0001 (default: 09/01)
+
+    if pd.isnull(row['sent_at']) & pd.isnull(row['decision_at']):
+        return int(row['cycle_id']) + 3
+
+    if pd.isnull(row['sent_at']):
+        if (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2018', '%m/%d/%Y')) & \
+                (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2017', '%m/%d/%Y')):
+            return 18
+        if (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2019', '%m/%d/%Y')) & \
+                (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2018', '%m/%d/%Y')):
+            return 19
+        if (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2020', '%m/%d/%Y')) & \
+                (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2019', '%m/%d/%Y')):
+            return 20
+        if (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2021', '%m/%d/%Y')) & \
+                (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2020', '%m/%d/%Y')):
+            return 21
+
+    if pd.isnull(row['decision_at']):
+        if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2017', '%m/%d/%Y')) & \
+                (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2018', '%m/%d/%Y')):
+            return 18
+        if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2018', '%m/%d/%Y')) & \
+                (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2019', '%m/%d/%Y')):
+            return 19
+        if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2019', '%m/%d/%Y')) & \
+                (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2020', '%m/%d/%Y')):
+            return 20
+        if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2020', '%m/%d/%Y')) & \
+                (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2021', '%m/%d/%Y')):
+            return 21
+
+    if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2017', '%m/%d/%Y')) & \
+            (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2018', '%m/%d/%Y')) & \
+            (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2018', '%m/%d/%Y')) & \
+            (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2017', '%m/%d/%Y')):
+        return 18
+    if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2018', '%m/%d/%Y')) & \
+            (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2019', '%m/%d/%Y')) & \
+            (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2019', '%m/%d/%Y')) & \
+            (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2018', '%m/%d/%Y')):
+        return 19
+    if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2019', '%m/%d/%Y')) & \
+            (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2020', '%m/%d/%Y')) & \
+            (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2020', '%m/%d/%Y')) & \
+            (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2019', '%m/%d/%Y')):
+        return 20
+    if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2020', '%m/%d/%Y')) & \
+            (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2021', '%m/%d/%Y')) & \
+            (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2021', '%m/%d/%Y')) & \
+            (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2020', '%m/%d/%Y')):
+        return 21
+
+    return 0
 
 
 def simplify_result(row):
@@ -134,21 +193,27 @@ def label_wait(row):
 df11['cycle_id'] = df11.apply(lambda row: label_cycle(row), axis=1)
 df11.rename(columns={'cycle_id': 'cycle'}, inplace=True)
 df11 = df11[df11['cycle'] > 15]
+print('\nLabelled cycles...')
 
 #  Simplify results
 df11['decision'] = df11.apply(lambda row: simplify_result(row), axis=1)
+print('Simplified results...')
 
 #  Add color indicator by result, for plotting
 df11['color'] = df11.apply(lambda row: label_color(row), axis=1)
+print('Added colors...')
 
 #  Create markers based on cycle
 df11['marker'] = df11.apply(lambda row: label_marker(row), axis=1)
+print('Set markers...')
 
 #  Mark splitters/reverse splitters
 df11['splitter'] = df11.apply(lambda row: label_splitter(row), axis=1)
+print('Marked splitters...')
 
 #  Calculate wait time
 df11['wait'] = df11.apply(lambda row: label_wait(row), axis=1)
+print('Calculated wait times...')
 
 #  Account for 2020 being a leap year
 df11.loc[df11['sent_at'] == '02/29/2020', 'sent_at'] = dt.datetime(2020, 2, 28)
@@ -159,6 +224,7 @@ df11.to_csv(fname_save, index=False)
 
 print('Completed and saved reference file to: ' + fname_save)
 
+#  Update footer with date of latest entry in lsdata.csv
 current_of = max(df11[df11['cycle'] == 21]['decision_at'])
 current = 'Current as of ' + str(current_of.month) + '/' + str(current_of.day) + '/2021.'
 reference = 'Admissions data from LawSchoolData.org. Medians data from 7Sage.com.'
@@ -168,3 +234,5 @@ cwd = Path(getcwd())
 fname_footer = str(cwd.parent.absolute()) + '/docs/_includes/footer.html'
 with open(fname_footer, 'w') as f:
     f.write(footer)
+
+print('Saved footer file.')

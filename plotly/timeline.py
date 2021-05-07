@@ -13,7 +13,7 @@ register_matplotlib_converters()
 fname_admit = 'lsdata_clean.csv'
 df11 = pd.read_csv(fname_admit, low_memory=False)
 
-df11 = df11.dropna(subset=['sent_at'])
+df11 = df11.dropna(subset=['sent_at', 'decision_at'])
 
 #  Convert sent_at and decision_at to datetime
 df11.loc[:, 'sent_at'] = pd.to_datetime(df11['sent_at'])
@@ -75,7 +75,8 @@ for c in cycles:
                                (df11['decision'].str.contains('|'.join(['A', 'R', 'WL'])))].shape[0]) + ')',
         customdata=df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c)],
         hovertemplate='LSAT: %{customdata[9]:.0f}<br>GPA: %{customdata[13]}<br>'
-                      'Sent: %{customdata[1]|%m/%d}<br>Decision: %{customdata[7]|%m/%d}<extra></extra>'
+                      'Sent: %{customdata[1]|%m/%d}<br>Decision: %{customdata[7]|%m/%d}<br>'
+                      'Cycle: %{customdata[17]}<extra></extra>'
         )
     )
 
