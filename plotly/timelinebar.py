@@ -36,8 +36,6 @@ T11 = ['Yale University', 'Harvard University', 'Stanford University', 'Universi
 T11_short = ['Yale', 'Harvard', 'Stanford', 'UChicago', 'Columbia', 'NYU', 'UPenn', 'Virginia', 'Michigan',
              'Berkeley', 'Northwestern']
 
-current_of = max(df11[df11['cycle'] == 21]['decision_at'])
-
 #  Calculate mean wait times and other wait statistics
 dftime = pd.DataFrame(columns=['school_name', 'cycle', 'month',
                                'acceptance_rate',

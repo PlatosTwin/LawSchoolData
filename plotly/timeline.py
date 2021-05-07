@@ -1,18 +1,21 @@
+import datetime as dt
 from os import getcwd
 from pathlib import Path
+
 import numpy as np
-import datetime as dt
-import plotly.graph_objects as go
-from plotly.graph_objs.layout import XAxis
-import plotly.io as pio
 import pandas as pd
+import plotly.graph_objects as go
+import plotly.io as pio
 from pandas.plotting import register_matplotlib_converters
+from plotly.graph_objs.layout import XAxis
+
 register_matplotlib_converters()
 
 #  Read-in admissions data
 fname_admit = 'lsdata_clean.csv'
 df11 = pd.read_csv(fname_admit, low_memory=False)
 
+#  Drop rows with null sent_at and decision_at
 df11 = df11.dropna(subset=['sent_at', 'decision_at'])
 
 #  Convert sent_at and decision_at to datetime
@@ -57,7 +60,7 @@ layout = go.Layout(
 
 fig = go.Figure(layout=layout)
 
-#  Add decision (A, R, WL) traces
+#  Add decision (A, R, WL) scatter traces
 for c in cycles:
     fig.add_trace(go.Scatter(
         x=df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c)]['sent_at'],
@@ -80,9 +83,9 @@ for c in cycles:
         )
     )
 
-#  Add percent lines for past cycles
+#  Calculate percentages from past cycles
 dfpct = pd.DataFrame(columns=['school_name', 'pctn', 'pcta', 'pctr', 'pctw', 'chancea',
-                                  'totaln', 'totala', 'totalr', 'totalw', 'date'])
+                              'totaln', 'totala', 'totalr', 'totalw', 'date'])
 
 for school in T11:
     cycles_past = df11[(df11['school_name'] == school) & (df11['cycle'] != 21)]
@@ -118,6 +121,7 @@ for school in T11:
                                 total_w,
                                 earliest + i*dt.timedelta(weeks=1)]
 
+#  Add percentage traces
 #  Notified
 dfpct_alpha = '0.4)'
 fig.add_trace(go.Scatter(
@@ -169,6 +173,7 @@ fig.add_trace(go.Scatter(
     name='Acceptance Likelihood')
 )
 
+#  Update layout for percentage traces
 fig.data[4].update(customdata=dfpct[dfpct['school_name'] == T11[0]],
                    hovertemplate='%{customdata[1]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>')
 fig.data[5].update(customdata=dfpct[dfpct['school_name'] == T11[0]],
