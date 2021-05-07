@@ -192,28 +192,28 @@ def label_wait(row):
 #  Label cycles: 18, 19, 20, 21
 df11['cycle_id'] = df11.apply(lambda row: label_cycle(row), axis=1)
 df11.rename(columns={'cycle_id': 'cycle'}, inplace=True)
-df11 = df11[df11['cycle'] > 15]
-print('\nLabelled cycles...')
+df11 = df11[df11['cycle'] > 17]
+print('\n1/6: Labelled cycles...')
 
 #  Simplify results
 df11['decision'] = df11.apply(lambda row: simplify_result(row), axis=1)
-print('Simplified results...')
+print('2/6: Simplified results...')
 
 #  Add color indicator by result, for plotting
 df11['color'] = df11.apply(lambda row: label_color(row), axis=1)
-print('Added colors...')
+print('3/6: Added colors...')
 
 #  Create markers based on cycle
 df11['marker'] = df11.apply(lambda row: label_marker(row), axis=1)
-print('Set markers...')
+print('4/6: Set markers...')
 
 #  Mark splitters/reverse splitters
 df11['splitter'] = df11.apply(lambda row: label_splitter(row), axis=1)
-print('Marked splitters...')
+print('5/6: Marked splitters...')
 
 #  Calculate wait time
 df11['wait'] = df11.apply(lambda row: label_wait(row), axis=1)
-print('Calculated wait times...')
+print('6/6: Calculated wait times...')
 
 #  Account for 2020 being a leap year
 df11.loc[df11['sent_at'] == '02/29/2020', 'sent_at'] = dt.datetime(2020, 2, 28)
@@ -222,7 +222,7 @@ df11.loc[df11['decision_at'] == '02/29/2020', 'decision_at'] = dt.datetime(2020,
 fname_save = 'lsdata_clean.csv'
 df11.to_csv(fname_save, index=False)
 
-print('Completed and saved reference file to: ' + fname_save)
+print('\nCompleted and saved reference file to: ' + fname_save)
 
 #  Update footer with date of latest entry in lsdata.csv
 current_of = max(df11[df11['cycle'] == 21]['decision_at'])
