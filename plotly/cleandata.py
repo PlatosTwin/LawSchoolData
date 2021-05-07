@@ -30,9 +30,6 @@ drop_cols = ['simple_status', 'scholarship', 'attendance', 'is_in_state', 'is_fe
              'is_international', 'international_gpa', 'is_lsn_import']
 df_dcol = df.drop(drop_cols, axis=1)
 
-#  TODO: Remove rows corresponding to useless results
-# remove 'Intend to Apply'
-
 #  Remove rows that are missing crucial values
 filter_rows = ['lsat', 'gpa', 'result']
 df_filtered = df_dcol.dropna(subset=filter_rows)
@@ -41,14 +38,17 @@ df_filtered = df_dcol.dropna(subset=filter_rows)
 df_filtered.loc[:, 'sent_at'] = pd.to_datetime(df_filtered['sent_at'])
 df_filtered.loc[:, 'decision_at'] = pd.to_datetime(df_filtered['decision_at'])
 
-print('Shape of filtered file: ' + str(df_filtered.shape))
-
 top_eleven_list = ['Yale University', 'Harvard University', 'Stanford University', 'University of Chicago',
                    'Columbia University', 'New York University', 'University of Pennsylvania', 'University of Virginia',
                    'University of Michigan', 'University of California—Berkeley', 'Northwestern University']
 
 df11 = df_filtered[df_filtered['school_name'].str.contains('|'.join(top_eleven_list))]
 
+# Remove 'Intend to Apply'
+indexes = df11[df11['result'] == 'Intend to Apply'].index
+df11.drop(indexes, inplace=True)
+
+print('Shape of filtered and delimited file: ' + str(df_filtered.shape))
 
 def label_cycle(row):
     """
