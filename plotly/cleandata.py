@@ -4,6 +4,7 @@ from os import getcwd
 from pathlib import Path
 
 import numpy as np
+import csv
 import pandas as pd
 from pandas.plotting import register_matplotlib_converters
 
@@ -28,6 +29,9 @@ print('\nShape of original file: ' + str(df.shape))
 drop_cols = ['simple_status', 'scholarship', 'attendance', 'is_in_state', 'is_fee_waived', 'is_conditional_scholarship',
              'is_international', 'international_gpa', 'is_lsn_import']
 df_dcol = df.drop(drop_cols, axis=1)
+
+#  TODO: Remove rows corresponding to useless results
+# remove 'Intend to Apply'
 
 #  Remove rows that are missing crucial values
 filter_rows = ['lsat', 'gpa', 'result']
@@ -192,15 +196,6 @@ def label_splitter(row):
     :param row:
     :return border color label, string:
     """
-    if row['decision'] == 'A':
-        return 'green'
-
-    if row['decision'] == 'R':
-        return 'red'
-
-    if row['decision'] == 'WL':
-        return 'orange'
-
     school_name = row['school_name']
 
     #  Splitters = blue
@@ -212,6 +207,17 @@ def label_splitter(row):
     if (row['lsat'] < dfmeds[dfmeds['School'] == school_name]['L25'].values[0]) & \
             (row['gpa'] > dfmeds[dfmeds['School'] == school_name]['G75'].values[0]):
         return 'black'
+
+    if row['decision'] == 'A':
+        return 'green'
+
+    if row['decision'] == 'R':
+        return 'red'
+
+    if row['decision'] == 'WL':
+        return 'orange'
+
+    return 'pink'
 
 
 def label_wait(row):
@@ -259,12 +265,14 @@ df11.to_csv(fname_save, index=False)
 
 print('\nCompleted and saved reference file to: ' + fname_save + '.')
 
-#  TODO: use first line of lsdata.csv to get date of last update, rather than max(dataframe)
-#  Update footer with date of latest entry in lsdata.csv
-# updated = ''
-# current_of = dt.datetime.strptime(updated[updated.index(':')+2:updated.index(':')+12], '%Y-%m-%d')
-df_temp = df11.dropna(subset=['decision_at'])
-current_of = max(df_temp[df_temp['cycle'] == 21]['decision_at'])
+#  Save footer
+with open(fname_admit, newline='') as f:
+    reader = csv.reader(f)
+    for row in reader:
+        updated = row[0]
+        break
+
+current_of = dt.datetime.strptime(updated[updated.index(':')+2:updated.index(':')+12], '%Y-%m-%d')
 current = 'Current as of ' + str(current_of.month) + '/' + str(current_of.day) + '/2021.'
 reference = 'Admissions data from LawSchoolData.org. Medians data from 7Sage.com.'
 footer = current + ' ' + reference

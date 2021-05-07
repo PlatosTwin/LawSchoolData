@@ -47,31 +47,23 @@ for school in T11:
                      (df_temp['splitter'] != 'black')].shape[0]
 
         split = 100*df_temp[(df_temp['decision'] == 'A') &
-                            (df_temp['splitter'] == 'blue') &
-                            (df_temp['splitter'] != 'black')].shape[0] / \
-                df_temp[(df_temp['splitter'] == 'blue') &
-                        (df_temp['splitter'] != 'black')].shape[0]
+                            (df_temp['splitter'] == 'blue')].shape[0] / \
+                df_temp[(df_temp['splitter'] == 'blue')].shape[0]
 
         sn = df_temp[(df_temp['decision'] == 'A') &
-                     (df_temp['splitter'] == 'blue') &
-                     (df_temp['splitter'] != 'black')].shape[0]
+                     (df_temp['splitter'] == 'blue')].shape[0]
 
         rsplit = 100*df_temp[(df_temp['decision'] == 'A') &
-                             (df_temp['splitter'] != 'blue') &
                              (df_temp['splitter'] == 'black')].shape[0] / \
-                 df_temp[(df_temp['splitter'] != 'blue') &
-                         (df_temp['splitter'] == 'black')].shape[0]
+                 df_temp[(df_temp['splitter'] == 'black')].shape[0]
 
         rsn = df_temp[(df_temp['decision'] == 'A') &
-                      (df_temp['splitter'] != 'blue') &
                       (df_temp['splitter'] == 'black')].shape[0]
 
         index = len(dfpct)
         dfpct.loc[index] = [school, c, reg, split, rsplit, rn, sn, rsn ]
 
 #  Set initial traces
-# fig = go.Figure()
-
 fig = make_subplots(
     rows=2, cols=1,
     shared_xaxes=True,

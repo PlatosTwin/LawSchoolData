@@ -67,7 +67,7 @@ for d in ['all', 'A', 'R', 'WL']:
                 ),
             meta=str(c-1) + '/' + str(c) + ' (n=%0.f' % df_temp.shape[0] +
                  ')<br>Avg. Wait: %0.f' % df_temp['wait'].mean(),
-            hovertemplate='%{meta}<br>%{x} days<extra></extra>',
+            hovertemplate='%{meta}<br>%{x} days<extra></extra>',  # TODO: style template better
             showlegend=showlegend,
             legendgroup=str(c)
             ),

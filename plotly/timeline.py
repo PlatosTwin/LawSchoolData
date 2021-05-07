@@ -3,6 +3,7 @@ from os import getcwd
 from pathlib import Path
 
 import numpy as np
+import csv
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.io as pio
@@ -271,12 +272,21 @@ fig.update_layout(
 )
 
 #  Add current-of line
+with open('/Users/Shared/lsdata.csv', newline='') as f:
+    reader = csv.reader(f)
+    for row in reader:
+        updated = row[0]
+        break
+
+current_of = '2018' + updated[updated.index(':')+2:updated.index(':')+12][4:]
+current_of = dt.datetime.strptime(current_of, '%Y-%m-%d')
+
 fig.add_shape(
     type='line',
     x0=dt.datetime(2017, 5, 1),
-    y0=max(df11[df11['cycle'] == 21]['decision_at']),
+    y0=current_of,
     x1=dt.datetime(2018, 5, 1),
-    y1=max(df11[df11['cycle'] == 21]['decision_at']),
+    y1=current_of,
     line=dict(
         color='LightSeaGreen',
         width=1,
