@@ -1,12 +1,14 @@
+import datetime as dt
+import math
 from os import getcwd
 from pathlib import Path
-import datetime as dt
+
+import pandas as pd
 import plotly.graph_objects as go
 import plotly.io as pio
-import pandas as pd
 from pandas.plotting import register_matplotlib_converters
 from plotly.subplots import make_subplots
-import math
+
 register_matplotlib_converters()
 
 #  Read-in admissions data
@@ -71,7 +73,7 @@ for school in T11:
             lsat_mean = df_temp['lsat'].mean()
             lsat_std = round(df_temp['lsat'].std(), 1) if not math.isnan(df_temp['lsat'].std()) else 0.0
             gpa_mean = df_temp['gpa'].mean()
-            gpa_std = round(df_temp['gpa'].std(), 1) if not math.isnan(df_temp['gpa'].std()) else 0.0
+            gpa_std = round(df_temp['gpa'].std(), 2) if not math.isnan(df_temp['gpa'].std()) else 0.0
             n = df_temp.shape[0]
             na = df_temp[df_temp['decision'] == 'A'].shape[0]
 

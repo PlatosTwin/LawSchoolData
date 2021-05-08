@@ -1,16 +1,16 @@
 from os import getcwd
 from pathlib import Path
-import datetime as dt
-import matplotlib
-import matplotlib.colors
+
 import matplotlib.cm as cm
+import matplotlib.colors
 import numpy as np
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-from plotly.colors import n_colors
-import plotly.io as pio
 import pandas as pd
+import plotly.graph_objects as go
+import plotly.io as pio
 from pandas.plotting import register_matplotlib_converters
+from plotly.colors import n_colors
+from plotly.subplots import make_subplots
+
 register_matplotlib_converters()
 
 #  Read-in admissions data
@@ -63,7 +63,7 @@ for school in T11:
         index = len(dfpct)
         dfpct.loc[index] = [school, c, reg, split, rsplit, rn, sn, rsn ]
 
-#  Set initial traces
+#  Set initial traces, with a 2x1 grid
 fig = make_subplots(
     rows=2, cols=1,
     shared_xaxes=True,
@@ -90,7 +90,7 @@ for s in [['Regular', 'lime', 'rn'], ['Splitters', 'dodgerblue', 'sn'], ['R. Spl
         col=1
     )
 
-#  Table formatting: index colors, alternating colors
+#  Table formatting: index column colors, alternating colors
 index_s = [round(x, 2) for x in dfpct['Splitters'].values/dfpct['Regular'].values]
 index_r = [round(x, 2) for x in dfpct['R. Splitters'].values/dfpct['Regular'].values]
 

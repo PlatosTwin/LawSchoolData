@@ -1,17 +1,19 @@
 from os import getcwd
 from pathlib import Path
+
 import numpy as np
-import datetime as dt
+import pandas as pd
 import plotly.graph_objects as go
 import plotly.io as pio
-import pandas as pd
 from pandas.plotting import register_matplotlib_converters
+
 register_matplotlib_converters()
 
 #  Read-in admissions data
 fname_admit = 'lsdata_clean.csv'
 df11 = pd.read_csv(fname_admit, low_memory=False)
 
+#  Read-in medians/schools data
 fname_percentiles = '/Users/Shared/lsmedians.csv'
 dff = pd.read_csv(fname_percentiles, low_memory=False)
 dff = dff[:20]  # Limit to top twenty schools
@@ -29,10 +31,11 @@ T11_short = ['Yale', 'Harvard', 'Stanford', 'UChicago', 'Columbia', 'NYU', 'UPen
 
 fig = go.Figure()
 
-#  Percentage of applicants who reported sent_at date on LSData, in T11
-total_a = 0
-total_app = 0
+#  Calculate percentage of applicants who reported LSAT, GPA, and a submitted application, in T11
+total_a = 0  # Total accepted
+total_app = 0  # Total applied
 for i, school in enumerate(T11):
+    #  Calculate total admitted and applied based on 2020 yield and acceptance rate
     school_t_a = dff[dff['School'] == school]['1st Yr Class'].values[0]/dff[dff['School'] == school]['Yield'].values[0]
     total_a += school_t_a
     school_t_app = school_t_a/dff[dff['School'] == school]['Acceptance Rate'].values[0]
@@ -49,7 +52,7 @@ for i, school in enumerate(T11):
         )
     )
 
-#  Across the T11 in aggregate
+#  Same percentage as above, across the T11 in aggregate
 fig.add_trace(go.Scatter(
     x=cycles,
     y=[100*df11[(df11['school_name'].str.contains('|'.join(T11))) & (df11['cycle'] == c)].shape[0]/total_app

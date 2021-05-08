@@ -111,16 +111,16 @@ for school in T11:
 
         index = len(dfpct)
         dfpct.loc[index] = [school,
-                                100*(num_a + num_r + num_w)/total_n,
-                                100*num_a/total_a,
-                                100*num_r/total_r,
-                                100*num_w/total_w,
-                                100*chance_a,
-                                total_n,
-                                total_a,
-                                total_r,
-                                total_w,
-                                earliest + i*dt.timedelta(weeks=1)]
+                            100*(num_a + num_r + num_w)/total_n,
+                            100*num_a/total_a,
+                            100*num_r/total_r,
+                            100*num_w/total_w,
+                            100*chance_a,
+                            total_n,
+                            total_a,
+                            total_r,
+                            total_w,
+                            earliest + i*dt.timedelta(weeks=1)]
 
 #  Add percentage traces
 #  Notified
