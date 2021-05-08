@@ -1,11 +1,14 @@
+import csv
+import datetime as dt
 from os import getcwd
 from pathlib import Path
-import datetime as dt
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import plotly.io as pio
+
 import pandas as pd
+import plotly.graph_objects as go
+import plotly.io as pio
 from pandas.plotting import register_matplotlib_converters
+from plotly.subplots import make_subplots
+
 register_matplotlib_converters()
 
 #  Read-in admissions data
@@ -38,7 +41,15 @@ T11_short = ['Yale', 'Harvard', 'Stanford', 'UChicago', 'Columbia', 'NYU', 'UPen
 #  Create 2x2 figure with origin at upper-left quadrant
 fig = make_subplots(rows=2, cols=2, start_cell='top-left')
 
-current_of = max(df11[df11['cycle'] == 21]['decision_at'])
+#  Get current-of date
+with open('/Users/Shared/lsdata.csv', newline='') as f:
+    reader = csv.reader(f)
+    for row in reader:
+        updated = row[0]
+        break
+
+current_of = '2018' + updated[updated.index(':')+2:updated.index(':')+12][4:]
+current_of = dt.datetime.strptime(current_of, '%Y-%m-%d')
 
 #  Set initial histogram traces
 row = 1
