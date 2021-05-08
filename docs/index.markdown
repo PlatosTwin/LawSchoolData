@@ -13,7 +13,7 @@ heading: Law School Data Admissions Analyses (2017/2018 - 2020/2021)
     <a href="https://plotly.com" target="_blank">Plotly</a> to visualize different slices of this data. Plotly makes possible an 
     interactive experience, among other things allowing users to: pan and zoom, using the toolbar at the top of each plot; 
     adjust the x and y axes, by hovering over an axis at the middle or at either end; and highlight and hide the data sets 
-    represented in the legend, by single- or double-clicking on the traces.
+    represented in the legend, by single- or double-clicking on the legend markers.
   
   <p></p>
 
@@ -21,13 +21,14 @@ heading: Law School Data Admissions Analyses (2017/2018 - 2020/2021)
     included in calculations, and waitlist -> rejected, waitlist -> accepted, and waitlist -> withdrawn reports are 
     treated as waitlists. Because there appears to be some inconsistency in the self-reporting of the decision date for
     waitlist -> rejected, waitlist -> accepted, and waitlist -> withdrawn reports—some users update their decision date 
-    upon second notification while others leave it unchanged since receiving the waitlist notice—it is likely that some 
+    upon second notification while others leave it unchanged since receiving the original waitlist notice—it is likely that some 
     waitlist data are erroneous. If cycles are not reported in the format <i>15/16</i> then the cycle number listed represents the 
     year in which applicants for that cycle would begin law school, such that cycle 17/18 is equivalent to cycle 18. 
     Finally, the plots below are generated from the pool of applicants who have entered on 
-    LawSchoolData.org at minimum their LSAT score and their GPA. Plots 1, 2, 3, and 4 have the additional restriction, because 
-    they analyze time data, that applicants are included only if they entered on LawSchoolData.org the date at which they sent 
-    their application; accordingly, counts for those four plots may differ from those available on LawSchoolData.org itself, 
+    LawSchoolData.org at minimum their LSAT score and their GPA. The data pool for plots 1, 2, 3, and 4 has the additional restriction, because 
+    these plots analyze time data, that applicants are included only if they entered on LawSchoolData.org the date at which they sent 
+    their application; the pool for plots 1, 3, and 4 is further restricted by requiring applicants to have entered the date at which they received 
+    their admissions decisions. Accordingly, counts for plots 1, 2, 3, and 4 may differ from those available on LawSchoolData.org itself, 
     which allows users to update their decision without providing any other information.
 
   <p></p>
@@ -54,11 +55,13 @@ ___
     received an acceptance, rejection, or waitlist notification. The <i>A</i>, <i>R</i>, and <i>WL</i> traces are calculated 
     by taking the number of acceptances, rejections, or waitlists up to a given date and dividing by the total number. 
     <i>Acceptance Likelihood</i> is calcuated by dividing the number of acceptances remaining at any given point by the number 
-    of applicants who at that point had not yet received an acceptance, rejection, or waitlist and who had not withdrawn. The faint diagonal lines 
+    of applicants who at that point had not yet received an acceptance, rejection, or waitlist and who had not withdrawn. 
+    The data filtering requirements discussed in the introductory paragraphs, for plots 1, 3, and 4, mean that the 
+    <i>Acceptance Likelihood</i> trace is likely to be of limited reliability. The faint diagonal lines 
     against the background represent months of waiting: y=x (0 months), 1 month, 2 months, ..., 6 months. Marker outlines in
     <span style="color: blue"><i>blue</i></span> represent splitters (>75th percentile LSAT and <25th percentile GPA) while marker 
-    outlines in <i>black</i> represent reverse splitters (<25th percentile LSAT and >75th percentile GPA). The dashed blue line 
-    marks the date of the last data update.
+    outlines in <i>black</i> represent reverse splitters (<25th percentile LSAT and >75th percentile GPA). Percentile 
+    data is from 2020. The dashed blue line marks the date of the last data update.
 
 </div>
 ___
@@ -68,9 +71,10 @@ ___
 
   <i>Note</i>: The top-left plot shows the acceptance rate by date of application submissions, calculated by dividing the 
     number of <i>acceptances</i> among applicants who submitted their application in a given month by the <i>total</i> number of 
-    applicants who submitted applications that month, whatever their end result. Because the plot above reports the total 
-    number of acceptances, rejections, and waitlists only, the n= totals may differ between this plot and the plot above. 
-    The remaining subplots in the present figure draw on the same data set as does the top-left plot. The top-right and 
+    applicants who submitted applications that month, whatever their end result, including <i>Pending</i>. This method of calculation assumes, therefore, 
+    that the overwhelming majority of those applicants who were admitted updated their LawSchoolData.org status to reflect their admission. 
+    Because the plot above reports the total number of acceptances, rejections, and waitlists only, the n= totals may differ between this 
+    plot and the plot above. The remaining subplots in the present figure draw on the same data set as does the top-left plot. The top-right and 
     bottom-right plots show the mean of the LSAT and GPA, respectively, of <i>all</i> applicants who applied in a given 
     month. The bottom-left plot shows, for each month, the percentage of the total volume of submitted applications 
     submitted that month. For example, if December of the 18/19 cycle were to show 23% it would indicate that 23% of the <i>total</i> 
@@ -101,16 +105,14 @@ ___
 <div style="margin: 0px 100px 18px 100px; font-family: calibri; text-align: justify">
 
   <i>Note</i>: Acceptance rates are calculated by dividing the number of regular, splitter, or reverse splitter
-    applicants admitted by the total number of applicants who applied, whatever their end result, including if they never 
-    updated their status on LawSchoolData.org. This method of calculation assumes, therefore, that the overwhelming
-    majority of those applicants who were admitted updated their LawSchoolData.org status to reflect their admission. 
-    The number of splitters and reverse splitters who applied and were admitted is for several
+    applicants admitted by the total number of applicants from the relevant category who applied, whatever their end result, 
+    including <i>Pending</i>. The number of splitters and reverse splitters who applied and were admitted is for several
     schools so small as to make meaningful inferences impossible. For each school, <i>Index</i> values are calculated 
     by dividing the acceptance percentage of splitters or reverse splitters by the acceptance percentage of applicants
     who were neither. The greater above 1.0 a value is the <i>easier</i> it was for splitters or reverse splitters to 
     gain admission, compared to regular applicants; the lower below 1.0 a value is the <i>harder</i> it was. Splitters 
     are applicants with an LSAT score greather than the 75th percentile and a GPA less than the 25th percentile; 
-    reverse splitters have a low LSAT and high GPA. Table columns may be rearranged by dragging.
+    reverse splitters have a low LSAT and high GPA. Percentile data is from 2020. Table columns may be rearranged by dragging.
 
 </div>
 ___

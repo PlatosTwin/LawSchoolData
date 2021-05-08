@@ -15,11 +15,10 @@ register_matplotlib_converters()
 fname_admit = 'lsdata_clean.csv'
 df11 = pd.read_csv(fname_admit, low_memory=False)
 
-df11 = df11.dropna(subset=['sent_at', 'decision_at'])
+df11 = df11.dropna(subset=['sent_at'])
 
-#  Convert sent_at and decision_at to datetime
+#  Convert sent_at to datetime
 df11.loc[:, 'sent_at'] = pd.to_datetime(df11['sent_at'])
-df11.loc[:, 'decision_at'] = pd.to_datetime(df11['decision_at'])
 
 cycles = [18, 19, 20, 21]
 
@@ -27,9 +26,6 @@ cycles = [18, 19, 20, 21]
 for i, cycle in enumerate(cycles[1:]):
     df11.loc[df11['cycle'] == cycle, 'sent_at'] = \
         df11[df11['cycle'] == cycle]['sent_at'].map(lambda t: dt.datetime(t.year - (i + 1), t.month, t.day))
-
-    df11.loc[df11['cycle'] == cycle, 'decision_at'] = \
-        df11[df11['cycle'] == cycle]['decision_at'].map(lambda t: dt.datetime(t.year - (i + 1), t.month, t.day))
 
 T11 = ['Yale University', 'Harvard University', 'Stanford University', 'University of Chicago',
        'Columbia University', 'New York University', 'University of Pennsylvania', 'University of Virginia',
@@ -64,9 +60,7 @@ for school in T11:
                            (df11['sent_at'] < t_max)]
 
             try:
-                acceptance_rate = round(
-                    100*df_temp[df_temp['decision'] == 'A'].shape[0] /
-                    df_temp[df_temp['decision'].str.contains('|'.join(['A', 'R', 'WL']))].shape[0], 2)
+                acceptance_rate = round(100*df_temp[df_temp['decision'] == 'A'].shape[0]/df_temp.shape[0], 2)
             except ZeroDivisionError:
                 acceptance_rate = 0.0
 
