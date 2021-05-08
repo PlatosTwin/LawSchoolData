@@ -44,8 +44,8 @@ top_eleven_list = ['Yale University', 'Harvard University', 'Stanford University
 
 df11 = df_filtered[df_filtered['school_name'].str.contains('|'.join(top_eleven_list))]
 
-# Remove 'Intend to Apply'
-indexes = df11[df11['result'] == 'Intend to Apply'].index
+# Remove 'Intend to Apply' and 'Intend to Apply, Withdrawn'
+indexes = df11[df11['result'].str.contains('|'.join(['Intend to Apply', 'Intend to Apply, Withdrawn']))].index
 df11.drop(indexes, inplace=True)
 
 print('Shape of filtered and delimited file: ' + str(df_filtered.shape))

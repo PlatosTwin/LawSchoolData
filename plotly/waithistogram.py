@@ -65,11 +65,12 @@ for d in ['all', 'A', 'R', 'WL']:
                 end=max(df_temp['wait']),
                 size=7
                 ),
-            meta=str(c-1) + '/' + str(c) + ' (n=%0.f' % df_temp.shape[0] +
-                 ')<br>Avg. Wait: %0.f' % df_temp['wait'].mean(),
-            hovertemplate='%{meta}<br>%{x} days<extra></extra>',  # TODO: style template better
+            meta=['Avg. Wait: %0.f' % df_temp['wait'].mean(),
+                  '(n=%0.f' % df_temp.shape[0] + ')'],
+            hovertemplate='%{meta[0]}<br>In Bar: %{y}<br>Range: %{x}<br>%{meta[1]}<extra></extra>',
             showlegend=showlegend,
-            legendgroup=str(c)
+            legendgroup=str(c),
+            histfunc='sum'
             ),
             row=row,
             col=col
@@ -107,8 +108,7 @@ for i, school in enumerate(T11):
 
             x.append(df_temp['wait'])
             name.append(str(c-1) + '/' + str(c) + ' (n=%0.f' % df_temp.shape[0] + ')')
-            meta.append(str(c-1) + '/' + str(c) +
-                        ' (n=%0.f' % df_temp.shape[0] + ')<br>Avg. Wait: %0.f' % df_temp['wait'].mean())
+            meta.append(['Avg. Wait: %0.f' % df_temp['wait'].mean(), '(n=%0.f' % df_temp.shape[0] + ')'])
 
     button_schools.append(
         dict(
