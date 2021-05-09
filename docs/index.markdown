@@ -78,7 +78,7 @@ ___
     bottom-right plots show the mean of the LSAT and GPA, respectively, of <i>all</i> applicants who applied in a given 
     month. The bottom-left plot shows, for each month, the percentage of the total volume of submitted applications 
     submitted that month. For example, if December of the 18/19 cycle were to show 23% it would indicate that 23% of the <i>total</i> 
-    number of applications submitted that cycle were submitted in December.
+    number of applications submitted that cycle were submitted in December. Error bars represent one standard deviation.
 
 </div>
 ___
