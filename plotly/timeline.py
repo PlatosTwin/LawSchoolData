@@ -78,9 +78,9 @@ for c in cycles:
              ' (n=' + str(df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c) &
                                (df11['decision'].str.contains('|'.join(['A', 'R', 'WL'])))].shape[0]) + ')',
         customdata=df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c)],
-        hovertemplate='LSAT: %{customdata[9]:.0f}<br>GPA: %{customdata[13]}<br>'
-                      'Sent: %{customdata[1]|%m/%d}<br>Decision: %{customdata[7]|%m/%d}<br>'
-                      'Cycle: %{customdata[17]}<extra></extra>'
+        hovertemplate='LSAT: %{customdata[3]:.0f}<br>GPA: %{customdata[4]}<br>'
+                      'Sent: %{customdata[1]|%m/%d}<br>Decision: %{customdata[2]|%m/%d}<br>'
+                      'Cycle: %{customdata[5]}<extra></extra>'
         )
     )
 
@@ -316,7 +316,7 @@ fig.update_yaxes(
     range=[min(df11['decision_at']) - dt.timedelta(days=7), dt.datetime(2018, 5, 15)],
 )
 
-# fig.show(config=dict(modeBarButtonsToRemove=['autoScale2d']))
+fig.show(config=dict(modeBarButtonsToRemove=['autoScale2d']))
 
 cwd = Path(getcwd())
 pio.write_html(fig,

@@ -17,6 +17,7 @@ pd.options.mode.chained_assignment = None
 fname_percentiles = '/Users/Shared/lsmedians.csv'
 dfmeds = pd.read_csv(fname_percentiles)
 dfmeds = dfmeds[:14]  # Limit to top 15 schools
+dfmeds = dfmeds[['School', 'L75', 'L25', 'G75', 'G25']]  # Drop unused columns
 
 #  Read-in admissions data, downloaded from https://www.lawschooldata.org/download
 fname_admit = '/Users/Shared/lsdata.csv'
@@ -26,9 +27,15 @@ print('\nPreparing to clean ' + fname_admit + '...')
 print('\nShape of original file: ' + str(df.shape))
 
 #  Drop unnecessary/uninteresting columns
-drop_cols = ['simple_status', 'scholarship', 'attendance', 'is_in_state', 'is_fee_waived', 'is_conditional_scholarship',
+drop_cols = ['ur_at', 'ur2_at', 'is_military', 'is_character_and_fitness_issues', 'non_trad', 'years_out', 'softs',
+             'simple_status', 'scholarship', 'attendance', 'is_in_state', 'is_fee_waived', 'is_conditional_scholarship',
              'is_international', 'international_gpa', 'is_lsn_import']
 df_dcol = df.drop(drop_cols, axis=1)
+
+#  Rearrange columns to avoid errors, from future adjustments, in timeline.py
+cols_to_order = ['school_name', 'sent_at', 'decision_at', 'lsat', 'gpa', 'cycle_id']
+new_columns = cols_to_order + (df_dcol.columns.drop(cols_to_order).tolist())
+df_dcol = df_dcol[new_columns]
 
 #  Remove rows that are missing crucial values
 filter_rows = ['lsat', 'gpa', 'result']
@@ -44,11 +51,12 @@ top_eleven_list = ['Yale University', 'Harvard University', 'Stanford University
 
 df11 = df_filtered[df_filtered['school_name'].str.contains('|'.join(top_eleven_list))]
 
-# Remove 'Intend to Apply' and 'Intend to Apply, Withdrawn'
+# Remove rows with result == 'Intend to Apply' and 'Intend to Apply, Withdrawn'
 indexes = df11[df11['result'].str.contains('|'.join(['Intend to Apply', 'Intend to Apply, Withdrawn']))].index
 df11.drop(indexes, inplace=True)
 
 print('Shape of filtered and delimited file: ' + str(df_filtered.shape))
+
 
 def label_cycle(row):
     """
@@ -58,62 +66,56 @@ def label_cycle(row):
     :return: cycle label, int:
     """
 
-    #  Break data down by cycles
-    snt_tstart = '09/01'  # 0000
-    snt_tend = '04/15'  # 0001 (default: 04/15)
-    dec_tstart = '08/31'  # 0000
-    dec_tend = '09/01'  # 0001 (default: 09/01)
-
     if pd.isnull(row['sent_at']) & pd.isnull(row['decision_at']):
         return int(row['cycle_id']) + 3
 
     if pd.isnull(row['sent_at']):
-        if (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2021', '%m/%d/%Y')) & \
-                (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2020', '%m/%d/%Y')):
+        if (row['decision_at'] <= dec_tend21) & \
+                (row['decision_at'] >= dec_tstart21):
             return 21
-        if (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2020', '%m/%d/%Y')) & \
-                (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2019', '%m/%d/%Y')):
+        if (row['decision_at'] <= dec_tend20) & \
+                (row['decision_at'] >= dec_tstart20):
             return 20
-        if (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2019', '%m/%d/%Y')) & \
-                (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2018', '%m/%d/%Y')):
+        if (row['decision_at'] <= dec_tend19) & \
+                (row['decision_at'] >= dec_tstart19):
             return 19
-        if (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2018', '%m/%d/%Y')) & \
-                (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2017', '%m/%d/%Y')):
+        if (row['decision_at'] <= dec_tend18) & \
+                (row['decision_at'] >= dec_tstart18):
             return 18
 
     if pd.isnull(row['decision_at']):
-        if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2020', '%m/%d/%Y')) & \
-                (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2021', '%m/%d/%Y')):
+        if (row['sent_at'] >= snt_tstart21) & \
+                (row['sent_at'] <= snt_tend21):
             return 21
-        if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2019', '%m/%d/%Y')) & \
-                (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2020', '%m/%d/%Y')):
+        if (row['sent_at'] >= snt_tstart20) & \
+                (row['sent_at'] <= snt_tend20):
             return 20
-        if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2018', '%m/%d/%Y')) & \
-                (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2019', '%m/%d/%Y')):
+        if (row['sent_at'] >= snt_tstart19) & \
+                (row['sent_at'] <= snt_tend19):
             return 19
-        if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2017', '%m/%d/%Y')) & \
-                (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2018', '%m/%d/%Y')):
+        if (row['sent_at'] >= snt_tstart18) & \
+                (row['sent_at'] <= snt_tend18):
             return 18
 
-    if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2020', '%m/%d/%Y')) & \
-            (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2021', '%m/%d/%Y')) & \
-            (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2021', '%m/%d/%Y')) & \
-            (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2020', '%m/%d/%Y')):
+    if (row['sent_at'] >= snt_tstart21) & \
+            (row['sent_at'] <= snt_tend21) & \
+            (row['decision_at'] <= dec_tend21) & \
+            (row['decision_at'] >= dec_tstart21):
         return 21
-    if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2019', '%m/%d/%Y')) & \
-            (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2020', '%m/%d/%Y')) & \
-            (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2020', '%m/%d/%Y')) & \
-            (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2019', '%m/%d/%Y')):
+    if (row['sent_at'] >= snt_tstart20) & \
+            (row['sent_at'] <= snt_tend20) & \
+            (row['decision_at'] <= dec_tend20) & \
+            (row['decision_at'] >= dec_tstart20):
         return 20
-    if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2018', '%m/%d/%Y')) & \
-            (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2019', '%m/%d/%Y')) & \
-            (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2019', '%m/%d/%Y')) & \
-            (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2018', '%m/%d/%Y')):
+    if (row['sent_at'] >= snt_tstart19) & \
+            (row['sent_at'] <= snt_tend19) & \
+            (row['decision_at'] <= dec_tend19) & \
+            (row['decision_at'] >= dec_tstart19):
         return 19
-    if (row['sent_at'] >= dt.datetime.strptime(snt_tstart + '/2017', '%m/%d/%Y')) & \
-            (row['sent_at'] <= dt.datetime.strptime(snt_tend + '/2018', '%m/%d/%Y')) & \
-            (row['decision_at'] <= dt.datetime.strptime(dec_tend + '/2018', '%m/%d/%Y')) & \
-            (row['decision_at'] >= dt.datetime.strptime(dec_tstart + '/2017', '%m/%d/%Y')):
+    if (row['sent_at'] >= snt_tstart18) & \
+            (row['sent_at'] <= snt_tend18) & \
+            (row['decision_at'] <= dec_tend18) & \
+            (row['decision_at'] >= dec_tstart18):
         return 18
 
     return 0
@@ -228,6 +230,32 @@ def label_wait(row):
     """
     return ((row['decision_at'] - row['sent_at'])/np.timedelta64(1, 's'))/(60*60*24)
 
+
+#  Prepare to break data down by cycles
+snt_tstart = '09/01'  # 0000
+snt_tend = '04/15'  # 0001 (default: 04/15)
+dec_tstart = '08/31'  # 0000
+dec_tend = '09/01'  # 0001 (default: 09/01)
+
+snt_tstart18 = dt.datetime.strptime(snt_tstart + '/2017', '%m/%d/%Y')
+snt_tstart19 = dt.datetime.strptime(snt_tstart + '/2018', '%m/%d/%Y')
+snt_tstart20 = dt.datetime.strptime(snt_tstart + '/2019', '%m/%d/%Y')
+snt_tstart21 = dt.datetime.strptime(snt_tstart + '/2020', '%m/%d/%Y')
+
+snt_tend18 = dt.datetime.strptime(snt_tend + '/2018', '%m/%d/%Y')
+snt_tend19 = dt.datetime.strptime(snt_tend + '/2019', '%m/%d/%Y')
+snt_tend20 = dt.datetime.strptime(snt_tend + '/2020', '%m/%d/%Y')
+snt_tend21 = dt.datetime.strptime(snt_tend + '/2021', '%m/%d/%Y')
+
+dec_tstart18 = dt.datetime.strptime(dec_tstart + '/2017', '%m/%d/%Y')
+dec_tstart19 = dt.datetime.strptime(dec_tstart + '/2018', '%m/%d/%Y')
+dec_tstart20 = dt.datetime.strptime(dec_tstart + '/2019', '%m/%d/%Y')
+dec_tstart21 = dt.datetime.strptime(dec_tstart + '/2020', '%m/%d/%Y')
+
+dec_tend18 = dt.datetime.strptime(dec_tend + '/2018', '%m/%d/%Y')
+dec_tend19 = dt.datetime.strptime(dec_tend + '/2019', '%m/%d/%Y')
+dec_tend20 = dt.datetime.strptime(dec_tend + '/2020', '%m/%d/%Y')
+dec_tend21 = dt.datetime.strptime(dec_tend + '/2021', '%m/%d/%Y')
 
 #  TODO: streamline and make more efficient
 #  Label cycles: 18, 19, 20, 21
