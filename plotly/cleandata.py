@@ -66,6 +66,7 @@ def label_cycle(row):
     :return: cycle label, int:
     """
 
+    #  TODO: translate to np.select: https://towardsdatascience.com/efficient-implementation-of-conditional-logic-on-pandas-dataframes-4afa61eb7fce
     if pd.isnull(row['sent_at']) & pd.isnull(row['decision_at']):
         return int(row['cycle_id']) + 3
 

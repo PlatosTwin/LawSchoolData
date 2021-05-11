@@ -316,7 +316,7 @@ fig.update_yaxes(
     range=[min(df11['decision_at']) - dt.timedelta(days=7), dt.datetime(2018, 5, 15)],
 )
 
-fig.show(config=dict(modeBarButtonsToRemove=['autoScale2d']))
+# fig.show(config=dict(modeBarButtonsToRemove=['autoScale2d']))
 
 cwd = Path(getcwd())
 pio.write_html(fig,
