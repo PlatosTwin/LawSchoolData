@@ -1,4 +1,4 @@
-# exec(open('cleandata.py').read())
+exec(open('cleandata.py').read())
 exec(open('timeline.py').read())
 exec(open('timelinebar.py').read())
 exec(open('waithistogram.py').read())
