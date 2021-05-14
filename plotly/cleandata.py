@@ -302,7 +302,7 @@ with open(fname_admit, newline='') as f:
         break
 
 current_of = dt.datetime.strptime(updated[updated.index(':')+2:updated.index(':')+12], '%Y-%m-%d')
-current = 'Current as of ' + str(current_of.month) + '/' + str(current_of.day) + '/2021.'
+current = 'Current as of ' + str(current_of.month) + '/' + str(current_of.day) + '/%i.' % dt.datetime.now().year
 reference = 'Admissions data from LawSchoolData.org. Medians data from 7Sage.com.'
 footer = current + ' ' + reference
 
