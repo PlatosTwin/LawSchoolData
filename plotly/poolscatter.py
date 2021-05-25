@@ -14,11 +14,8 @@ fname_admit = 'lsdata_clean.csv'
 df11 = pd.read_csv(fname_admit, low_memory=False)
 
 #  Read-in medians/schools data
-fname_percentiles = '/Users/Shared/lsmedians.csv'
-dff = pd.read_csv(fname_percentiles, low_memory=False)
-dff = dff[:20]  # Limit to top twenty schools
-dff.loc[:, 'Yield'] = dff['Yield'].map(lambda x: float(x[:-1])/100)
-dff.loc[:, 'Acceptance Rate'] = dff['Acceptance Rate'].map(lambda x: float(x[:-1])/100)
+fname_percentiles = 'lsmedians.csv'
+dfmeds = pd.read_csv(fname_percentiles, low_memory=False)
 
 cycles = [18, 19, 20, 21]
 
@@ -29,21 +26,20 @@ T11 = ['Yale University', 'Harvard University', 'Stanford University', 'Universi
 T11_short = ['Yale', 'Harvard', 'Stanford', 'UChicago', 'Columbia', 'NYU', 'UPenn', 'Virginia', 'Michigan',
              'Berkeley', 'Northwestern']
 
+#  Set 2021 medians data to 2020 medians data, until 2021 data becomes available
+for school in T11:
+    index = dfmeds[(dfmeds['school_name'] == school) & (dfmeds['cycle'] == 21)].index[0]
+    dfmeds.loc[index] = \
+        list(dfmeds[(dfmeds['school_name'] == school) & (dfmeds['cycle'] == 20)].values[0][:-1]) + [21]
+
 fig = go.Figure()
 
-#  Calculate percentage of applicants who reported LSAT, GPA, and a submitted application, in T11
-total_a = 0  # Total accepted
-total_app = 0  # Total applied
+#  Plot percentage of all applicants who reported LSAT, GPA, and a submitted application, in T11
 for i, school in enumerate(T11):
-    #  Calculate total admitted and applied based on 2020 yield and acceptance rate
-    school_t_a = dff[dff['School'] == school]['1st Yr Class'].values[0]/dff[dff['School'] == school]['Yield'].values[0]
-    total_a += school_t_a
-    school_t_app = school_t_a/dff[dff['School'] == school]['Acceptance Rate'].values[0]
-    total_app += school_t_app
-
     fig.add_trace(go.Scatter(
         x=cycles,
-        y=[100*df11[(df11['school_name'] == school) & (df11['cycle'] == c)].shape[0]/school_t_app for c in cycles],
+        y=[100 * df11[(df11['school_name'] == school) & (df11['cycle'] == c)].shape[0] /
+           dfmeds[(dfmeds['school_name'] == school) & (dfmeds['cycle'] == c)]['total_applicants'].values[0] for c in cycles],
         mode='lines+markers',
         name=T11_short[i],
         meta=[T11_short[i] + '<br>' + 'LSData Volume: ' +
@@ -55,8 +51,8 @@ for i, school in enumerate(T11):
 #  Same percentage as above, across the T11 in aggregate
 fig.add_trace(go.Scatter(
     x=cycles,
-    y=[100*df11[(df11['school_name'].str.contains('|'.join(T11))) & (df11['cycle'] == c)].shape[0]/total_app
-       for c in cycles],
+    y=[100 * df11[(df11['school_name'].str.contains('|'.join(T11))) & (df11['cycle'] == c)].shape[0] /
+       dfmeds[dfmeds['cycle'] == c]['total_applicants'].sum() for c in cycles],
     mode='lines+markers',
     name='Top 11',
     meta=['Top 11' + '<br>' + 'LSData Volume: ' +
@@ -71,14 +67,22 @@ x2 = np.tile(cycles, (len(T11)+1, 1))
 y1 = []
 y2 = []
 
+#  For individual schools
 for school in T11:
-    school_t_a = dff[dff['School'] == school]['1st Yr Class'].values[0]/dff[dff['School'] == school]['Yield'].values[0]
-    school_t_app = school_t_a/dff[dff['School'] == school]['Acceptance Rate'].values[0]
-    y1.append([100*df11[(df11['school_name'] == school) & (df11['cycle'] == c)].shape[0]/school_t_app for c in cycles])
-    y2.append([100*df11[(df11['school_name'] == school) & (df11['cycle'] == c) & (df11['decision'] == 'A')].shape[0]/school_t_a for c in cycles])
+    #  All applicants
+    y1.append([100 * df11[(df11['school_name'] == school) & (df11['cycle'] == c)].shape[0] /
+               dfmeds[(dfmeds['school_name'] == school) & (dfmeds['cycle'] == c)]['total_applicants'].values[0] for c in cycles])
 
-y1.append([100*df11[(df11['school_name'].str.contains('|'.join(T11))) & (df11['cycle'] == c)].shape[0]/total_app for c in cycles])
-y2.append([100*df11[(df11['school_name'].str.contains('|'.join(T11))) & (df11['cycle'] == c) & (df11['decision'] == 'A')].shape[0]/total_a for c in cycles])
+    #  Accepted applicants
+    y2.append([100 * df11[(df11['school_name'] == school) & (df11['cycle'] == c) & (df11['decision'] == 'A')].shape[0] /
+               dfmeds[(dfmeds['school_name'] == school) & (dfmeds['cycle'] == c)]['total_accepted'].values[0] for c in cycles])
+
+#  For T11 as collective: all and accepted applicants
+y1.append([100 * df11[(df11['school_name'].str.contains('|'.join(T11))) & (df11['cycle'] == c)].shape[0] /
+           dfmeds[dfmeds['cycle'] == c]['total_applicants'].sum() for c in cycles])
+y2.append([100 * df11[(df11['school_name'].str.contains('|'.join(T11))) & (df11['cycle'] == c) &
+                    (df11['decision'] == 'A')].shape[0] /
+           dfmeds[dfmeds['cycle'] == c]['total_accepted'].sum() for c in cycles])
 
 meta1 = [[T11_short[i] + '<br>' + 'LSData Volume: ' +
           str(df11[(df11['school_name'] == school) & (df11['cycle'] == c)].shape[0]) for c in cycles]

@@ -13,11 +13,9 @@ register_matplotlib_converters()
 #  Suppress Pandas SettingWithCopyWarning
 pd.options.mode.chained_assignment = None
 
-#  Read-in medians data, downloaded from https://7sage.com/top-law-school-admissions/
-fname_percentiles = '/Users/Shared/lsmedians.csv'
+#  Read-in medians data, compiled from ABA: https://www.americanbar.org/groups/legal_education/resources/statistics/
+fname_percentiles = 'lsmedians.csv'
 dfmeds = pd.read_csv(fname_percentiles)
-dfmeds = dfmeds[:14]  # Limit to top 15 schools
-dfmeds = dfmeds[['School', 'L75', 'L25', 'G75', 'G25']]  # Drop unused columns
 
 #  Read-in admissions data, downloaded from https://www.lawschooldata.org/download
 fname_admit = '/Users/Shared/lsdata.csv'
@@ -45,11 +43,11 @@ df_filtered = df_dcol.dropna(subset=filter_rows)
 df_filtered.loc[:, 'sent_at'] = pd.to_datetime(df_filtered['sent_at'])
 df_filtered.loc[:, 'decision_at'] = pd.to_datetime(df_filtered['decision_at'])
 
-top_eleven_list = ['Yale University', 'Harvard University', 'Stanford University', 'University of Chicago',
+T11 = ['Yale University', 'Harvard University', 'Stanford University', 'University of Chicago',
                    'Columbia University', 'New York University', 'University of Pennsylvania', 'University of Virginia',
                    'University of Michigan', 'University of California—Berkeley', 'Northwestern University']
 
-df11 = df_filtered[df_filtered['school_name'].str.contains('|'.join(top_eleven_list))]
+df11 = df_filtered[df_filtered['school_name'].str.contains('|'.join(T11))]
 
 # Remove rows with result == 'Intend to Apply' and 'Intend to Apply, Withdrawn'
 indexes = df11[df11['result'].str.contains('|'.join(['Intend to Apply', 'Intend to Apply, Withdrawn']))].index
@@ -199,17 +197,21 @@ def label_splitter(row):
     :param row:
     :return border color label, string:
     """
-    school_name = row['school_name']
+    try:
+        dfmeds_temp = dfmeds[(dfmeds['cycle'] == row['cycle']) & (dfmeds['school_name'] == row['school_name'])]
 
-    #  Splitters = blue
-    if (row['lsat'] > dfmeds[dfmeds['School'] == school_name]['L75'].values[0]) & \
-            (row['gpa'] < dfmeds[dfmeds['School'] == school_name]['G25'].values[0]):
-        return 'blue'
+        #  Splitters = blue
+        if (row['lsat'] > dfmeds_temp['L75'].values[0]) & \
+                (row['gpa'] < dfmeds_temp['G25'].values[0]):
+            return 'blue'
 
-    #  Reverse splitters = black
-    if (row['lsat'] < dfmeds[dfmeds['School'] == school_name]['L25'].values[0]) & \
-            (row['gpa'] > dfmeds[dfmeds['School'] == school_name]['G75'].values[0]):
-        return 'black'
+        #  Reverse splitters = black
+        if (row['lsat'] < dfmeds_temp['L25'].values[0]) & \
+                (row['gpa'] > dfmeds_temp['G75'].values[0]):
+            return 'black'
+
+    except IndexError:
+        print('fuck')
 
     if row['decision'] == 'A':
         return 'green'
@@ -258,11 +260,17 @@ dec_tend19 = dt.datetime.strptime(dec_tend + '/2019', '%m/%d/%Y')
 dec_tend20 = dt.datetime.strptime(dec_tend + '/2020', '%m/%d/%Y')
 dec_tend21 = dt.datetime.strptime(dec_tend + '/2021', '%m/%d/%Y')
 
+#  Set 2021 medians data to 2020 medians data, until 2021 data becomes available
+for school in T11:
+    index = dfmeds[(dfmeds['school_name'] == school) & (dfmeds['cycle'] == 21)].index[0]
+    dfmeds.loc[index] = \
+        list(dfmeds[(dfmeds['school_name'] == school) & (dfmeds['cycle'] == 20)].values[0][:-1]) + [21]
+
 #  TODO: streamline and make more efficient
 #  Label cycles: 18, 19, 20, 21
 df11['cycle_id'] = df11.apply(lambda row: label_cycle(row), axis=1)
 df11.rename(columns={'cycle_id': 'cycle'}, inplace=True)
-df11 = df11[df11['cycle'] > 17]
+df11 = df11[(df11['cycle'] > 17) & (df11['cycle'] < 22)]
 print('\n1/6: Labelled cycles...')
 
 #  Simplify results

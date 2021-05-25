@@ -60,8 +60,8 @@ ___
     <i>Acceptance Likelihood</i> trace is likely to be of limited reliability. The faint diagonal lines 
     against the background represent months of waiting: y=x (0 months), 1 month, 2 months, ..., 6 months. Marker outlines in
     <span style="color: blue"><i>blue</i></span> represent splitters (>75th percentile LSAT and <25th percentile GPA) while marker 
-    outlines in <i>black</i> represent reverse splitters (<25th percentile LSAT and >75th percentile GPA). Percentile 
-    data is from 2020. The dashed blue line marks the date of the last data update.
+    outlines in <i>black</i> represent reverse splitters (<25th percentile LSAT and >75th percentile GPA). Until 2021 percentile data 
+    become available, percentiles for 2021 are assumed to be percentiles from 2020. The dashed blue line marks the date of the last data update.
 
 </div>
 ___
@@ -112,7 +112,8 @@ ___
     who were neither. The greater above 1.0 a value is the <i>easier</i> it was for splitters or reverse splitters to 
     gain admission, compared to regular applicants; the lower below 1.0 a value is the <i>harder</i> it was. Splitters 
     are applicants with an LSAT score greather than the 75th percentile and a GPA less than the 25th percentile; 
-    reverse splitters have a low LSAT and high GPA. Percentile data is from 2020. Table columns may be rearranged by dragging.
+    reverse splitters have a low LSAT and high GPA. Until 2021 percentile data 
+    become available, percentiles for 2021 are assumed to be percentiles from 2020. Table columns may be rearranged by dragging.
 
 </div>
 ___
@@ -121,9 +122,8 @@ ___
 <div style="margin: 0px 100px 18px 100px; font-family: calibri; text-align: justify">
 
   <i>Note</i>: Percentages are calculated by dividing the total number of applicants and admits from LawSchoolData.org by 
-    the total number of applicants and admits as determined by the 
-    2020 acceptance rate and yield, as reported by the ABA and made available in convenient format by 
-    <a href="https://7sage.com/top-law-school-admissions/" target="_blank">7Sage</a>. An 
+    the total number of applicants and admits as reported by the
+    <a href="https://www.americanbar.org/groups/legal_education/resources/statistics/" target="_blank">ABA</a>. An 
     applicant counts as having used LawSchoolData.org to report their applying to or hearing from a given school 
     if they entered at minimum their LSAT score and GPA.
 

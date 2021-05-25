@@ -1,0 +1,45 @@
+﻿school_name,L75,L25,G75,G25,total_applicants,total_accepted,acceptance_rate,yield,cycle
+Yale University,176,170,3.98,3.84,3473,238,0.06852865,0.689,18
+Yale University,175,170,3.99,3.85,3198,263,0.082238899,0.700,19
+Yale University,176,170,3.99,3.85,3539,262,0.074032212,0.641221374,20
+Yale University,,,,,,,,,21
+Harvard University,175,170,3.97,3.8,7551,971,0.128592239,0.498,18
+Harvard University,175,170,3.96,3.79,7333,916,0.124914769,0.53930131,19
+Harvard University,175,170,3.96,3.78,7448,968,0.129967777,0.459710744,20
+Harvard University,,,,,,,,,21
+Stanford University,174,169,3.99,3.82,4360,380,0.087155963,0.434,18
+Stanford University,174,169,3.96,3.79,3908,380,0.097236438,0.413157895,19
+Stanford University,174,169,3.96,3.77,3807,399,0.104806935,0.403508772,20
+Stanford University,,,,,,,,,21
+University of Chicago,173,167,3.96,3.73,5110,893,0.174755382,0.206,18
+University of Chicago,172,167,3.96,3.78,4933,918,0.186093655,0.209150327,19
+University of Chicago,173,167,3.95,3.72,4971,888,0.178636089,0.202702703,20
+University of Chicago,,,,,,,,,21
+Columbia University,174,170,3.84,3.63,6957,1168,0.167888458,0.338184932,18
+Columbia University,173,169,3.89,3.69,7193,1141,0.158626442,0.288343558,19
+Columbia University,173,169,3.91,3.72,6986,1166,0.166905239,0.323327616,20
+Columbia University,,,,,,,,,21
+New York University,172,167,3.9,3.61,7493,1766,0.235686641,0.233861835,18
+New York University,172,167,3.89,3.63,7959,1719,0.215981907,0.242001163,19
+New York University,172,167,3.9,3.65,8009,1728,0.215757273,0.234953704,20
+New York University,,,,,,,,,21
+University of Pennsylvania,171,164,3.95,3.49,6413,945,0.147356931,0.251851852,18
+University of Pennsylvania,171,163,3.96,3.54,6483,941,0.145148851,0.249734325,19
+University of Pennsylvania,171,164,3.95,3.57,6148,879,0.271899886,,20
+University of Pennsylvania,,,,,,,,,21
+University of Virginia,171,163,3.97,3.59,5631,863,0.153258746,0.348783314,18
+University of Virginia,172,164,3.96,3.47,5645,829,0.146855624,0.365500603,19
+University of Virginia,172,164,3.96,3.49,5458,767,0.140527666,0.366362451,20
+University of Virginia,,,,,,,,,21
+University of Michigan,171,165,3.89,3.55,5698,1117,0.196033696,0.311548791,18
+University of Michigan,170,163,3.88,3.56,5629,936,0.166281755,0.314102564,19
+University of Michigan,170,164,3.88,3.56,5417,886,0.163559166,0.326185102,20
+University of Michigan,,,,,,,,,21
+University of California—Berkeley,170,165,3.9,3.64,6019,1185,0.196876558,0.254008439,18
+University of California—Berkeley,170,165,3.9,3.7,5843,1150,0.196816704,0.266956522,19
+University of California—Berkeley,170,163,3.93,3.65,5667,1220,0.215281454,0.274590164,20
+University of California—Berkeley,,,,,,,,,21
+Northwestern University,170,164,3.9,3.58,5313,1027,0.193299454,0.23369036,18
+Northwestern University,171,165,3.92,3.56,5441,980,0.18011395,0.23877551,19
+Northwestern University,172,165,3.92,3.57,5302,1018,0.192003018,0.23280943,20
+Northwestern University,,,,,,,,,21
