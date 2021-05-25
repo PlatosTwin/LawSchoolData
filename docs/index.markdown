@@ -112,8 +112,8 @@ ___
     who were neither. The greater above 1.0 a value is the <i>easier</i> it was for splitters or reverse splitters to 
     gain admission, compared to regular applicants; the lower below 1.0 a value is the <i>harder</i> it was. Splitters 
     are applicants with an LSAT score greather than the 75th percentile and a GPA less than the 25th percentile; 
-    reverse splitters have a low LSAT and high GPA. Until 2021 percentile data 
-    become available, percentiles for 2021 are assumed to be percentiles from 2020. Table columns may be rearranged by dragging.
+    reverse splitters have a low LSAT and high GPA. Until 2021 admissions data 
+    become available, percentages for 2021 are assumed to be percentages from 2020. Table columns may be rearranged by dragging.
 
 </div>
 ___
@@ -125,6 +125,7 @@ ___
     the total number of applicants and admits as reported by the
     <a href="https://www.americanbar.org/groups/legal_education/resources/statistics/" target="_blank">ABA</a>. An 
     applicant counts as having used LawSchoolData.org to report their applying to or hearing from a given school 
-    if they entered at minimum their LSAT score and GPA.
+    if they entered at minimum their LSAT score and GPA. Until 2021 volume data 
+    becomes available, volumes for 2021 are assumed to be volumes from 2020.
 
 </div>

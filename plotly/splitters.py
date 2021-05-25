@@ -17,6 +17,9 @@ register_matplotlib_converters()
 fname_admit = 'lsdata_clean.csv'
 df11 = pd.read_csv(fname_admit, low_memory=False)
 
+fname_meds = 'lsmedians.csv'
+dfmeds = pd.read_csv(fname_meds, low_memory=False)
+
 cycles = [18, 19, 20, 21]
 
 T11 = ['Yale University', 'Harvard University', 'Stanford University', 'University of Chicago',
@@ -25,6 +28,12 @@ T11 = ['Yale University', 'Harvard University', 'Stanford University', 'Universi
 
 T11_short = ['Yale', 'Harvard', 'Stanford', 'UChicago', 'Columbia', 'NYU', 'UPenn', 'Virginia', 'Michigan',
              'Berkeley', 'Northwestern']
+
+#  Set 2021 medians data to 2020 medians data, until 2021 data becomes available
+for school in T11:
+    index = dfmeds[(dfmeds['school_name'] == school) & (dfmeds['cycle'] == 21)].index[0]
+    dfmeds.loc[index] = \
+        list(dfmeds[(dfmeds['school_name'] == school) & (dfmeds['cycle'] == 20)].values[0][:-1]) + [21]
 
 #  Calculate regular and splitter acceptance rates
 dfpct = pd.DataFrame(columns=['school_name', 'cycle', 'Regular', 'Splitters', 'R. Splitters', 'rn', 'sn', 'rsn'])
@@ -72,6 +81,7 @@ fig = make_subplots(
            [{'type': 'table'}]]
 )
 
+#  Self-reported data
 for s in [['Regular', 'lime', 'rn'], ['Splitters', 'dodgerblue', 'sn'], ['R. Splitters', 'black', 'rsn']]:
     fig.add_trace(
         go.Scatter(
@@ -89,6 +99,23 @@ for s in [['Regular', 'lime', 'rn'], ['Splitters', 'dodgerblue', 'sn'], ['R. Spl
         row=1,
         col=1
     )
+
+#  Actual admissions rate
+fig.add_trace(
+        go.Scatter(
+            x=cycles,
+            y=100*np.array(dfmeds[dfmeds['school_name'] == T11[0]]['acceptance_rate']),
+            mode='markers',
+            name='Actual',
+            hovertemplate='%{y:.2f}%<extra></extra>',
+            marker=dict(
+                size=10,
+                color='magenta',
+                )
+            ),
+        row=1,
+        col=1
+)
 
 #  Table formatting: index column colors, alternating colors
 index_s = [round(x, 2) for x in dfpct['Splitters'].values/dfpct['Regular'].values]
@@ -180,6 +207,7 @@ for i, school in enumerate(T11):
     marker = []
     meta = []
 
+    #  Self-reported data
     for s in [['Regular', 'lime', 'rn'], ['Splitters', 'dodgerblue', 'sn'], ['R. Splitters', 'black', 'rsn']]:
         y.append(dfpct[(dfpct['school_name'] == school)][s[0]])
         name.append(s[0] + ' (n=%0.f' % dfpct[dfpct['school_name'] == school][s[2]][:-1].sum() + ')',)
@@ -190,6 +218,17 @@ for i, school in enumerate(T11):
                 )
             )
         meta.append([dfpct[(dfpct['school_name'] == school) & (dfpct['cycle'] == c)][s[2]] for c in cycles])
+
+    #  Actual admissions rates
+    y.append(100*np.array(dfmeds[dfmeds['school_name'] == school]['acceptance_rate']))
+    name.append('Actual')
+    marker.append(
+        dict(
+            size=10,
+            color=['magenta'] * 4
+        )
+    )
+    meta.append([])
 
     button_schools.append(
         dict(

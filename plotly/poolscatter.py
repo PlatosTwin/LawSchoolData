@@ -14,8 +14,8 @@ fname_admit = 'lsdata_clean.csv'
 df11 = pd.read_csv(fname_admit, low_memory=False)
 
 #  Read-in medians/schools data
-fname_percentiles = 'lsmedians.csv'
-dfmeds = pd.read_csv(fname_percentiles, low_memory=False)
+fname_meds = 'lsmedians.csv'
+dfmeds = pd.read_csv(fname_meds, low_memory=False)
 
 cycles = [18, 19, 20, 21]
 
