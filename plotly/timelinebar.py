@@ -112,7 +112,7 @@ for b in [['acceptance_rate', '%'], ['lsat_mean', ' LSAT', 'lsat_std'], ['gpa_me
             error_y=dict(
                 type='data',
                 array=eb,
-                color='darkgray',
+                color='lightgray',
                 thickness=1.5
                 ),
             legendgroup=str(c),
@@ -184,7 +184,7 @@ for i, school in enumerate(T11):
                     dict(
                         type='data',
                         array=[],
-                        color='darkgray',
+                        color='lightgray',
                         thickness=1.5
                         )
                     )
@@ -198,7 +198,7 @@ for i, school in enumerate(T11):
                         array=[dftime[(dftime['month'] == m) & (dftime['cycle'] == c) &
                                       (dftime['school_name'] == school)].groupby(['school_name']).mean()[b[2]].values[0]
                                for m in months],
-                        color='darkgray',
+                        color='lightgray',
                         thickness=1.5
                     )
                 )
@@ -279,8 +279,8 @@ fig.update_xaxes(title_text='Month Application Sent')
 
 # Update yaxis properties
 fig.update_yaxes(title_text='Acceptance Rate', row=1, col=1)
-fig.update_yaxes(title_text='LSAT (all apps.)', row=1, col=2)
-fig.update_yaxes(title_text='GPA (all apps.)', row=2, col=2)
+fig.update_yaxes(title_text='LSAT (all apps.)', range=[150, 183], row=1, col=2)
+fig.update_yaxes(title_text='GPA (all apps.)', range=[3.4, 3.97], row=2, col=2)
 fig.update_yaxes(title_text='Pct. of All Apps. Sent', row=2, col=1)
 
 # fig.show(config=dict(modeBarButtonsToRemove=['autoScale2d']))
