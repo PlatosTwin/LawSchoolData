@@ -92,7 +92,7 @@ for i, c in enumerate(cycles):
         error_y=dict(
             type='data',
             array=eb,
-            color='darkgray',
+            color='lightgray',
             thickness=1.5
         )
     )

@@ -83,13 +83,17 @@ for b in [['acceptance_rate', '%'], ['lsat_mean', ' LSAT', 'lsat_std'], ['gpa_me
     for c in cycles:
         y = [dftime[(dftime['month'] == m) & (dftime['cycle'] == c) &
                     (dftime['school_name'] == T11[0])].groupby(['school_name']).mean()[b[0]].values[0] for m in months]
-        y = [round(elem, 1) for elem in y]
+
+        if b[0] == 'gpa_mean':
+            y = [round(elem, 2) for elem in y]
+        else:
+            y = [round(elem, 1) for elem in y]
 
         if b[0] == 'acceptance_rate':
             showlegend = True
             meta = [b[1] + '<br>(n=%i' % dftime[(dftime['month'] == m) &
-                                         (dftime['cycle'] == c) &
-                                         (dftime['school_name'] == T11[0])]['na'] + ')' for m in months]
+                                                (dftime['cycle'] == c) &
+                                                (dftime['school_name'] == T11[0])]['na'] + ')' for m in months]
             eb = []
         else:
             showlegend = False
@@ -113,7 +117,7 @@ for b in [['acceptance_rate', '%'], ['lsat_mean', ' LSAT', 'lsat_std'], ['gpa_me
                 type='data',
                 array=eb,
                 color='lightgray',
-                thickness=1.5
+                thickness=1.0
                 ),
             legendgroup=str(c),
             showlegend=showlegend
@@ -169,9 +173,15 @@ for i, school in enumerate(T11):
     #  For plots 1, 2, and 3
     for b in [['acceptance_rate', '%'], ['lsat_mean', ' LSAT', 'lsat_std'], ['gpa_mean', ' GPA', 'gpa_std']]:
         for c in cycles:
-            y_temp = [round(dftime[(dftime['month'] == m) & (dftime['cycle'] == c) &
-                                   (dftime['school_name'] == school)].groupby(['school_name']).mean()[b[0]].values[0], 1)
+            y_temp = [dftime[(dftime['month'] == m) & (dftime['cycle'] == c) &
+                             (dftime['school_name'] == school)].groupby(['school_name']).mean()[b[0]].values[0]
                       for m in months]
+
+            if b[0] == 'gpa_mean':
+                y_temp = [round(elem, 2) for elem in y_temp]
+            else:
+                y_temp = [round(elem, 1) for elem in y_temp]
+
             y.append(y_temp)
 
             name.append(str(c-1) + '/' + str(c) + ' (n=%0.f' % df11[(df11['school_name'] == school) &
@@ -185,7 +195,7 @@ for i, school in enumerate(T11):
                         type='data',
                         array=[],
                         color='lightgray',
-                        thickness=1.5
+                        thickness=1.0
                         )
                     )
             else:
@@ -199,7 +209,7 @@ for i, school in enumerate(T11):
                                       (dftime['school_name'] == school)].groupby(['school_name']).mean()[b[2]].values[0]
                                for m in months],
                         color='lightgray',
-                        thickness=1.5
+                        thickness=1.0
                     )
                 )
 
