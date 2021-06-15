@@ -8,23 +8,61 @@ heading: Law School Data Admissions Analyses (2017/2018 - 2020/2021)
 ---
 
 <div style="margin: 35px 100px 18px 100px; font-family: calibri; text-align: justify">
-    
-  The plots below pull self-reported data from <a href="https://lawschooldata.org" target="_blank">LawSchoolData.org</a> and utilize 
-    <a href="https://plotly.com" target="_blank">Plotly</a> to visualize different slices of this data. Plotly makes possible an 
-    interactive experience, among other things allowing users to: pan and zoom, using the toolbar at the top of each plot; 
-    adjust the x and y axes, by hovering over an axis at the middle or at either end; and highlight and hide the data sets 
-    represented in the legend, by single- or double-clicking on the legend markers.
+  
+  How long does the average law school applicant wait to hear back? Are those with high LSATs and low GPAs—or with low LSATs 
+    and high GPAs—more or less likely 
+    to be admitted? Are early candidates more qualified, strictly by the numbers? Does it really matter if you apply in November instead of in February? Drawing on self-reported data 
+    from <a href="https://lawschooldata.org" target="_blank">LawSchoolData.org</a> and utilizing 
+    <a href="https://plotly.com" target="_blank">Plotly</a>, this project aims to provide users with the analysis tools 
+    necessary to answer these and related questions.
+
+  <p></p>
+
+  While some general trends are discernible—it tends to help if applicants apply by the end of November, for instance—the takeaway broadly 
+    is that the admissions context varies greatly from school to school. What holds for Yale may not for Northwestern, and vice 
+    versa.
   
   <p></p>
 
-  Unless otherwise noted, all comparison groups are drawn from LawSchoolData.org, holds and withdrawls are not 
-    included in calculations, and waitlist -> rejected, waitlist -> accepted, and waitlist -> withdrawn reports are 
-    treated as waitlists. Because there appears to be some inconsistency in the self-reporting of the decision date for
+  {% include footer.html %}
+
+<hr style="border: 0; height: 0; border-top: 1px solid rgba(0, 0, 0, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.3);">
+
+<p style="color:darkgrey; font-size:70%;">
+  Usage Note:
+</p>
+
+<BLOCKQUOTE style="color:darkgrey; font-size:70%;">
+
+  The plotting package Plotly makes possible an interactive experience, among other things allowing users to: pan and zoom, using the toolbar at the top of each plot; 
+    adjust the <i>x</i> and <i>y</i> axes, by hovering over an axis at the middle or at either end; and highlight and hide the data sets 
+    represented in the legend, by single- or double-clicking on the legend markers.
+
+</BLOCKQUOTE>
+  
+  <p></p>
+
+<p style="color:darkgrey; font-size:70%;">
+  Technical Details:
+</p>
+
+<BLOCKQUOTE style="color:darkgrey; font-size:70%;">
+  Unless otherwise noted: 1) all admissions data is drawn from LawSchoolData.org; 2) holds and withdrawls are not 
+    included in calculations of wait time, acceptance rate, and other derivative values; and 
+    3) and waitlisted, waitlist -> rejected, waitlist -> accepted, and waitlist -> withdrawn reports are 
+    treated identically, as waitlists. Note that, because there appears to be some inconsistency in the self-reporting of the decision date for
     waitlist -> rejected, waitlist -> accepted, and waitlist -> withdrawn reports—some users update their decision date 
-    upon second notification while others leave it unchanged since receiving the original waitlist notice—it is likely that some 
-    waitlist data are erroneous. If cycles are not reported in the format <i>15/16</i> then the cycle number listed represents the 
-    year in which applicants for that cycle would begin law school, such that cycle 17/18 is equivalent to cycle 18. 
-    Finally, the plots below are generated from the pool of applicants who have entered on 
+    upon second notification while others leave it unchanged since receiving the original waitlist notice—there is likely to be some 
+    error in waitlist timing data.
+
+<p></p>
+
+  If cycles are not reported in the format <i>15/16</i> then the cycle number listed represents the 
+    year in which applicants for that cycle would begin law school; e.g., cycle 17/18 is equivalent to cycle 18. 
+
+<p></p>    
+
+  The plots below are generated from the pool of applicants who have entered on 
     LawSchoolData.org at minimum their LSAT score and their GPA. The data pool for plots 1, 2, 3, and 4 has the additional restriction, because 
     these plots analyze time data, that applicants are included only if they entered on LawSchoolData.org the date at which they sent 
     their application; the pool for plots 1, 3, and 4 is further restricted by requiring applicants to have entered the date at which they received 
@@ -37,13 +75,14 @@ heading: Law School Data Admissions Analyses (2017/2018 - 2020/2021)
     <a href="https://github.com/PlatosTwin/LawSchoolData/tree/gh-pages" target="_blank">GitHub repository</a> for this project. Feedback, 
     suggestions, and other notes may be directed to 
     <a href="https://www.reddit.com/user/IneffablePhilospoher" target="_blank">u/IneffablePhilosopher</a>.
-    
-  <p></p>
-    
-  See the footer for attributions and the latest date of update.
+
+</BLOCKQUOTE>
+
+<p></p>
 
 </div>
-___
+
+<hr style="height:2px;border-width:0;color:gray;background-color:gray">
 
 {% include timeline.html %}
 
@@ -56,9 +95,9 @@ ___
     by taking the number of acceptances, rejections, or waitlists up to a given date and dividing by the total number. 
     <i>Acceptance Likelihood</i> is calcuated by dividing the number of acceptances remaining at any given point by the number 
     of applicants who at that point had not yet received an acceptance, rejection, or waitlist and who had not withdrawn. 
-    The data filtering requirements discussed in the introductory paragraphs, for plots 1, 3, and 4, mean that the 
+    The data filtering requirements discussed in the technical details, above, for plots 1, 3, and 4, mean that the 
     <i>Acceptance Likelihood</i> trace is likely to be of limited reliability. The faint diagonal lines 
-    against the background represent months of waiting: y=x (0 months), 1 month, 2 months, ..., 6 months. Marker outlines in
+    against the background represent months of waiting: <i>y</i>=<i>x</i> (0 months), 1 month, 2 months, ..., 6 months. Marker outlines in
     <span style="color: blue"><i>blue</i></span> represent splitters (>75th percentile LSAT and <25th percentile GPA) while marker 
     outlines in <i>black</i> represent reverse splitters (<25th percentile LSAT and >75th percentile GPA). Until 2021 percentile data 
     become available, percentiles for 2021 are assumed to be percentiles from 2020. The dashed blue line marks the date of the last data update.
@@ -72,7 +111,8 @@ ___
   <i>Note</i>: The top-left plot shows the acceptance rate by date of application submissions, calculated by dividing the 
     number of <i>acceptances</i> among applicants who submitted their application in a given month by the <i>total</i> number of 
     applicants who submitted applications that month, whatever their end result, including <i>Pending</i>. This method of calculation assumes, therefore, 
-    that the overwhelming majority of those applicants who were admitted updated their LawSchoolData.org status to reflect their admission. 
+    that the overwhelming majority of those applicants who were admitted updated their LawSchoolData.org status to reflect their admission and 
+    that there are no significant correlations between application date and the liklihood of updating a LawSchoolData.org profile. 
     Because the plot above reports the total number of acceptances, rejections, and waitlists only, the n= totals may differ between this 
     plot and the plot above. The remaining subplots in the present figure draw on the same data set as does the top-left plot. The top-right and 
     bottom-right plots show the mean of the LSAT and GPA, respectively, of <i>all</i> applicants who applied in a given 
