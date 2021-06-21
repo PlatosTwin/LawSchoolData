@@ -197,21 +197,17 @@ def label_splitter(row):
     :param row:
     :return border color label, string:
     """
-    try:
-        dfmeds_temp = dfmeds[(dfmeds['cycle'] == row['cycle']) & (dfmeds['school_name'] == row['school_name'])]
+    dfmeds_temp = dfmeds[(dfmeds['cycle'] == row['cycle']) & (dfmeds['school_name'] == row['school_name'])]
 
-        #  Splitters = blue
-        if (row['lsat'] > dfmeds_temp['L75'].values[0]) & \
-                (row['gpa'] < dfmeds_temp['G25'].values[0]):
-            return 'blue'
+    #  Splitters = blue
+    if (row['lsat'] > dfmeds_temp['L75'].values[0]) & \
+            (row['gpa'] < dfmeds_temp['G25'].values[0]):
+        return 'blue'
 
-        #  Reverse splitters = black
-        if (row['lsat'] < dfmeds_temp['L25'].values[0]) & \
-                (row['gpa'] > dfmeds_temp['G75'].values[0]):
-            return 'black'
-
-    except IndexError:
-        print('fuck')
+    #  Reverse splitters = black
+    if (row['lsat'] < dfmeds_temp['L25'].values[0]) & \
+            (row['gpa'] > dfmeds_temp['G75'].values[0]):
+        return 'black'
 
     if row['decision'] == 'A':
         return 'green'
