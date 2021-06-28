@@ -24,7 +24,7 @@ heading: Law School Data Admissions Analyses (2017/2018 - 2020/2021)
   
   <p></p>
 
-  {% include footer.html %}
+  {% include footer.html %} Analyses for the 2021/2022 cycle will begin September 1, 2021.
 
 <hr style="border: 0; height: 0; border-top: 1px solid rgba(0, 0, 0, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.3);">
 
