@@ -24,7 +24,7 @@ heading: Law School Data Admissions Analyses (2017/2018 - 2020/2021)
   
   <p></p>
 
-  {% include footer.html %} Analyses for the 2021/2022 cycle will begin September 1, 2021.
+  {% include footer.html %} Analyses for the 2021/2022 cycle will commence September 1, 2021.
 
 <hr style="border: 0; height: 0; border-top: 1px solid rgba(0, 0, 0, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.3);">
 
@@ -37,44 +37,6 @@ heading: Law School Data Admissions Analyses (2017/2018 - 2020/2021)
   The plotting package Plotly makes possible an interactive experience, among other things allowing users to: pan and zoom, using the toolbar at the top of each plot; 
     adjust the <i>x</i> and <i>y</i> axes, by hovering over an axis at the middle or at either end; and highlight and hide the data sets 
     represented in the legend, by single- or double-clicking on the legend markers.
-
-</BLOCKQUOTE>
-  
-  <p></p>
-
-<p style="color:darkgrey; font-size:70%;">
-  Technical Details:
-</p>
-
-<BLOCKQUOTE style="color:darkgrey; font-size:70%;">
-  Unless otherwise noted: 1) all admissions data is drawn from LawSchoolData.org; 2) holds and withdrawls are not 
-    included in calculations of wait time, acceptance rate, and other derivative values; and 
-    3) and waitlisted, waitlist -> rejected, waitlist -> accepted, and waitlist -> withdrawn reports are 
-    treated identically, as waitlists. Note that, because there appears to be some inconsistency in the self-reporting of the decision date for
-    waitlist -> rejected, waitlist -> accepted, and waitlist -> withdrawn reports—some users update their decision date 
-    upon second notification while others leave it unchanged since receiving the original waitlist notice—there is likely to be some 
-    error in waitlist timing data.
-
-<p></p>
-
-  If cycles are not reported in the format <i>15/16</i> then the cycle number listed represents the 
-    year in which applicants for that cycle would begin law school; e.g., cycle 17/18 is equivalent to cycle 18. 
-
-<p></p>    
-
-  The plots below are generated from the pool of applicants who have entered on 
-    LawSchoolData.org at minimum their LSAT score and their GPA. The data pool for plots 1, 2, 3, and 4 has the additional restriction, because 
-    these plots analyze time data, that applicants are included only if they entered on LawSchoolData.org the date at which they sent 
-    their application; the pool for plots 1, 3, and 4 is further restricted by requiring applicants to have entered the date at which they received 
-    their admissions decisions. Accordingly, counts for plots 1, 2, 3, and 4 may differ from those available on LawSchoolData.org itself, 
-    which allows users to update their decision without providing any other information.
-
-  <p></p>
-    
-  Those interested in examining the source code may wish to visit the 
-    <a href="https://github.com/PlatosTwin/LawSchoolData/tree/gh-pages" target="_blank">GitHub repository</a> for this project. Feedback, 
-    suggestions, and other notes may be directed to 
-    <a href="https://www.reddit.com/user/IneffablePhilospoher" target="_blank">u/IneffablePhilosopher</a>.
 
 </BLOCKQUOTE>
 
@@ -167,5 +129,47 @@ ___
     applicant counts as having used LawSchoolData.org to report their applying to or hearing from a given school 
     if they entered at minimum their LSAT score and GPA. Until 2021 volume data 
     becomes available, volumes for 2021 are assumed to be volumes from 2020.
+
+</div>
+
+<hr style="height:2px;border-width:0;color:gray;background-color:gray">
+
+<div style="margin: 24px 100px 18px 100px; font-family: calibri; text-align: justify">
+
+<p style="color:darkgrey; font-size:70%;">
+  Technical Details:
+</p>
+
+<BLOCKQUOTE style="color:darkgrey; font-size:70%;">
+  Unless otherwise noted: 1) all admissions data is drawn from LawSchoolData.org; 2) holds and withdrawls are not 
+    included in calculations of wait time, acceptance rate, and other derivative values; and 
+    3) and waitlisted, waitlist -> rejected, waitlist -> accepted, and waitlist -> withdrawn reports are 
+    treated identically, as waitlists. Note that, because there appears to be some inconsistency in the self-reporting of the decision date for
+    waitlist -> rejected, waitlist -> accepted, and waitlist -> withdrawn reports—some users update their decision date 
+    upon second notification while others leave it unchanged since receiving the original waitlist notice—there is likely to be some 
+    error in waitlist timing data.
+
+<p></p>
+
+  If cycles are not reported in the format <i>15/16</i> then the cycle number listed represents the 
+    year in which applicants for that cycle would begin law school; e.g., cycle 17/18 is equivalent to cycle 18. 
+
+<p></p>    
+
+  The plots below are generated from the pool of applicants who have entered on 
+    LawSchoolData.org at minimum their LSAT score and their GPA. The data pool for plots 1, 2, 3, and 4 has the additional restriction, because 
+    these plots analyze time data, that applicants are included only if they entered on LawSchoolData.org the date at which they sent 
+    their application; the pool for plots 1, 3, and 4 is further restricted by requiring applicants to have entered the date at which they received 
+    their admissions decisions. Accordingly, counts for plots 1, 2, 3, and 4 may differ from those available on LawSchoolData.org itself, 
+    which allows users to update their decision without providing any other information.
+
+  <p></p>
+    
+  Those interested in examining the source code may wish to visit the 
+    <a href="https://github.com/PlatosTwin/LawSchoolData/tree/gh-pages" target="_blank">GitHub repository</a> for this project. Feedback, 
+    suggestions, and other notes may be directed to 
+    <a href="https://www.reddit.com/user/IneffablePhilospoher" target="_blank">u/IneffablePhilosopher</a>.
+
+</BLOCKQUOTE>
 
 </div>
