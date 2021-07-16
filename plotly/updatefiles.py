@@ -10,4 +10,4 @@ exec(open('waitbar.py').read())
 exec(open('splitters.py').read())
 exec(open('poolscatter.py').read())
 
-print('\nAll files updated. Time to complete: %.2f minutes.' % ((time.time() - start)/60))
+print(f'\nAll files updated. Time to complete: {(time.time() - start)/60:.2f} minutes.')
