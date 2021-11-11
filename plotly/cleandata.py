@@ -69,6 +69,9 @@ def label_cycle(row):
         return int(row['cycle_id']) + 3
 
     if pd.isnull(row['sent_at']):
+        if (row['decision_at'] <= dec_tend22) & \
+                (row['decision_at'] >= dec_tstart22):
+            return 22
         if (row['decision_at'] <= dec_tend21) & \
                 (row['decision_at'] >= dec_tstart21):
             return 21
@@ -83,6 +86,9 @@ def label_cycle(row):
             return 18
 
     if pd.isnull(row['decision_at']):
+        if (row['sent_at'] >= snt_tstart22) & \
+                (row['sent_at'] <= snt_tend22):
+            return 22
         if (row['sent_at'] >= snt_tstart21) & \
                 (row['sent_at'] <= snt_tend21):
             return 21
@@ -96,6 +102,11 @@ def label_cycle(row):
                 (row['sent_at'] <= snt_tend18):
             return 18
 
+    if (row['sent_at'] >= snt_tstart22) & \
+            (row['sent_at'] <= snt_tend22) & \
+            (row['decision_at'] <= dec_tend22) & \
+            (row['decision_at'] >= dec_tstart22):
+        return 22
     if (row['sent_at'] >= snt_tstart21) & \
             (row['sent_at'] <= snt_tend21) & \
             (row['decision_at'] <= dec_tend21) & \
@@ -177,8 +188,11 @@ def label_marker(row):
     :param row:
     :return marker label, string:
     """
-    if row['cycle'] == 21:
+    if row['cycle'] == 22:
         return 'circle'
+
+    if row['cycle'] == 21:
+        return 'square'
 
     if row['cycle'] == 20:
         return 'triangle-sw'
@@ -240,21 +254,25 @@ snt_tstart18 = dt.datetime.strptime(snt_tstart + '/2017', '%m/%d/%Y')
 snt_tstart19 = dt.datetime.strptime(snt_tstart + '/2018', '%m/%d/%Y')
 snt_tstart20 = dt.datetime.strptime(snt_tstart + '/2019', '%m/%d/%Y')
 snt_tstart21 = dt.datetime.strptime(snt_tstart + '/2020', '%m/%d/%Y')
+snt_tstart22 = dt.datetime.strptime(snt_tstart + '/2021', '%m/%d/%Y')
 
 snt_tend18 = dt.datetime.strptime(snt_tend + '/2018', '%m/%d/%Y')
 snt_tend19 = dt.datetime.strptime(snt_tend + '/2019', '%m/%d/%Y')
 snt_tend20 = dt.datetime.strptime(snt_tend + '/2020', '%m/%d/%Y')
 snt_tend21 = dt.datetime.strptime(snt_tend + '/2021', '%m/%d/%Y')
+snt_tend22 = dt.datetime.strptime(snt_tend + '/2022', '%m/%d/%Y')
 
 dec_tstart18 = dt.datetime.strptime(dec_tstart + '/2017', '%m/%d/%Y')
 dec_tstart19 = dt.datetime.strptime(dec_tstart + '/2018', '%m/%d/%Y')
 dec_tstart20 = dt.datetime.strptime(dec_tstart + '/2019', '%m/%d/%Y')
 dec_tstart21 = dt.datetime.strptime(dec_tstart + '/2020', '%m/%d/%Y')
+dec_tstart22 = dt.datetime.strptime(dec_tstart + '/2021', '%m/%d/%Y')
 
 dec_tend18 = dt.datetime.strptime(dec_tend + '/2018', '%m/%d/%Y')
 dec_tend19 = dt.datetime.strptime(dec_tend + '/2019', '%m/%d/%Y')
 dec_tend20 = dt.datetime.strptime(dec_tend + '/2020', '%m/%d/%Y')
 dec_tend21 = dt.datetime.strptime(dec_tend + '/2021', '%m/%d/%Y')
+dec_tend22 = dt.datetime.strptime(dec_tend + '/2022', '%m/%d/%Y')
 
 #  Set 2021 medians data to 2020 medians data, until 2021 data becomes available
 for school in T11:
