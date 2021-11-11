@@ -44,8 +44,8 @@ df_filtered.loc[:, 'sent_at'] = pd.to_datetime(df_filtered['sent_at'])
 df_filtered.loc[:, 'decision_at'] = pd.to_datetime(df_filtered['decision_at'])
 
 T11 = ['Yale University', 'Harvard University', 'Stanford University', 'University of Chicago',
-                   'Columbia University', 'New York University', 'University of Pennsylvania', 'University of Virginia',
-                   'University of Michigan', 'University of California—Berkeley', 'Northwestern University']
+       'Columbia University', 'New York University', 'University of Pennsylvania', 'University of Virginia',
+       'University of Michigan', 'University of California—Berkeley', 'Northwestern University']
 
 df11 = df_filtered[df_filtered['school_name'].str.contains('|'.join(T11))]
 
@@ -192,7 +192,7 @@ def label_marker(row):
         return 'circle'
 
     if row['cycle'] == 21:
-        return 'square'
+        return 'triangle-nw'
 
     if row['cycle'] == 20:
         return 'triangle-sw'
@@ -241,7 +241,7 @@ def label_wait(row):
     :param row:
     :return wait time in days as int, or float NaN:
     """
-    return ((row['decision_at'] - row['sent_at'])/np.timedelta64(1, 's'))/(60*60*24)
+    return ((row['decision_at'] - row['sent_at']) / np.timedelta64(1, 's')) / (60 * 60 * 24)
 
 
 #  Prepare to break data down by cycles
@@ -274,17 +274,22 @@ dec_tend20 = dt.datetime.strptime(dec_tend + '/2020', '%m/%d/%Y')
 dec_tend21 = dt.datetime.strptime(dec_tend + '/2021', '%m/%d/%Y')
 dec_tend22 = dt.datetime.strptime(dec_tend + '/2022', '%m/%d/%Y')
 
-#  Set 2021 medians data to 2020 medians data, until 2021 data becomes available
-for school in T11:
-    index = dfmeds[(dfmeds['school_name'] == school) & (dfmeds['cycle'] == 21)].index[0]
-    dfmeds.loc[index] = \
-        list(dfmeds[(dfmeds['school_name'] == school) & (dfmeds['cycle'] == 20)].values[0][:-1]) + [21]
+#  Set 2021/2022 stats to corresponding stats from prior year, if current year's are empty
+for m in range(2):
+    for school in T11:
+        temp = dfmeds[dfmeds['school_name'] == school].replace(np.NaN, '')
+        dfmeds[dfmeds['school_name'] == school] = \
+            temp.apply(lambda x:
+                       [i if i != ''
+                        else temp[temp['cycle'] == x[9] - 1].iloc[:, k].values[0] for k, i in enumerate(x)],
+                       axis=1,
+                       result_type='expand')
 
 #  TODO: streamline and make more efficient
-#  Label cycles: 18, 19, 20, 21
+#  Label cycles: 18, 19, 20, 21, 22
 df11['cycle_id'] = df11.apply(lambda row: label_cycle(row), axis=1)
 df11.rename(columns={'cycle_id': 'cycle'}, inplace=True)
-df11 = df11[(df11['cycle'] > 17) & (df11['cycle'] < 22)]
+df11 = df11[(df11['cycle'] > 17) & (df11['cycle'] < 23)]
 print('\n1/6: Labelled cycles...')
 
 #  Simplify results
@@ -323,7 +328,7 @@ with open(fname_admit, newline='') as f:
         updated = row[0]
         break
 
-current_of = dt.datetime.strptime(updated[updated.index(':')+2:updated.index(':')+12], '%Y-%m-%d')
+current_of = dt.datetime.strptime(updated[updated.index(':') + 2:updated.index(':') + 12], '%Y-%m-%d')
 current = 'Current as of ' + str(current_of.month) + '/' + str(current_of.day) + '/%i' % dt.datetime.now().year
 update_time = 'and updated approximately weekly.'
 footer = current + ' ' + update_time

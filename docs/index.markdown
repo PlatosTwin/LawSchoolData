@@ -4,7 +4,7 @@
 
 layout: home
 title: Admissions Analysis
-heading: Law School Data Admissions Analyses (2017/2018 - 2020/2021)
+heading: Law School Data Admissions Analyses (2017/2018 - 2021/2022)
 ---
 
 <div style="margin: 35px 100px 18px 100px; font-family: calibri; text-align: justify">
@@ -24,7 +24,8 @@ heading: Law School Data Admissions Analyses (2017/2018 - 2020/2021)
   
   <p></p>
 
-  {% include footer.html %} Analyses for the 2021/2022 cycle will commence September 1, 2021.
+  {% include footer.html %} The first plot is live for the 2021/2022 cycle; all other plots will be updated for the current cycle once
+    more data become available, likely near the end of February, 2022.
 
 <hr style="border: 0; height: 0; border-top: 1px solid rgba(0, 0, 0, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.3);">
 
@@ -50,8 +51,8 @@ heading: Law School Data Admissions Analyses (2017/2018 - 2020/2021)
 
 <div style="margin: 0px 100px 18px 100px; font-family: calibri; text-align: justify">
 
-  <i>Note</i>: Historical percentages and likelihood are calculated based on the past three cycles (17/18, 18/19, and 
-    19/20). The <i>Notified</i> trace includes only those who have received an acceptance, rejection, or waitlist—thus 
+  <i>Note</i>: Historical percentages and likelihood are calculated based on the past four cycles (17/18, 18/19, 
+    19/20, and 20/21). The <i>Notified</i> trace includes only those who have received an acceptance, rejection, or waitlist—thus 
     does not include withdrawls or holds. This trace is calculated by reference to the total number of applicants who 
     received an acceptance, rejection, or waitlist notification. The <i>A</i>, <i>R</i>, and <i>WL</i> traces are calculated 
     by taking the number of acceptances, rejections, or waitlists up to a given date and dividing by the total number. 
@@ -61,8 +62,8 @@ heading: Law School Data Admissions Analyses (2017/2018 - 2020/2021)
     <i>Acceptance Likelihood</i> trace is likely to be of limited reliability. The faint diagonal lines 
     against the background represent months of waiting: <i>y</i>=<i>x</i> (0 months), 1 month, 2 months, ..., 6 months. Marker outlines in
     <span style="color: blue"><i>blue</i></span> represent splitters (>75th percentile LSAT and <25th percentile GPA) while marker 
-    outlines in <i>black</i> represent reverse splitters (<25th percentile LSAT and >75th percentile GPA). Until 2021 percentile data 
-    become available, percentiles for 2021 are assumed to be percentiles from 2020. The dashed blue line marks the date of the last data update.
+    outlines in <i>black</i> represent reverse splitters (<25th percentile LSAT and >75th percentile GPA). Until 2022 percentile data 
+    become available, percentiles for 2022 are assumed to be percentiles from 2021. The dashed blue line marks the date of the last data update.
 
 </div>
 ___

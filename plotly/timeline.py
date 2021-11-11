@@ -2,6 +2,7 @@ import datetime as dt
 from os import getcwd
 from pathlib import Path
 
+from itertools import chain
 import numpy as np
 import csv
 import pandas as pd
@@ -23,7 +24,7 @@ df11 = df11.dropna(subset=['sent_at', 'decision_at'])
 df11.loc[:, 'sent_at'] = pd.to_datetime(df11['sent_at'])
 df11.loc[:, 'decision_at'] = pd.to_datetime(df11['decision_at'])
 
-cycles = [18, 19, 20, 21]
+cycles = [18, 19, 20, 21, 22]
 
 #  Normalize years
 for i, cycle in enumerate(cycles[1:]):
@@ -61,27 +62,47 @@ layout = go.Layout(
 
 fig = go.Figure(layout=layout)
 
+init = T11[0]
+symbol = ['triangle-ne', 'triangle-se', 'triangle-sw', 'triangle-nw', 'circle']
+
 #  Add decision (A, R, WL) scatter traces
-for c in cycles:
+for k, c in enumerate(cycles):
     fig.add_trace(go.Scatter(
-        x=df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c)]['sent_at'],
-        y=df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c)]['decision_at'],
+        x=df11[(df11['school_name'] == init) & (df11['cycle'] == c)]['sent_at'],
+        y=df11[(df11['school_name'] == init) & (df11['cycle'] == c)]['decision_at'],
         mode='markers',
         marker=dict(
             size=5,
-            color=df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c)]['color'],
-            symbol=df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c)]['marker'],
+            color=df11[(df11['school_name'] == init) & (df11['cycle'] == c)]['color'],
+            symbol=df11[(df11['school_name'] == init) & (df11['cycle'] == c)]['marker'],
             line=dict(
                 width=1,
-                color=df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c)]['splitter'])),
-        name=str(c-1) + '/' + str(c) +
-             ' (n=' + str(df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c) &
+                color=df11[(df11['school_name'] == init) & (df11['cycle'] == c)]['splitter'])),
+        name=str(c - 1) + '/' + str(c) +
+             ' (n=' + str(df11[(df11['school_name'] == init) & (df11['cycle'] == c) &
                                (df11['decision'].str.contains('|'.join(['A', 'R', 'WL'])))].shape[0]) + ')',
-        customdata=df11[(df11['school_name'] == T11[0]) & (df11['cycle'] == c)],
+        customdata=df11[(df11['school_name'] == init) & (df11['cycle'] == c)],
+        showlegend=False,
+        legendgroup=c,
         hovertemplate='LSAT: %{customdata[3]:.0f}<br>GPA: %{customdata[4]}<br>'
                       'Sent: %{customdata[1]|%m/%d}<br>Decision: %{customdata[2]|%m/%d}<br>'
                       'Cycle: %{customdata[5]}<extra></extra>'
-        )
+    )
+    )
+
+    fig.add_trace(go.Scatter(
+        x=[pd.Series(dt.datetime(2001, 9, 1))],
+        y=[pd.Series(dt.datetime(2001, 5, 1))],
+        mode='markers',
+        marker=dict(
+            size=8,
+            color='black',
+            symbol=symbol[k]),
+        name=str(c - 1) + '/' + str(c) +
+             ' (n=' + str(df11[(df11['school_name'] == init) & (df11['cycle'] == c) &
+                               (df11['decision'].str.contains('|'.join(['A', 'R', 'WL'])))].shape[0]) + ')',
+        legendgroup=c
+    )
     )
 
 #  Calculate percentages from past cycles
@@ -89,7 +110,7 @@ dfpct = pd.DataFrame(columns=['school_name', 'pctn', 'pcta', 'pctr', 'pctw', 'ch
                               'totaln', 'totala', 'totalr', 'totalw', 'date'])
 
 for school in T11:
-    cycles_past = df11[(df11['school_name'] == school) & (df11['cycle'] != 21)]
+    cycles_past = df11[(df11['school_name'] == school) & (df11['cycle'] != 22)]
     num_weeks = int((max(cycles_past['decision_at']) - min(cycles_past['decision_at'])).days / 7) + 1
     earliest = min(cycles_past['decision_at'])
     total_a = cycles_past[cycles_past['decision'] == 'A'].shape[0]
@@ -111,94 +132,128 @@ for school in T11:
 
         index = len(dfpct)
         dfpct.loc[index] = [school,
-                            100*(num_a + num_r + num_w)/total_n,
-                            100*num_a/total_a,
-                            100*num_r/total_r,
-                            100*num_w/total_w,
-                            100*chance_a,
+                            100 * (num_a + num_r + num_w) / total_n,
+                            100 * num_a / total_a,
+                            100 * num_r / total_r,
+                            100 * num_w / total_w,
+                            100 * chance_a,
                             total_n,
                             total_a,
                             total_r,
                             total_w,
-                            earliest + i*dt.timedelta(weeks=1)]
+                            earliest + i * dt.timedelta(weeks=1)]
 
 #  Add percentage traces
 #  Notified
 dfpct_alpha = '0.4)'
 fig.add_trace(go.Scatter(
-    x=dfpct[dfpct['school_name'] == T11[0]]['pctn'],
-    y=dfpct[dfpct['school_name'] == T11[0]]['date'],
+    x=dfpct[dfpct['school_name'] == init]['pctn'],
+    y=dfpct[dfpct['school_name'] == init]['date'],
     line=dict(color='RGBA(0,0,0,' + dfpct_alpha, width=1.25),
     mode='lines',
     xaxis='x2',
-    name='Hist. Pct. Notified (n=%0.f' % max(dfpct[dfpct['school_name'] == T11[0]]['totaln']) + ')'),
+    name='Hist. Pct. Notified (n=%0.f' % max(dfpct[dfpct['school_name'] == init]['totaln']) + ')',
+    legendgroup=1
+),
 )
 
 #  Accepted
 fig.add_trace(go.Scatter(
-    x=dfpct[dfpct['school_name'] == T11[0]]['pcta'],
-    y=dfpct[dfpct['school_name'] == T11[0]]['date'],
+    x=dfpct[dfpct['school_name'] == init]['pcta'],
+    y=dfpct[dfpct['school_name'] == init]['date'],
     line=dict(color='RGBA(0,177,64,' + dfpct_alpha, width=1.25),
     mode='lines',
     xaxis='x2',
-    name='Hist. Pct. A (n=%0.f' % max(dfpct[dfpct['school_name'] == T11[0]]['totala']) + ')')
+    name='Hist. Pct. A (n=%0.f' % max(dfpct[dfpct['school_name'] == init]['totala']) + ')',
+    legendgroup=2
+)
 )
 
 #  Rejected
 fig.add_trace(go.Scatter(
-    x=dfpct[dfpct['school_name'] == T11[0]]['pctr'],
-    y=dfpct[dfpct['school_name'] == T11[0]]['date'],
+    x=dfpct[dfpct['school_name'] == init]['pctr'],
+    y=dfpct[dfpct['school_name'] == init]['date'],
     line=dict(color='RGBA(255,0,0,' + dfpct_alpha, width=1.25),
     mode='lines',
     xaxis='x2',
-    name='Hist. Pct. R (n=%0.f' % max(dfpct[dfpct['school_name'] == T11[0]]['totalr']) + ')')
+    name='Hist. Pct. R (n=%0.f' % max(dfpct[dfpct['school_name'] == init]['totalr']) + ')',
+    legendgroup=3
+)
 )
 
 #  Waitlisted
 fig.add_trace(go.Scatter(
-    x=dfpct[dfpct['school_name'] == T11[0]]['pctw'],
-    y=dfpct[dfpct['school_name'] == T11[0]]['date'],
+    x=dfpct[dfpct['school_name'] == init]['pctw'],
+    y=dfpct[dfpct['school_name'] == init]['date'],
     line=dict(color='RGBA(255,165,0,' + dfpct_alpha, width=1.25),
     mode='lines',
     xaxis='x2',
-    name='Hist. Pct. WL (n=%0.f' % max(dfpct[dfpct['school_name'] == T11[0]]['totalw']) + ')')
+    name='Hist. Pct. WL (n=%0.f' % max(dfpct[dfpct['school_name'] == init]['totalw']) + ')',
+    legendgroup=4
+)
 )
 
 #  Chance of acceptance
 fig.add_trace(go.Scatter(
-    x=dfpct[dfpct['school_name'] == T11[0]]['chancea'],
-    y=dfpct[dfpct['school_name'] == T11[0]]['date'],
+    x=dfpct[dfpct['school_name'] == init]['chancea'],
+    y=dfpct[dfpct['school_name'] == init]['date'],
     line=dict(color='RGBA(0,255,255,' + dfpct_alpha, width=1.25),
     mode='lines',
     xaxis='x2',
-    name='Acceptance Likelihood')
+    name='Acceptance Likelihood',
+    legendgroup=5
+)
 )
 
 #  Update layout for percentage traces
-fig.data[4].update(customdata=dfpct[dfpct['school_name'] == T11[0]],
-                   hovertemplate='%{customdata[1]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>')
-fig.data[5].update(customdata=dfpct[dfpct['school_name'] == T11[0]],
-                   hovertemplate='%{customdata[2]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>')
-fig.data[6].update(customdata=dfpct[dfpct['school_name'] == T11[0]],
-                   hovertemplate='%{customdata[3]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>')
-fig.data[7].update(customdata=dfpct[dfpct['school_name'] == T11[0]],
-                   hovertemplate='%{customdata[4]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>')
-fig.data[8].update(customdata=dfpct[dfpct['school_name'] == T11[0]],
-                   hovertemplate='%{customdata[5]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>')
+fig.data[10].update(customdata=dfpct[dfpct['school_name'] == init],
+                    hovertemplate='%{customdata[1]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>')
+fig.data[11].update(customdata=dfpct[dfpct['school_name'] == init],
+                    hovertemplate='%{customdata[2]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>')
+fig.data[12].update(customdata=dfpct[dfpct['school_name'] == init],
+                    hovertemplate='%{customdata[3]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>')
+fig.data[13].update(customdata=dfpct[dfpct['school_name'] == init],
+                    hovertemplate='%{customdata[4]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>')
+fig.data[14].update(customdata=dfpct[dfpct['school_name'] == init],
+                    hovertemplate='%{customdata[5]:.0f}%<br>%{customdata[10]|%m/%d}<extra></extra>')
 
 #  Dropdown menu
 updatemenu = []
 buttons = []
 
+constant_x = [pd.Series(dt.datetime(2001, 9, 1))]
+constant_y = [pd.Series(dt.datetime(2001, 5, 1))]
 #  Button with one option for each school
 for i, school in enumerate(T11):
-    x = [df11[(df11['school_name'] == school) & (df11['cycle'] == c)]['sent_at'] for c in cycles] + \
+    x = [df11[(df11['school_name'] == school) & (df11['cycle'] == 18)]['sent_at']] + \
+        constant_x + \
+        [df11[(df11['school_name'] == school) & (df11['cycle'] == 19)]['sent_at']] + \
+        constant_x + \
+        [df11[(df11['school_name'] == school) & (df11['cycle'] == 20)]['sent_at']] + \
+        constant_x + \
+        [df11[(df11['school_name'] == school) & (df11['cycle'] == 21)]['sent_at']] + \
+        constant_x + \
+        [df11[(df11['school_name'] == school) & (df11['cycle'] == 22)]['sent_at']] + \
+        constant_x + \
         [dfpct[dfpct['school_name'] == school][c] for c in ['pctn', 'pcta', 'pctr', 'pctw', 'chancea']]
 
-    y = [df11[(df11['school_name'] == school) & (df11['cycle'] == c)]['decision_at'] for c in cycles] +\
-        [dfpct[dfpct['school_name'] == school]['date']]*5
+    y = [df11[(df11['school_name'] == school) & (df11['cycle'] == 18)]['decision_at']] + \
+        constant_y + \
+        [df11[(df11['school_name'] == school) & (df11['cycle'] == 19)]['decision_at']] + \
+        constant_y + \
+        [df11[(df11['school_name'] == school) & (df11['cycle'] == 20)]['decision_at']] + \
+        constant_y + \
+        [df11[(df11['school_name'] == school) & (df11['cycle'] == 21)]['decision_at']] + \
+        constant_y + \
+        [df11[(df11['school_name'] == school) & (df11['cycle'] == 22)]['decision_at']] + \
+        constant_y + \
+        [dfpct[dfpct['school_name'] == school]['date']] * 5
 
-    name = [str(c-1) + '/' + str(c) +
+    name = [str(c - 1) + '/' + str(c) +
+            ' (n=' + str(df11[(df11['school_name'] == school) & (df11['cycle'] == c) &
+                              (df11['decision'].str.contains('|'.join(['A', 'R', 'WL'])))].shape[0]) + ')'
+            for c in cycles] + \
+           [str(c - 1) + '/' + str(c) +
             ' (n=' + str(df11[(df11['school_name'] == school) & (df11['cycle'] == c) &
                               (df11['decision'].str.contains('|'.join(['A', 'R', 'WL'])))].shape[0]) + ')'
             for c in cycles] + \
@@ -208,27 +263,87 @@ for i, school in enumerate(T11):
             'Hist. Pct. W (n=%0.f' % max(dfpct[dfpct['school_name'] == school]['totalw']) + ')',
             'Acceptance Likelihood']
 
+    marker = [
+        dict(
+            size=5,
+            color=df11[(df11['school_name'] == school) & (df11['cycle'] == 18)]['color'],
+            symbol=df11[(df11['school_name'] == school) & (df11['cycle'] == 18)]['marker'],
+            line=dict(
+                width=1,
+                color=df11[(df11['school_name'] == school) & (df11['cycle'] == 18)]['splitter'])),
+        dict(
+            size=8,
+            color='black',
+            symbol=symbol[0]),
+        dict(
+            size=5,
+            color=df11[(df11['school_name'] == school) & (df11['cycle'] == 19)]['color'],
+            symbol=df11[(df11['school_name'] == school) & (df11['cycle'] == 19)]['marker'],
+            line=dict(
+                width=1,
+                color=df11[(df11['school_name'] == school) & (df11['cycle'] == 19)]['splitter'])),
+        dict(
+            size=8,
+            color='black',
+            symbol=symbol[1]),
+        dict(
+            size=5,
+            color=df11[(df11['school_name'] == school) & (df11['cycle'] == 20)]['color'],
+            symbol=df11[(df11['school_name'] == school) & (df11['cycle'] == 20)]['marker'],
+            line=dict(
+                width=1,
+                color=df11[(df11['school_name'] == school) & (df11['cycle'] == 20)]['splitter'])),
+        dict(
+            size=8,
+            color='black',
+            symbol=symbol[2]),
+        dict(
+            size=5,
+            color=df11[(df11['school_name'] == school) & (df11['cycle'] == 21)]['color'],
+            symbol=df11[(df11['school_name'] == school) & (df11['cycle'] == 21)]['marker'],
+            line=dict(
+                width=1,
+                color=df11[(df11['school_name'] == school) & (df11['cycle'] == 21)]['splitter'])),
+        dict(
+            size=8,
+            color='black',
+            symbol=symbol[3]),
+        dict(
+            size=5,
+            color=df11[(df11['school_name'] == school) & (df11['cycle'] == 22)]['color'],
+            symbol=df11[(df11['school_name'] == school) & (df11['cycle'] == 22)]['marker'],
+            line=dict(
+                width=1,
+                color=df11[(df11['school_name'] == school) & (df11['cycle'] == 22)]['splitter'])),
+        dict(
+            size=8,
+            color='black',
+            symbol=symbol[4]),
+    ]
+
+    showlegend = [False, True] * 5 + [True] * 5
+
+    legendgroup = list(np.array([[(i + 1) * m + 7, (i + 1) * m + 7] for m in cycles]).flatten()) + [1, 2, 3, 4, 5]
+
     buttons.append(
         dict(
             method='update',
             label=T11_short[i] + ' (n=' + str(df11[(df11['school_name'] == school) &
-                                                   (df11['decision'].str.contains('|'.join(['A', 'R', 'WL'])))].shape[0]) + ')',
+                                                   (df11['decision'].str.contains('|'.join(['A', 'R', 'WL'])))].shape[
+                                                  0]) + ')',
             visible=True,
             args=[{
                 'x': x,
                 'y': y,
-                'marker':
-                    [dict(
-                        size=5,
-                        color=df11[(df11['school_name'] == school) & (df11['cycle'] == c)]['color'],
-                        symbol=df11[(df11['school_name'] == school) & (df11['cycle'] == c)]['marker'],
-                        line=dict(
-                            width=1,
-                            color=df11[(df11['school_name'] == school) & (df11['cycle'] == c)]['splitter'])) for c in cycles],
+                'showlegend': showlegend,
+                'legendgroup': legendgroup,
+                'marker': marker,
                 'name': name,
-                'customdata': [np.array(df11[(df11['school_name'] == school) & (df11['cycle'] == c)]) for c in cycles] +
+                'customdata': list(
+                    np.array([[np.array(df11[(df11['school_name'] == school) & (df11['cycle'] == c)]) for i in [1, 2]]
+                              for c in cycles], dtype=object).flatten()) +
                               [np.array(dfpct[dfpct['school_name'] == school]) for i in range(4, 9)]
-                },
+            },
             ],
         )
     )
@@ -278,7 +393,7 @@ with open('/Users/Shared/lsdata.csv', newline='') as f:
         updated = row[0]
         break
 
-current_of = '2018' + updated[updated.index(':')+2:updated.index(':')+12][4:]
+current_of = '2017' + updated[updated.index(':') + 2:updated.index(':') + 12][4:]
 current_of = dt.datetime.strptime(current_of, '%Y-%m-%d')
 
 fig.add_shape(
