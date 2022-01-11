@@ -68,24 +68,25 @@ for d in ['all', 'A', 'R', 'WL']:
                            (df11['decision_at'] <= current_of) & (df11['decision'] == d)]
             showlegend = False
 
-        fig.add_trace(go.Histogram(
-            x=df_temp['wait'],
-            name=str(c-1) + '/' + str(c) + ' (n=%0.f' % df_temp.shape[0] + ')',
-            xbins=dict(
-                start=min(df_temp['wait']),
-                end=max(df_temp['wait']),
-                size=7
+        if df_temp.shape[0] != 0:
+            fig.add_trace(go.Histogram(
+                x=df_temp['wait'],
+                name=str(c-1) + '/' + str(c) + ' (n=%0.f' % df_temp.shape[0] + ')',
+                xbins=dict(
+                    start=min(df_temp['wait']),
+                    end=max(df_temp['wait']),
+                    size=7
+                    ),
+                meta=['Avg. Wait: %0.f' % df_temp['wait'].mean(),
+                      '(n=%0.f' % df_temp.shape[0] + ')'],
+                hovertemplate='%{meta[0]}<br>In Bar: %{y}<br>Range: %{x}<br>%{meta[1]}<extra></extra>',
+                showlegend=showlegend,
+                legendgroup=str(c),
+                histfunc='sum'
                 ),
-            meta=['Avg. Wait: %0.f' % df_temp['wait'].mean(),
-                  '(n=%0.f' % df_temp.shape[0] + ')'],
-            hovertemplate='%{meta[0]}<br>In Bar: %{y}<br>Range: %{x}<br>%{meta[1]}<extra></extra>',
-            showlegend=showlegend,
-            legendgroup=str(c),
-            histfunc='sum'
-            ),
-            row=row,
-            col=col
-        )
+                row=row,
+                col=col
+            )
 
     #  Advance to the next quadrant, clockwise
     if (row == 2) & (col == 2):

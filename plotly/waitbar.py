@@ -2,6 +2,7 @@ import csv
 import datetime as dt
 from os import getcwd
 from pathlib import Path
+import numpy as np
 
 import pandas as pd
 import plotly.graph_objects as go
@@ -64,6 +65,8 @@ for school in T11:
 
             index = len(dfwait)
             dfwait.loc[index] = [school, c, d, df_temp['wait'].mean(), df_temp['wait'].std(), df_temp['wait'].shape[0]]
+
+dfwait.replace(np.NaN, 0, inplace=True)
 
 dfwait['wait'] = dfwait.apply(lambda row: int(round(row['wait'], 0)), axis=1)
 dfwait['stdev'] = dfwait.apply(lambda row: int(round(row['stdev'], 0)), axis=1)
