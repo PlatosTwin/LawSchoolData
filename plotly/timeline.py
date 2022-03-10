@@ -393,7 +393,7 @@ with open('/Users/Shared/lsdata.csv', newline='') as f:
         updated = row[0]
         break
 
-current_of = '2017' + updated[updated.index(':') + 2:updated.index(':') + 12][4:]
+current_of = '2018' + updated[updated.index(':') + 2:updated.index(':') + 12][4:]
 current_of = dt.datetime.strptime(current_of, '%Y-%m-%d')
 
 fig.add_shape(
